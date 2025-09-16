@@ -1,0 +1,33 @@
+﻿@model List<WebStoreHouse.Models.QC_Model.QCData>
+
+<h2>QC Data</h2>
+<table class="table">
+    <tr>
+        <th>客戶工單</th>
+        <th>工單</th>
+        <th>機種名稱</th>
+        <th>客戶訂單</th>
+        <th>數量</th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        foreach (var listItem in item.QCDataList)
+        {
+            <tr>
+                <td>@listItem.wono_cust</td>
+                <td>@listItem.wono</td>
+                <td>@listItem.engsr</td>
+                <td>@listItem.order_cust</td>
+                <td>@item.ProCount</td>
+            </tr>
+        }
+    }
+    <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th></th>
+        <th align="left">Total:@ViewBag.Total</th>
+    </tr>
+</table>

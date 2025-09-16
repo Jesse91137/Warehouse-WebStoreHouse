@@ -1,0 +1,145 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>mrkt demo</title>
+
+    <!-- CSS Includes -->    
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <style type="text/css">
+
+        .field-validation-error {
+            color: #ff0000;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <p></p>
+
+        <p></p>
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <hr />
+                <h4>倉庫庫存新增</h4>
+                <hr />
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">工單</label>
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.wono, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.wono, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">數量</label>
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.quantity, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.quantity, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">儲位</label>
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.position, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.position, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">包裝</label>
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.package, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.package, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-md-2">備註</label>
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.mark, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.mark, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="button" value="CPK" class="btn btn-default" id="addButton" />
+                        @*<input type="button" value="WT" class="btn btn-default" id="addButton"/>
+                        <input type="button" value="Coatting" class="btn btn-default" id="addButton"/>*@
+                        <input type="submit" value="Create" class="btn btn-default" />
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+
+    <!-- JS includes -->    
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+            $('#textbox1').focus();
+
+            $("#addButton").click(function () {
+                var currentCount = parseInt($('#TextBoxCount').val(), 10);
+                var newCount = currentCount + 1;
+
+                var newColumnDiv =
+                    $(document.createElement('div')).attr("class", 'col-md-10');
+
+                var newTextBoxDiv =
+                    $(document.createElement('div')).attr(
+                        {
+                            "id": 'TextBoxScope' + newCount,
+                            "class": "form-group"
+                        });
+
+                newTextBoxDiv.appendTo(newColumnDiv);
+
+                newTextBoxDiv.after().html(
+                    '<label>Textbox #' + newCount + ' : </label>' +
+                    '<input type="text"' +
+                    ' name="textbox' + newCount + '" id="textbox' + newCount + '"' +
+                    ' value="" class="form-control">');
+
+                newColumnDiv.appendTo("#TextBoxesGroup");
+                $('#TextBoxCount').val(newCount);
+                $('#textbox' + newCount).focus();
+            });
+
+            $("#removeButton").click(function () {
+                var currentCount = parseInt($('#TextBoxCount').val(), 10);
+                if (currentCount == 0) {
+                    alert("已經沒有東西可以移除啦");
+                    return false;
+                }
+                $("#TextBoxScope" + currentCount).remove();
+                var newCount = currentCount - 1;
+                $('#TextBoxCount').val(newCount);
+            });
+
+        });
+
+    </script>
+</body>
+</html>

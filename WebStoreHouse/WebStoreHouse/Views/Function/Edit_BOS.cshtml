@@ -1,0 +1,64 @@
+﻿@model WebStoreHouse.Models.E_StoreHouseStock_BOS
+
+@{
+    ViewBag.Title = "已銷單庫存庫位編輯";
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    <hr />
+    <h4>已銷單庫存庫位編輯</h4>
+    <div class="form-horizontal">
+
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.sno)
+
+        <div class="form-group">
+            <label class="control-label col-md-2">機種名稱</label>
+            <div class="col-md-10">
+                @Html.HiddenFor(model => model.eng_sr)
+                @Html.DisplayFor(model => model.eng_sr, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.eng_sr, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">預計出貨數量</label>
+            <div class="col-md-10">
+
+                @Html.DisplayFor(model => model.ship_quantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.eng_sr, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">已銷單庫存量</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.quantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.HiddenFor(model => model.quantity)
+                @Html.ValidationMessageFor(model => model.quantity, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">欲變更庫位</label>
+            <div class="col-md-10">
+                @Html.HiddenFor(model => model.position)
+                @Html.DisplayFor(model => model.position, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-md-2">變更後庫位</label>
+            <div class="col-md-10">
+                <input class="form-control" name="changeP" value="" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}

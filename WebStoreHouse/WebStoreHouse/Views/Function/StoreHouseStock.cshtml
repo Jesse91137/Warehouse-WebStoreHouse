@@ -1,0 +1,137 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model IPagedList<WebStoreHouse.Models.StoreHouseStock>
+<br />
+<p>
+    @if (@ViewBag.RoleId != "V")
+    {
+        @Html.ActionLink("建立新資料", "StockCreate")
+    }
+
+</p>
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/PagedList.css" rel="stylesheet" />
+    <link href="~/Content/position-sticky.css" rel="stylesheet" />
+    <script>
+    $(document).ready(function () {
+        $('#detailBtn').click(function () {
+            var key = $('#detailBtn').data('id');
+            $.ajax({
+                url: '@Url.Action("StoreHouseStockDetails", "Function")',
+                type: 'GET',
+                data: { 'id': key },
+                success: function (data) {
+                    $('#myModal .modal-body').html(data);
+                    $('#myModal').modal('show');
+                }
+            });
+        });
+    });
+    </script>
+    
+</head>
+@using (Html.BeginForm())
+    {
+        @Html.PagedListPager(Model, page => Url.Action("StoreHouseStock", new { page }))
+        <label for="wono">工單號碼:</label>
+        @Html.TextBox("wono", null, new { @class = "form-control input-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "display:inline-block; width: 150px;" })
+        <label for="order_cust">客戶業單:</label>
+        @Html.TextBox("order_cust", null, new { @class = "form-control input-sm", @id = "order_cust", @placeholder = "請輸入客戶業單", style = "display:inline-block; width: 150px;" })
+        <label for="engsr">機種名稱:</label>
+        @Html.TextBox("engsr", null, new { @class = "form-control input-sm", @id = "engsr", @placeholder = "請輸入機種名稱", style = "display:inline-block; width: 150px;" })
+        <button type="submit" class="btn btn-default">查詢</button>
+    }
+<p></p>
+<div class="table-sticky-wrapper">
+    <table class="table table-sticky">
+        <thead class="tr-sticky">
+            <tr>
+                <th>工單</th>
+                <th>客戶業單</th>
+                <th>機種名稱</th>
+                <th>訂單數量</th>
+                <th>箱數</th>
+                <th>數量</th>
+                <th>KF10</th>
+                <th>KQ30</th>
+                <th>儲位</th>
+                <th>累積入庫</th>
+                <th>預計銷單日</th>
+                <th>備註</th>
+                <th>入庫日期</th>
+                <th>包裝</th>
+                @if (ViewBag.RoleId != "V")
+                {
+                    <th></th>
+
+                }
+                @if (@ViewBag.RoleId == "A")
+                {
+
+                    <th></th>
+                }
+            </tr>
+        </thead>
+            @foreach (var item in Model)
+            {
+                <tr class="@((item.nowono=="Y") ? "empty-row" : "")">
+                    @*<td>
+                    <a href="@Url.Action("AddCar")?sno=@item.sno" class="btn btn-primary">+明細</a>
+                </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.wono)
+                        @if (!string.IsNullOrEmpty(item.Igroup))
+                        {
+                            <button id="detailBtn" data-id=@item.Igroup>展開</button>
+                        }
+                    </td>
+                    <td>@Html.DisplayFor(modelItem => item.cust_wono)</td>
+                    <td>@Html.DisplayFor(modelItem => item.eng_sr)</td>
+                    <td>@Html.DisplayFor(modelItem => item.order_count)</td>
+                    <td>@Html.DisplayFor(modelItem => item.box_quantity)</td>
+                    <td>@Html.DisplayFor(modelItem => item.quantity)</td>
+                    <td>@Html.DisplayFor(modelItem => item.kf10)</td>
+                    <td>@Html.DisplayFor(modelItem => item.kq30)</td>
+                    <td>@Html.DisplayFor(modelItem => item.position)</td>
+                    <td>@Html.DisplayFor(modelItem => item.acc_in)</td>
+                    <td>@DateTime.Parse(item.due_date.ToString()).ToShortDateString()</td>
+                    <td>@Html.DisplayFor(modelItem => item.mark)</td>
+                    <td>@Html.DisplayFor(modelItem => item.inputdate)</td>
+                    <td>@Html.DisplayFor(modelItem => item.package)</td>
+                    @if (@ViewBag.RoleId != "V")
+                    {
+                        <td>@Html.ActionLink("編輯", "EditStock", new { serialno = item.serialno })</td>
+                    }
+                    @if (@ViewBag.RoleId == "A")
+                    {
+                        <td>
+                            @if (!string.IsNullOrEmpty(item.Igroup))
+                            {
+                                @Html.ActionLink("刪除", "DeleteStock", new { igroup = item.Igroup })
+                            }
+                            else
+                            {
+                                @Html.ActionLink("刪除", "DeleteStock", new { serialno = item.serialno })
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+</table>
+    </div>
+    @Html.PagedListPager(Model, page => Url.Action("StoreHouseStock", new { page }))
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog" style="width: 100%; " ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">群組資料明細</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- 在這裡顯示詳細資訊 -->
+                </div>
+            </div>
+        </div>
+    </div>

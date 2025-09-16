@@ -1,0 +1,88 @@
+﻿@model WebStoreHouse.Models.E_Compyany
+@{ ViewBag.Title = "";}
+
+<head>
+    <script type="text/javascript">
+        var message = @Html.Raw(Json.Encode(TempData["ErrorMessage"]));
+        if (message != null) {
+            alert(message);
+        }       
+    </script>
+</head>
+@using (Html.BeginForm()) 
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <p></p>
+        <h4></h4>
+        <h2>新增公司資訊</h2>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="form-group">
+            <label class="control-label col-md-2">代號</label>
+            <div class="col-md-10">
+                <input class="form-control" id="code" name="code" value="@TempData["code"]" autocomplete="off"/>                
+                @Html.ValidationMessageFor(model => model.code, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">英文代號</label>
+            <div class="col-md-10">
+                <input class="form-control" id="company_No" name="company_No" value="@TempData["company_No"]" autocomplete="off" />
+                @Html.ValidationMessageFor(model => model.company_No, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">公司名稱</label>
+            <div class="col-md-10">
+                <input class="form-control" id="company_Name" name="company_Name" value="@TempData["company_Name"]" autocomplete="off" />
+                @Html.ValidationMessageFor(model => model.company_Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">公司地址</label>
+            <div class="col-md-10">
+                <input class="form-control" id="address" name="address" value="@TempData["address"]" autocomplete="off" />
+                @Html.ValidationMessageFor(model => model.address, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">連絡電話</label>
+            <div class="col-md-10">
+                <input class="form-control" id="company_Tel" name="company_Tel" value="@TempData["company_Tel"]" autocomplete="off" />
+                @Html.ValidationMessageFor(model => model.company_Tel, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">聯絡分機</label>
+            <div class="col-md-10">
+                <input class="form-control" id="tel_extension" name="tel_extension" value="@TempData["tel_extension"]" autocomplete="off" />
+                @Html.ValidationMessageFor(model => model.tel_extension, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">聯絡人</label>
+            <div class="col-md-10">
+                <input class="form-control" id="contact" name="contact" value="@TempData["contact"]" autocomplete="off" />
+                @Html.ValidationMessageFor(model => model.contact, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" value="Create" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

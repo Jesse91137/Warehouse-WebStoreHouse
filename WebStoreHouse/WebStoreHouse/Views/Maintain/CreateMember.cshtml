@@ -1,0 +1,100 @@
+﻿
+
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/PagedList.css" rel="stylesheet" />
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid black;
+        }
+
+        th {
+            background-color: #ddd;
+        }
+
+        @@media print {
+            table, th, td {
+                border: 1px solid black;
+            }
+        }
+    </style>
+    <script>
+        function submitForm() {
+            var fUserIdField = document.getElementById('fUserId');
+            var fUserIdValue = fUserIdField.value;
+
+            if (fUserIdValue.length < 5) {
+                while (fUserIdValue.length < 5) {
+                    fUserIdValue = '0' + fUserIdValue;
+                }
+                fUserIdField.value = fUserIdValue;
+            }
+
+            // 提交表單
+            document.forms[0].submit();
+        }
+
+        var message = @Html.Raw(Json.Encode(TempData["ErrorMessage"]));
+        var selection = @Html.Raw(Json.Encode(TempData["ROLE_ID"]));
+        if (message != null) {            
+            alert(message);
+            document.getElementById('ROLE_ID').value = selection;
+        }
+
+
+    </script>
+</head>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <hr />
+        <h4>新增人員名單</h4>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        
+        <div class="form-group">
+            <label class="control-label col-md-2">員工編號</label>
+            <div class="col-md-10">
+                <input class="form-control" id="fUserId" name="fUserId" autocomplete="off" maxlength="5" value="@TempData["fUserId"]" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">員工姓名</label>
+            <div class="col-md-10">
+                <input class="form-control" id="fName" name="fName" autocomplete="off" value="@TempData["fName"]"/>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">權限設定</label>
+            <div class="col-md-10">
+                <select id="ROLE_ID" name="ROLE_ID" class="form-control">
+                    <option value="A">A | 管理者</option>
+                    <option value="E">E | 僅可編輯</option>
+                    <option value="V">V | 僅可查閱</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="text-danger">@ViewBag.err</label>
+            <div class="col-md-offset-2 col-md-10">
+                <button type="button" onclick="submitForm()" class="btn btn-default">新增送出</button>                
+            </div>
+        </div>
+
+    </div>
+}
+

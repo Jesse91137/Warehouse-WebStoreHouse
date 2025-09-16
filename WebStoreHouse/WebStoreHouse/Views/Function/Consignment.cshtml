@@ -1,0 +1,131 @@
+﻿@model List<string>
+
+@{
+    ViewBag.Title = "出貨單列印";
+}
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid black;
+        }
+
+        th {
+            background-color: #ddd;
+        }
+
+        @@media print {
+            table, tr, th, td {
+                border: none;
+            }
+        }
+    </style>
+
+</head>
+<h2>出貨單列印</h2>
+
+@using (Html.BeginForm())
+{
+    <label for="wono">公司代號:</label>
+    @Html.TextBox("code", null, new { @class = "form-control input-sm", @id = "code", @placeholder = "請輸入公司代號", style = "display:inline-block; width: 150px;" })
+    <label for="order_cust">聯絡人:</label>
+    @Html.TextBox("contact", null, new { @class = "form-control input-sm", @id = "contact", @placeholder = "請輸入聯絡人", style = "display:inline-block; width: 150px;" })
+    @*<label for="engsr">機種名稱:</label>
+        @Html.TextBox("engsr", null, new { @class = "form-control input-sm", @id = "engsr", @placeholder = "請輸入機種名稱", style = "display:inline-block; width: 150px;" })*@
+    <button type="submit" class="btn btn-default">查詢</button>
+}
+<p></p>
+
+<table class="table table-bordered" id="table-to-print" style="width: 600px;">
+    <tr>
+        <td>&nbsp;</td>
+        <td align="center">&nbsp;@DateTime.Now.ToString("yyyy-MM-dd")</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;昶亨科技</td>
+        <td>@ViewBag.comName &nbsp;</td>
+        <td>@ViewBag.comTel&nbsp;@ViewBag.extension</td>
+    </tr>
+    <tr>
+        <td>高雄市前鎮區&nbsp;</td>
+        <td>@ViewBag.contact&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>東十街6號&nbsp;</td>
+        <td align="right">@ViewBag.comNo</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>07-8152243&nbsp;</td>
+        <td>@ViewBag.address&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>林俊樂 07-8152243#133&nbsp;</td>
+        <td>&nbsp;</td>
+    </tr>
+</table>
+<button id="print-btn">列印</button>
+<script>
+    $(function () {
+        $('#print-btn').click(function () {
+            // 產生一個暫時的 div 用來儲存要列印的內容
+            var printContent = $('<div>').append($('#table-to-print').clone());
+
+            // 隱藏不需要列印的欄位
+            //printContent.find('th:last-child, td:last-child').remove();
+
+            // 開始列印
+            var printWindow = window.open('', '', 'height=600,width=800');
+            //printWindow.document.write('<html><head><title>Print</title>');
+            printWindow.document.write('<style>@@media print { table, th, td { border: none; } }</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(printContent.html());
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        });
+    });
+
+
+    $(function () {
+        $('.delete-link').click(function (event) {
+            event.preventDefault(); // 阻止默認行為，即跳轉到刪除操作的 URL
+            var deleteUrl = $(this).attr('href');
+            var reason = prompt('請輸入刪除原因：');
+            if (reason) {
+                // 使用 AJAX 向後端傳送刪除原因
+                $.ajax({
+                    url: deleteUrl,
+                    method: 'POST',
+                    data: { reason: reason },
+                    success: function () {
+                        // 刪除成功，重新載入頁面
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('刪除失敗，請重試。');
+                    }
+                });
+            }
+        });
+    });
+
+</script>

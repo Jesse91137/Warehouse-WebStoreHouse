@@ -1,0 +1,59 @@
+﻿@model List<WebStoreHouse.ViewModels.MaintainViewModels>
+@{ViewBag.Title = "";}
+<h2></h2>
+<h2>人員編輯</h2>
+<p></p>
+@using (Html.BeginForm())
+{
+<div class="form-horizontal">
+
+    @foreach (var item in Model)
+    {
+            @Html.HiddenFor(model => model[0].fId)
+            <div class="form-group">
+                <label class="control-label col-md-2">員工編號</label>
+                <div class="col-md-10">
+                    <input class="form-control" id="fUserId" name="fUserId" value="@item.fUserId" readonly="readonly" />
+                    @Html.ValidationMessageFor(model => item.fUserId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+        <div class="form-group">
+            <label class="control-label col-md-2">人員名稱</label>
+            <div class="col-md-10">                
+                <input class="form-control" id="fName" name="fName" value="@item.fName" />
+                @Html.ValidationMessageFor(model => model[0].fName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">權限描述</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model[0].ROLE_DESC, new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model[0].ROLE_DESC, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">權限代號</label>
+            <div class="col-md-10">
+                <select id="ROLE_ID" name="ROLE_ID" class="form-control">
+                    <option value="A">A | 管理者</option>
+                    <option value="E">E | 僅可編輯</option>
+                    <option value="V">V | 僅可查閱</option>
+                </select>
+            </div>
+        </div>
+
+    }
+
+
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Submit" class="btn-default" />
+        </div>
+    </div>
+</div>
+        }

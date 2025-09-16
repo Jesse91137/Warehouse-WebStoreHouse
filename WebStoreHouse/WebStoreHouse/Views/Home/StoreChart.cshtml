@@ -1,0 +1,112 @@
+﻿@model IEnumerable<WebStoreHouse.ViewModels.ModelChartJs>
+
+@{
+    ViewBag.Title = "達交率";
+    var jsonDays = Json.Encode(ViewBag.DaysLabel);//將Controller傳來轉型成json
+    var jsonOFR = Json.Encode(Model);//將透過Model讀取的資料轉成json
+}
+
+<h2></h2>
+<h4>達交率</h4>
+<!-- 引用Chart.js庫 -->
+<script src="~/Scripts/chart.js"></script>
+<!-- 創建HTML canvas元素，用於繪製曲線圖 -->
+<canvas id="chartjs" width="100" height="50"></canvas>
+
+<!-- 引用相關的JavaScript和CSS文件 -->
+<script src="~/Scripts/chart.umd.js"></script>
+<script src="~/Scripts/Chart.min.js"></script>
+
+
+<!-- 使用傳遞的資料，創建曲線圖 -->
+@*<script>
+    var datasets = [];
+    var jsErrDev =@Html.Raw(jsonOFR);//顯示json原始資料
+    for (var i = 0; i < jsErrDev.length; i++) {
+        datasets.push({
+            label: jsErrDev[i].Date,
+            data: jsErrDev[i].OFR,
+            backgroundColor: [
+                'rgba(255,199,132,0.2)',
+                'rgba(255,99,32,0.2)',
+                'rgba(255,99,13,0.2)',
+                'rgba(25,99,132,0.2)',
+                'rgba(25,99,232,0.2)',
+                'rgba(155,199,132,0.2)',
+                'rgba(55,99,232,0.2)',
+                'rgba(75,9,32,0.2)',
+                'rgba(55,9,32,0.2)',
+                'rgba(25,89,232,0.2)',
+            ]
+        });
+    }
+
+    var ctx = document.getElementById("chartjs");
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: @Html.Raw(jsonDays),
+            datasets: datasets
+        }
+    });
+</script>*@
+@*<script>
+        var jsErrDev =@Html.Raw(jsonOFR);//顯示json原始資料
+        var ctx = document.getElementById("chartjs");
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels:@Html.Raw(jsonDays),
+                datasets: [{
+                    label: jsErrDev[0].OFR,
+                    data: jsErrDev[0].Date,
+                    backgroundColor: [
+                        'rgba(255,199,132,0.2)',
+                        'rgba(255,99,32,0.2)',
+                        'rgba(255,99,13,0.2)',
+                        'rgba(25,99,132,0.2)',
+                        'rgba(25,99,232,0.2)',
+                        'rgba(155,199,132,0.2)',
+                        'rgba(55,99,232,0.2)',
+                        'rgba(75,9,32,0.2)',
+                        'rgba(55,9,32,0.2)',
+                        'rgba(25,89,232,0.2)',
+                    ]
+                }]
+            }
+        })
+    </script>*@
+
+<script>
+        var dataPoints = @Html.Raw(Json.Encode(Model));
+
+        var chartjs = document.getElementById("chartjs");
+        var myChart = new Chart(chartjs, {
+            type: 'bar',
+            data: {
+                labels: dataPoints.map(function (dp) { return dp.Date }),
+                datasets: [{
+                    label: 'OFR',
+                    data: dataPoints.map(function (dp) { return dp.OFR }),
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    //borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        type: 'time',
+                        time: {
+                            unit: 'day'
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>

@@ -1,0 +1,87 @@
+﻿@model IEnumerable<WebStoreHouse.Models.E_Dropshipping>
+@{ ViewBag.Title = "";}
+<p></p>
+<h2>預計直出</h2>
+<h1></h1>
+<p>
+    @if (ViewBag.RoleId != "V")
+        {
+            @Html.ActionLink("建立新資料", "CreateDropship")
+        }
+
+</p>
+<head>
+    <style>
+        .empty-row {
+            background-color: #E8FFE8;
+        }
+    </style>
+    <script>
+        function checkLink() {
+            if (confirm("您確定要執行此操作嗎?")) {
+                window.location.href = this.href;
+            } else {
+                return false;
+            }
+        }
+    </script>
+</head>
+
+@using (Html.BeginForm())
+{
+    <label for="indate">日期:</label>
+    @Html.TextBox("date", null, new { @class = "form-control input-sm", @id = "date", @placeholder = "YYYY-MM-DD", style = "display:inline-block; width: 100px;" })    
+    <button type="submit" class="btn btn-default">查詢</button>
+}
+<p></p>
+
+<table class="table">
+    <tr>
+        <th>日期</th>
+        <th>DN</th>
+        <th>機種名稱</th>
+        <th>數量</th>
+        <th>貨運行</th>
+        <th>確認</th>
+        @if (ViewBag.RoleId != "V")
+            {
+                <th></th>
+                <th></th>
+            }
+    </tr>
+
+    @foreach (var item in Model)
+        {
+            <tr class="@((item.checkOK.GetValueOrDefault()) ? "empty-row" : "")">
+                <td>
+                    @Html.DisplayFor(modelItem => item.date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DN)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.eng_sr)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.freight)
+                </td>
+                <td>
+                    @Html.CheckBox("checkOK", item.checkOK.GetValueOrDefault(), new { value = item.checkOK, disabled = "disabled" })
+                </td>
+                @if (@ViewBag.RoleId != "V")
+                    {
+                        <td>
+                            @Html.ActionLink("Edit", "EditDropship", new { sno = item.sno })
+                            @if (@ViewBag.RoleId == "A")
+                            {
+                                @Html.ActionLink(" | Delete", "DeleteDropship", new { sno = item.sno })
+                            }
+                            @Html.ActionLink(" | CheckOK", "CheckDropship", new { sno = item.sno }, new { @onclick = "return checkLink()" })
+                        </td>
+                    }
+            </tr>
+        }
+</table>

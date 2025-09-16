@@ -1,0 +1,35 @@
+﻿@model List<WebStoreHouse.Models.E_StoreHouseStock>
+
+<table class="table">
+    <tr>
+        <th>工單</th>
+        <th>機種名稱</th>
+        <th>數量</th>
+        <th>儲位</th>
+        <th>入庫日期</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.wono)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.eng_sr)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.position)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.inputdate)
+            </td>
+            <td>@Html.ActionLink("Edit","EditStock_P",new { sno=item.sno})</td>
+        </tr>
+    }
+</table>
+

@@ -1,0 +1,83 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model  IPagedList<WebStoreHouse.Models.E_StoreHouseStock_SC>
+
+@{
+    ViewBag.Title = "預計出貨";
+}
+
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/PagedList.css" rel="stylesheet" />
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid black;
+        }
+
+        th {
+            background-color: #ddd;
+        }
+
+        @@media print {
+            table, th, td {
+                border: 1px solid black;
+            }
+        }
+    </style>
+</head>
+<h2>預計出貨</h2>
+<p></p>
+@Html.PagedListPager(Model, page => Url.Action("StoreHouseStock_SC", new { page }))
+<form action="@Url.Action("ListView")" method="post">
+    <table class="table table-bordered">
+        <tr>
+            <th>出貨日期</th>
+            <th>機種</th>
+            <th>工單</th>
+            <th>業務單號</th>
+            <th>客戶工單</th>
+            <th>預計出貨</th>
+            <th>成倉數量</th>
+            <th>SAP備註</th>
+            <th>order_item</th>
+            <th>公司名稱</th>
+            <th>地址</th>
+            <th></th>
+        </tr>
+        @foreach (var item in Model)
+        {
+    <tr>
+        <td>@Html.DisplayFor(modelItem => item.exp_shipdate)</td>
+        <td>@Html.DisplayFor(modelItem => item.eng_sr) </td>
+        <td>@Html.DisplayFor(modelItem => item.wono)</td>
+        <td>@Html.DisplayFor(modelItem => item.sales_order)</td>
+        <td>@Html.DisplayFor(modelItem => item.cust_wono)</td>
+        <td>@Html.DisplayFor(modelItem => item.exp_shipquantity)</td>
+        <td>@Html.DisplayFor(modelItem => item.stock_quantity)</td>
+        <td>@Html.DisplayFor(modelItem => item.sap_mark)</td>
+        <td>@Html.DisplayFor(modelItem => item.order_item)</td>
+        <td>@Html.DisplayFor(modelItem => item.company_name)</td>
+        <td>@Html.DisplayFor(modelItem => item.address)</td>
+        <td>
+            @Html.ActionLink("Edit ", "Edit_SC", new { sno = item.sno, sales_order = item.sales_order })
+            @if (@ViewBag.RoleId == "A"){
+            @Html.ActionLink("| Delete", "Delete_SC", new { sno = item.sno })}
+        </td>
+    </tr>
+        }
+    </table>
+</form>
+@Html.PagedListPager(Model, page => Url.Action("StoreHouseStock_SC", new { page }))
+<form action="@Url.Action("OrderConfirm")" method="post">
+    <div class="form-group">
+        <input type="submit" value="出貨確認" class="btn btn-default" />
+    </div>
+</form>

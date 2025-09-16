@@ -1,0 +1,81 @@
+﻿@model List<WebStoreHouse.Models.E_StoreHouseStock_BOS>
+
+@{
+    ViewBag.Title = "已銷單庫存";
+}
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <script>
+    $(document).ready(function () {
+        $('#detailBtn').click(function () {
+            var key = $('#detailBtn').data('engsr');
+            $.ajax({
+                url: '@Url.Action("StoreHouseStockBOSDetails", "Function")',
+                type: 'GET',
+                data: { 'engsr': key },
+                success: function (data) {
+                    $('#myModal .modal-body').html(data);
+                    $('#myModal').modal('show');
+                }
+            });
+        });
+    });
+    </script>
+</head>
+<h2>已銷單庫存</h2>
+<table class="table">
+    <tr>
+        <th></th>
+        
+        <th>機種名稱</th>
+        <th>數量</th>
+        <th>庫位</th>
+        <th>滿箱台數</th>
+        <th>G.W.(kgs)</th>
+        <th>N.W.(kgs)</th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+<tr>
+    <td>        
+        <button id="detailBtn" data-engsr=@item.eng_sr>展開</button>        
+    </td>    
+    <td>
+        @Html.DisplayFor(modelItem => item.eng_sr)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.quantity)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.position)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Full_Amount)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Full_GW)
+    </td>
+    <td>
+        @Html.DisplayFor(modelItem => item.Full_NW)
+    </td>
+    <td>
+    </td>
+</tr>
+    }
+</table>
+<div id="myModal" class="modal fade">
+    <div class="modal-dialog" style="width: 100%; " ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">資料明細</h4>
+            </div>
+            <div class="modal-body">
+                <!-- 在這裡顯示詳細資訊 -->
+            </div>
+        </div>
+    </div>
+</div>

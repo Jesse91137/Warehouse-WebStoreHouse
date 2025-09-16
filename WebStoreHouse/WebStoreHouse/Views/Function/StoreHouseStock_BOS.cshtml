@@ -1,0 +1,107 @@
+﻿@model System.Data.DataSet
+
+@{
+    ViewBag.Title = "已銷單庫存";
+}
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/PagedList.css" rel="stylesheet" />
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid black;
+        }
+
+        th {
+            background-color: #ddd;
+        }
+
+        @@media print {
+            table, th, td {
+                border: 1px solid black;
+            }
+        }
+    </style>
+</head>
+<h2>已銷單庫存</h2>
+<table class="table table-bordered">
+    <tr>
+        @*<th></th>*@
+        <th>機種名稱</th>
+        <th>數量</th>
+        <th>庫位</th>
+        <th>出貨方式</th>
+        <th>滿箱台數</th>
+        <th>G.W.(kgs)</th>
+        <th>N.W.(kgs)</th>
+        @if (ViewBag.RoleId != "V")
+        {
+            <th></th>
+        }
+    </tr>
+
+    @foreach (System.Data.DataRow row in Model.Tables[0].Rows)
+    {
+        <tr>
+            @*<td>
+                    <button id="detailBtn" data-engsr="@row["eng_sr"]" data-position="@row["position"]">展開</button>
+                </td>*@
+            <td>@row["eng_sr"]</td>
+            <td>@row["quantity"].ToString()</td>
+            <td>@row["position"]</td>
+            <td>@row["transportation"]</td>
+            <td>@row["Full_Amount"].ToString()</td>
+            <td>@row["Full_GW"]</td>
+            <td>@row["Full_NW"]</td>
+            @if (ViewBag.RoleId != "V")
+                {
+                    <td>
+                        @Html.ActionLink("庫位異動", "Edit_BOS", new { eng_sr = @row["eng_sr"] }) |
+                        @Html.ActionLink("已銷出貨", "BOS_toShip", new { eng_sr = @row["eng_sr"], position = @row["position"] })
+                    </td>
+                }
+            
+        </tr>
+    }
+</table>
+@*
+    <script>
+        $(document).ready(function () {
+        $(document).on('click', '#detailBtn', function () {
+            var key = $(this).data('engsr');
+            //var key2 = $(this).data('position');
+            $.ajax({
+                url: '@Url.Action("StoreHouseStockBOSDetails", "Function")',
+                type: 'GET',
+                //data: { 'engsr': key, 'position': key2 },
+                data: { 'engsr': key},
+                success: function (data) {
+                    $('#myModal .modal-body').html(data);
+                    $('#myModal').modal('show');
+                }
+            });
+        });
+    });
+
+    </script>
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog" style="width: 100%; " ">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">資料明細</h4>
+                </div>
+                <div class="modal-body">
+                    <!-- 在這裡顯示詳細資訊 -->
+                </div>
+            </div>
+        </div>
+    </div>
+*@

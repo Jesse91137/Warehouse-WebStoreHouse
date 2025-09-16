@@ -1,0 +1,27 @@
+﻿@model List<WebStoreHouse.ViewModels.ModelChartJs>
+
+@{
+    ViewBag.Title = "達交率";
+    var jsonDays = Json.Encode(ViewBag.DaysLabel);//將Controller傳來轉型成json
+    var jsonOFR = Json.Encode(Model);//將透過Model讀取的資料轉成json
+}
+<script src="~/Scripts/chart.js"></script>
+<h2>達交率</h2>
+<canvas id="BarChart" style="background-color: #FFFAF2 "></canvas>
+@*Chart一定用使用canvas標籤，不然會出現建立失敗的錯誤訊息*@
+<script>
+    var jsErrDev =@Html.Raw(jsonOFR);//顯示json原始資料
+    var ctx = document.getElementById("BarChart");
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels:@Html.Raw(jsonDays),
+            datasets: [{
+                label: "每日三點達交率",
+                data: jsErrDev[0].OFR,
+                backgroundColor: ['rgba(155,199,132,0.2)',],
+                borderColor: '#171717',
+            }]
+        }
+    })
+</script>

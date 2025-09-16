@@ -1,0 +1,169 @@
+﻿@*@model System.Data.DataSet*@
+@model WebStoreHouse.ViewModels.StockOrderDataAndQcDataViewModels
+
+@{
+    ViewBag.Title = "資料查詢";
+}
+<h2>資料查詢</h2>
+<div class="row">
+    <div class="col-xs-2">
+        <h4>@Html.ActionLink("訂單資料查詢", "StoreHouseStock_OrderData", new { li = "O" })</h4>
+        <h4>@Html.ActionLink("ZRSD19查詢", "StoreHouseStock_OrderData", new { li = "Z" })</h4>
+        <h4>@Html.ActionLink("Kf10、Kq30查詢", "StoreHouseStock_OrderData", new { li = "K" })</h4>
+        @*<h4>@Html.ActionLink("QC查詢", "StoreHouseStock_OrderData", new { li = "Q" })</h4>*@
+    </div>
+    <div class="col-xs-10">
+        @if (ViewBag.List == "Z")
+        {
+            using (Html.BeginForm())
+            {
+                <label for="wono">工單:</label>
+                @Html.TextBox("wono", null, new { @class = "form-control input-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "display:inline-block; width: 150px;" })
+                <label for="order_cust">客戶單號:</label>
+                @Html.TextBox("order_cust", null, new { @class = "form-control input-sm", @id = "order_cust", @placeholder = "請輸入客戶單號", style = "display:inline-block; width: 150px;" })
+                <label for="wono_cust">客戶工單:</label>
+                @Html.TextBox("wono_cust", null, new { @class = "form-control input-sm", @id = "wono_cust", @placeholder = "請輸入客戶工單", style = "display:inline-block; width: 150px;" })
+                <label for="engsr">機種名稱:</label>
+                @Html.TextBox("engsr", null, new { @class = "form-control input-sm", @id = "engsr", @placeholder = "請輸入機種名稱", style = "display:inline-block; width: 150px;" })
+                <button type="submit" class="btn btn-default">查詢</button>
+            }
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>wono</th>
+                        <th>order_cust</th>
+                        <th>wono_cust</th>
+                        <th>item</th>
+                        <th>spec_product</th>
+                        <th>order_quantity</th>
+                        <th>shipped_quantity</th>
+                        <th>unshipped_quantity</th>
+                        <th>borrow_count</th>
+                        <th>wono_openCount</th>
+                        <th>wono_inStoreCount</th>
+                        <th>due_date</th>
+                        <th>prod_notes</th>
+                        <th>prod_notes2</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (System.Data.DataRow row in Model.StockData.Tables[0].Rows)
+                    {
+                        <tr>
+                            <td>@row["wono"]</td>
+                            <td>@row["order_cust"]</td>
+                            <td>@row["wono_cust"]</td>
+                            <td>@row["item"]</td>
+                            <td>@row["spec_product"]</td>
+                            <td>@row["order_quantity"]</td>
+                            <td>@row["shipped_quantity"]</td>
+                            <td>@row["unshipped_quantity"]</td>
+                            <td>@row["borrow_count"]</td>
+                            <td>@row["wono_openCount"]</td>
+                            <td>@row["wono_inStoreCount"]</td>
+                            <td>@row["due_date"]</td>
+                            <td>@row["prod_notes"]</td>
+                            <td>@row["prod_notes2"]</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else if (ViewBag.List == "O")
+        {
+            using (Html.BeginForm())
+            {
+                <label for="indate">日期:</label>
+                @Html.TextBox("indate", null, new { @class = "form-control input-sm", @id = "indate", @placeholder = "YYYY-MM-DD", style = "display:inline-block; width: 100px;" })
+                <label for="indate2">～</label>
+                @Html.TextBox("indate2", null, new { @class = "form-control input-sm", @id = "indate2", @placeholder = "YYYY-MM-DD", style = "display:inline-block; width: 100px;" })
+
+                <label for="engsr">機種名稱:</label>
+                @Html.TextBox("engsr", null, new { @class = "form-control input-sm", @id = "engsr", @placeholder = "請輸入工程號", style = "display:inline-block; width: 150px;" })
+
+                <label for="wono">工單:</label>
+                @Html.TextBox("wono", null, new { @class = "form-control input-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "display:inline-block; width: 150px;" })
+
+                <label for="mark">備註:</label>
+                @Html.TextBox("mark", null, new { @class = "form-control input-sm", @id = "mark", @placeholder = "請輸入標籤", style = "display:inline-block; width: 150px;" })
+
+                <button type="submit" class="btn btn-default">查詢</button>
+            }
+
+            if (Model != null && Model.StockData.Tables[0].Rows.Count > 0)
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>訂單日期</th>
+                            <th>工單號碼</th>
+                            <th>機種名稱</th>
+                            <th>客戶單號</th>
+                            <th>出貨數</th>
+                            <th>SAP備註</th>
+                            <th>地址</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (System.Data.DataRow row in Model.StockData.Tables[0].Rows)
+                        {
+                            <tr>
+                                <td>@DateTime.Parse(row["chk_date"].ToString()).ToShortDateString()</td>
+                                <td>@row["wono"]</td>
+                                <td>@row["eng_sr"]</td>
+                                <td>@row["cust_wono"]</td>
+                                <td>@row["exp_shipquantity"]</td>
+                                <td>@row["sap_mark"]</td>
+                                <td>@row["address"]</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+        else if (ViewBag.List == "K")
+        {
+            @*using (Html.BeginForm())
+            {
+                <label for="engsr">機種名稱:</label>
+                @Html.TextBox("Material", null, new { @class = "form-control input-sm", @id = "Material", @placeholder = "請輸入工程號", style = "display:inline-block; width: 150px;" })
+
+                <label for="wono">工單:</label>
+                @Html.TextBox("Docu", null, new { @class = "form-control input-sm", @id = "Docu", @placeholder = "請輸入工單號碼", style = "display:inline-block; width: 150px;" })
+
+                <label for="mark">備註:</label>
+                @Html.TextBox("SLoc", null, new { @class = "form-control input-sm", @id = "SLoc", @placeholder = "請輸入倉別", style = "display:inline-block; width: 150px;" })
+
+                <button type="submit" class="btn btn-default">查詢</button>
+            }*@
+            if (Model != null && Model.StockData.Tables[0].Rows.Count > 0)
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>倉別</th>
+                            <th>工單號碼</th>
+                            <th>機種名稱</th>
+                            <th>數量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (System.Data.DataRow row in Model.StockData.Tables[0].Rows)
+                        {
+                            <tr>
+                                <td>@row["SLoc"]</td>
+                                <td>@row["Docu"]</td>
+                                <td>@row["Material"]</td>
+                                <td>@row["Unrestricted"]</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        }
+        @*else if (ViewBag.List == "Q")
+        {
+            @Html.Partial("_QCDataPartial",Model.QCData)
+        }*@
+    </div>
+</div>

@@ -1,0 +1,50 @@
+﻿@model  IEnumerable<WebStoreHouse.Models.E_StoreHouseStock_SC>
+
+@{
+    ViewBag.Title = "預計出貨";
+}
+
+<h2>預計出貨</h2>
+<form action="@Url.Action("ListView")" method="post">
+    <table class="table">
+        <tr>
+            <th>工單</th>
+            <th>機種</th>
+            <th>業務單號</th>
+            <th>客戶單號</th>
+            <th>預計出貨數</th>
+            <th>出貨數量</th>
+            <th>SAP備註</th>
+            <th>成倉數量</th>
+            <th>SAP入庫</th>
+            <th>公司名稱</th>
+            <th>地址</th>
+            <th></th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.wono)</td>
+                <td>@Html.DisplayFor(modelItem => item.eng_sr) </td>
+                <td>@Html.DisplayFor(modelItem => item.sales_order)</td>
+                <td>@Html.DisplayFor(modelItem => item.cust_wono)</td>
+                <td>@Html.DisplayFor(modelItem => item.exp_shipquantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.ship_quantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.sap_mark)</td>
+                <td>@Html.DisplayFor(modelItem => item.stock_quantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.sap_in)</td>
+                <td>@Html.DisplayFor(modelItem => item.company_name)</td>
+                <td>@Html.DisplayFor(modelItem => item.address)</td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit_SC", new { sno = item.sno }) |
+                    @Html.ActionLink("Delete", "Delete", new { sno = item.sno })
+                </td>
+            </tr>
+        }
+    </table>
+</form>
+    <form action="@Url.Action("OrderConfirm")" method="post">
+        <div class="form-group">
+            <input type="submit" value="出貨確認" class="btn btn-default" />            
+        </div>
+    </form>

@@ -1,0 +1,142 @@
+﻿@model  WebStoreHouse.Models.E_StoreHouseStock_SC
+@{
+    ViewBag.Title = "出貨明細修改";
+}
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+
+</head>
+
+
+@using (Html.BeginForm("Edit_SCbos", "Function", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal">
+        <hr />
+        <h4>出貨明細修改</h4>
+
+        @Html.HiddenFor(model => model.sno)
+        <div class="form-group" hidden="hidden">
+            <label class="control-label col-md-2">執行人員</label>
+            <div class="col-md-10">
+                <input class="form-control" disabled="disabled" value="@Model.UserId" />
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">工單</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.wono, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.wono, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">庫位</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.position, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.position, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">機種名稱</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.eng_sr, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.eng_sr, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">業務單號</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.sales_order, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.sales_order, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">客戶單號</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.cust_wono, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.cust_wono, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">預計出貨數量</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.exp_shipquantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.exp_shipquantity, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">已銷庫存數量</label>
+            <div class="col-md-10">
+                @Html.DisplayFor(model => model.stock_quantity, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.stock_quantity, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">SAP備註</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.sap_mark, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.sap_mark, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">公司代碼</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.company_code, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.company_code, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                @*<input type="submit" id="submit-btn" value="Submit" class="btn-default" onclick="return false;" />*@
+                <input type="submit" value="Save" class="btn btn-default" />
+            </div>
+        </div>
+    </div>
+}
+<script>
+    var form = document.getElementById('scForm');
+    var exp_shipquantity = document.getElementById('exp_shipquantity');
+    var cust_wono = document.getElementById('cust_wono');
+    var stock_quantity = document.getElementById('stock_quantity');
+    var sap_mark = document.getElementById('sap_mark');
+    var position = document.getElementById('position');
+    var eng_sr = document.getElementById('eng_sr');
+    var button = document.getElementById('submit-btn');
+    //var wono = $('#wono').val();
+
+
+    button.addEventListener('click', function (e) {
+        // 當用戶提交表單時，先將 disabled 屬性設置為 false
+        exp_shipquantity.disabled = false;
+        cust_wono.disabled = false;
+        stock_quantity.disabled = false;
+        sap_mark.disabled = false;
+        position.disabled = false;
+        eng_sr.disabled = false;
+        form.submit();
+
+    });
+
+    exp_shipquantity.addEventListener("blur", function () {
+
+        var valueA = parseFloat(exp_shipquantity.value);
+        var valueB = parseFloat(stock_quantity.value);
+        //
+        if (valueB - valueA < 0) {
+            // 如果小於B欄位的值，顯示錯誤訊息
+            alert("預計出貨數量不可大於庫存數量!!");
+            return;
+        }
+    });
+</script>

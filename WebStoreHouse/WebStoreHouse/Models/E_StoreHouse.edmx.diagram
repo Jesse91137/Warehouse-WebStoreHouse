@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="1ce96035670549db9179a4f1b9514a30" Name="Diagram1">
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_Kf10" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_KQ30" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_Weight" Width="1.5" PointX="13.875" PointY="0.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_ZRSD14P" Width="1.5" PointX="6.125" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_ZRSD19" Width="1.5" PointX="4.5" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.Invoicing" Width="1.5" PointX="12.25" PointY="0.625" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_Outbound_Details" Width="2.5" PointX="0.625" PointY="9.625" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_Compyany" Width="2.125" PointX="2.5" PointY="5.75" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_StoreHouseStock" Width="1.875" PointX="12.25" PointY="5.75" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_StoreHouseStock_Order" Width="2.125" PointX="7.5" PointY="5.75" />        
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_StoreHouseStock_SC" Width="2.375" PointX="9.75" PointY="5.75" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_StoreHouseStock_In" Width="1.875" PointX="5.375" PointY="5.75" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_ZRSD13" Width="1.5" PointX="7.75" PointY="0.75" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_Package" Width="1.5" PointX="0.625" PointY="6" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_StoreHouseStock_BOS" Width="2" PointX="7.25" PointY="11.375" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_StoreChartjs" Width="1.5" PointX="5.375" PointY="10.75" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_Dropshipping" Width="1.5" PointX="4.375" PointY="13.75" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_Member" Width="1.5" PointX="10.125" PointY="11.625" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_MemberRole" Width="1.5" PointX="10.125" PointY="13.75" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_StoreHouse_Role" Width="1.5" PointX="11.875" PointY="11.625" />
+        <EntityTypeShape EntityType="E_StoreHouseModel.E_QC" Width="1.5" PointX="9.5" PointY="0.75" />
+        </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

@@ -1,0 +1,38 @@
+﻿@model IEnumerable<WebStoreHouse.ViewModels.ModelChartJs>
+
+@{
+    ViewBag.Title = "ErrDevBar";
+    var jsonMonths = Json.Encode(ViewBag.MonthLabel);//將Controller傳來轉型成json
+    var jsonErrDev = Json.Encode(Model);//將透過Model讀取的資料轉成json
+}
+<script src="~/Scripts/chart.js"></script>
+<h2>ErrDevBar</h2>
+<canvas id="BarChart"></canvas>//Chart一定用使用canvas標籤，不然會出現建立失敗的錯誤訊息
+<script>
+    var jsErrDev =@Html.Raw(jsonErrDev);//顯示json原始資料
+    var ctx = document.getElementById("BarChart");
+    var chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels:@Html.Raw(jsonMonths),
+            datasets: [{
+                label: jsErrDev[0].dev,
+                data: jsErrDev[0].errCount,
+                backgroundColor: [
+                    'rgba(255,199,132,0.2)',
+                    'rgba(255,99,32,0.2)',
+                    'rgba(255,99,13,0.2)',
+                    'rgba(25,99,132,0.2)',
+                    'rgba(25,99,232,0.2)',
+                    'rgba(155,199,132,0.2)',
+                    'rgba(55,99,232,0.2)',
+                    'rgba(75,9,32,0.2)',
+                    'rgba(55,9,32,0.2)',
+                    'rgba(25,89,232,0.2)',
+                    'rgba(55,199,32,0.2)',
+                    'rgba(155,66,88,0.2)',
+                ]
+            }]
+        }
+    })
+</script>

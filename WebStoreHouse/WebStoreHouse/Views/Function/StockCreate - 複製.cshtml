@@ -1,0 +1,62 @@
+﻿@model WebStoreHouse.Models.E_StoreHouseStock
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()      
+<div class="form-horizontal">
+    <hr />
+    <h4>倉庫庫存新增</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        
+    <div class="form-group">
+        <label class="control-label col-md-2">工單</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.wono, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.wono, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">數量</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.quantity, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.quantity, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">儲位</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.position, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.position, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">包裝</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.package, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.package, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">備註</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.mark, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.mark, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="建立" class="btn btn-default" name="defaultBtn" />
+            <input type="submit" value="CPK" class="btn btn-default" id="cpkBtn" name="cpkBtn" />
+            <input type="submit" value="WT" class="btn btn-default" id="wtBtn" name="wtBtn" />
+            <input type="submit" value="Coatting" class="btn btn-default" id="coattingBtn" name="coattingBtn" />
+
+        </div>
+    </div>
+
+</div>
+    }

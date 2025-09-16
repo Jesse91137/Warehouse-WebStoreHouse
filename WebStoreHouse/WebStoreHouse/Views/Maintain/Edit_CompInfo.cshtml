@@ -1,0 +1,86 @@
+﻿@model List<WebStoreHouse.Models.E_Compyany>
+
+@{ ViewBag.Title = "";}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal">
+    <p></p>
+    <h4>編輯公司資訊</h4>
+    <hr />
+
+    @foreach (var item in Model)
+    {
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => item.sno)
+
+        <div class="form-group">
+            <label class = "control-label col-md-2" >代號</label>
+            <div class="col-md-10">
+                <input class="form-control" id="code" name="code" value="@item.code" autocomplete="off" readonly="readonly"/>
+                @Html.ValidationMessageFor(model => item.code, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">公司英文代號</label>
+            <div class="col-md-10">
+                <input class="form-control" id="company_No" name="company_No" value="@item.company_No" autocomplete="off"/>
+                @Html.ValidationMessageFor(model => item.company_No, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">公司名稱</label>
+            <div class="col-md-10">
+                <input class="form-control" id="company_Name" name="company_Name" value="@item.company_Name" autocomplete="off"/>
+                @Html.ValidationMessageFor(model => item.company_Name, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">公司地址</label>
+            <div class="col-md-10">
+                <input class="form-control" id="company_Name" name="company_Name" value="@item.company_Name" autocomplete="off"/>
+                @Html.ValidationMessageFor(model => item.address, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">聯絡電話</label>
+            <div class="col-md-10">
+                <input class="form-control" id="company_Tel" name="company_Tel" value="@item.company_Tel" autocomplete="off"/>
+                @Html.ValidationMessageFor(model => item.company_Tel, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">聯絡分機</label>
+            <div class="col-md-10">
+                <input class="form-control" id="tel_extension" name="tel_extension" value="@item.tel_extension" autocomplete="off"/>
+                @Html.ValidationMessageFor(model => item.tel_extension, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2">聯絡人</label>
+            <div class="col-md-10">
+                <input class="form-control" id="contact" name="contact" value="@item.contact" autocomplete="off"/>
+                @Html.ValidationMessageFor(model => item.contact, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    }
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Save" class="btn btn-default" />
+        </div>
+    </div>
+</div>
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>

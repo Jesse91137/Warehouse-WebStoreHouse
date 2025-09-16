@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - 成品倉庫</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <p class = "navbar-brand" >成品倉庫</p>                
+                @*@Html.ActionLink("應用程式名稱", "", "", new { area = "" }, new { @class = "navbar-brand" })*@
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    <li>@Html.ActionLink("首頁", "Index", "Home")</li>
+                    <li>@Html.ActionLink("倉庫庫存", "StoreHouseStock", "Function")</li>
+                    <li>@Html.ActionLink("預計出貨", "StoreHouseStock_SC", "Function")</li>
+                    <li>@Html.ActionLink("出貨明細", "StoreHouseStock_Order", "Function")</li>
+                    <li>@Html.ActionLink("已銷單庫存", "StoreHouseStock_BOS", "Function")</li>
+                    <li>@Html.ActionLink("預計直出", "StoreHouseDropshipping", "Function")</li>
+                    <li>@Html.ActionLink("資料查詢", "StoreHouseStock_OrderData", "Function")</li>
+                    <li>@Html.ActionLink("資料維護", "StoreHouseStock_Maintain", "Maintain")</li>
+                    @*<li>@Html.ActionLink("出貨單列印", "Consignment", "Function")</li>*@
+                    <li>@Html.ActionLink("登出", "Logout", "Home")</li>
+                    <li><a href="#">@Session["WelCome"]</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            @*<p>&copy; 2022 - 成品倉庫</p>*@
+        </footer>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

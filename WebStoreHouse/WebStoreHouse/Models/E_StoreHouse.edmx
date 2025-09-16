@@ -1,0 +1,1206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="E_StoreHouseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="E_Compyany">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="code" Type="nvarchar" MaxLength="10" />
+          <Property Name="company_No" Type="nvarchar" MaxLength="10" />
+          <Property Name="company_Name" Type="nvarchar" MaxLength="50" />
+          <Property Name="address" Type="nvarchar" MaxLength="200" />
+          <Property Name="company_Tel" Type="nvarchar" MaxLength="20" />
+          <Property Name="tel_extension" Type="nvarchar" MaxLength="10" />
+          <Property Name="contact" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="E_Dropshipping">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="date" Type="nvarchar" MaxLength="10" />
+          <Property Name="DN" Type="nvarchar" MaxLength="50" />
+          <Property Name="eng_sr" Type="nvarchar" MaxLength="20" />
+          <Property Name="quantity" Type="int" />
+          <Property Name="freight" Type="nvarchar" MaxLength="255" />
+          <Property Name="checkOK" Type="bit" />
+        </EntityType>
+        <EntityType Name="E_Kf10">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Material" Type="nvarchar" MaxLength="20" />
+          <Property Name="Material_Desc" Type="nvarchar" MaxLength="200" />
+          <Property Name="Specification" Type="nvarchar" MaxLength="50" />
+          <Property Name="Plnt" Type="nvarchar" MaxLength="10" />
+          <Property Name="SLoc" Type="nvarchar" MaxLength="10" />
+          <Property Name="S" Type="nvarchar" MaxLength="10" />
+          <Property Name="SL" Type="nvarchar" MaxLength="10" />
+          <Property Name="Batch" Type="nvarchar" MaxLength="10" />
+          <Property Name="BUn" Type="nvarchar" MaxLength="10" />
+          <Property Name="Unrestricted" Type="int" />
+          <Property Name="Stock_in_Transfer" Type="int" />
+          <Property Name="I_Q_I" Type="int" />
+          <Property Name="Restricted_Use" Type="int" />
+          <Property Name="Blocked" Type="int" />
+          <Property Name="RE" Type="int" />
+          <Property Name="Docu" Type="nvarchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="E_KQ30">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Material" Type="nvarchar" MaxLength="20" />
+          <Property Name="Material_Desc" Type="nvarchar" MaxLength="200" />
+          <Property Name="Specification" Type="nvarchar" MaxLength="50" />
+          <Property Name="Plnt" Type="nvarchar" MaxLength="10" />
+          <Property Name="SLoc" Type="nvarchar" MaxLength="10" />
+          <Property Name="S" Type="nvarchar" MaxLength="10" />
+          <Property Name="SL" Type="nvarchar" MaxLength="10" />
+          <Property Name="Batch" Type="nvarchar" MaxLength="10" />
+          <Property Name="BUn" Type="nvarchar" MaxLength="10" />
+          <Property Name="Unrestricted" Type="int" />
+          <Property Name="Stock_in_Transfer" Type="int" />
+          <Property Name="I_Q_I" Type="int" />
+          <Property Name="Restricted_Use" Type="int" />
+          <Property Name="Blocked" Type="int" />
+          <Property Name="RE" Type="int" />
+          <Property Name="Docu" Type="nvarchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="E_Member">
+          <Key>
+            <PropertyRef Name="fId" />
+          </Key>
+          <Property Name="fId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="fUserId" Type="nvarchar" MaxLength="5" />
+          <Property Name="fPwd" Type="nvarchar" MaxLength="50" />
+          <Property Name="fName" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="E_MemberRole">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="USER_ID" Type="varchar" MaxLength="5" />
+          <Property Name="ROLE_ID" Type="char" MaxLength="1" />
+          <Property Name="EXPIRED_DATE" Type="datetime" />
+        </EntityType>
+        <EntityType Name="E_Outbound_Details">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="engsr" Type="nchar" MaxLength="10" />
+          <Property Name="wono" Type="nchar" MaxLength="10" />
+          <Property Name="sales_order" Type="nchar" MaxLength="10" />
+          <Property Name="cust_wono" Type="nchar" MaxLength="10" />
+          <Property Name="exp_shipquantity" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="ship_quantity" Type="nchar" MaxLength="10" />
+          <Property Name="sap_mark" Type="nchar" MaxLength="10" />
+          <Property Name="stock_quantity" Type="nchar" MaxLength="10" />
+          <Property Name="sap_in" Type="nchar" MaxLength="10" />
+          <Property Name="company_name" Type="nchar" MaxLength="10" />
+          <Property Name="address" Type="nchar" MaxLength="10" />
+          <Property Name="company_code" Type="nchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="E_Package">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Package_View" Type="nvarchar" MaxLength="20" />
+          <Property Name="Package" Type="nvarchar" MaxLength="20" />
+          <Property Name="code" Type="nvarchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="E_QC">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="QCinspect" Type="varchar" MaxLength="50" />
+          <Property Name="iclass" Type="varchar" MaxLength="1" />
+          <Property Name="ship_serialno" Type="varchar" MaxLength="50" />
+          <Property Name="product_serialno" Type="varchar" MaxLength="50" />
+          <Property Name="error_code" Type="varchar" MaxLength="50" />
+          <Property Name="describe" Type="varchar" MaxLength="50" />
+          <Property Name="status" Type="varchar" MaxLength="50" />
+          <Property Name="issample" Type="varchar" MaxLength="50" />
+          <Property Name="ispass" Type="varchar" MaxLength="50" />
+          <Property Name="inspect_result" Type="varchar" MaxLength="50" />
+          <Property Name="op_user" Type="varchar" MaxLength="50" />
+          <Property Name="outsourcing" Type="varchar" MaxLength="50" />
+          <Property Name="wono" Type="varchar" MaxLength="50" />
+          <Property Name="GUID" Type="varchar" MaxLength="50" />
+          <Property Name="error2" Type="varchar" MaxLength="50" />
+          <Property Name="product_date" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="E_StoreChartjs">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="date" Type="nchar" MaxLength="10" />
+          <Property Name="OFR" Type="int" />
+        </EntityType>
+        <EntityType Name="E_StoreHouse_Role">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ROLE_NAME" Type="nvarchar" MaxLength="50" />
+          <Property Name="ROLE_DESC" Type="nvarchar" MaxLength="150" />
+          <Property Name="CREATE_USERID" Type="varchar" MaxLength="5" />
+          <Property Name="ROLE_ID" Type="nchar" MaxLength="1" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock">
+          <Key>
+            <PropertyRef Name="serialno" />
+          </Key>
+          <Property Name="serialno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="sno" Type="int" />
+          <Property Name="wono" Type="varchar" MaxLength="20" />
+          <Property Name="cust_wono" Type="varchar" MaxLength="50" />
+          <Property Name="eng_sr" Type="varchar" MaxLength="20" />
+          <Property Name="order_count" Type="int" />
+          <Property Name="quantity" Type="int" />
+          <Property Name="kf10" Type="int" />
+          <Property Name="kq30" Type="int" />
+          <Property Name="sap_in" Type="nvarchar" MaxLength="255" />
+          <Property Name="position" Type="varchar" MaxLength="20" />
+          <Property Name="acc_in" Type="int" />
+          <Property Name="outed" Type="int" />
+          <Property Name="notout" Type="int" />
+          <Property Name="borrow" Type="int" />
+          <Property Name="due_date" Type="date" />
+          <Property Name="mark" Type="nvarchar" MaxLength="255" />
+          <Property Name="inputdate" Type="varchar" MaxLength="20" />
+          <Property Name="package" Type="varchar" MaxLength="20" />
+          <Property Name="output_local" Type="nchar" MaxLength="10" />
+          <Property Name="Igroup" Type="nvarchar" MaxLength="255" />
+          <Property Name="del_flag" Type="nvarchar" MaxLength="1" />
+          <Property Name="nowono" Type="nchar" MaxLength="1" />
+          <Property Name="box_quantity" Type="int" />
+          <Property Name="transportation" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock_BOS">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="date" Type="nvarchar" MaxLength="10" />
+          <Property Name="eng_sr" Type="nvarchar" MaxLength="20" />
+          <Property Name="quantity" Type="int" />
+          <Property Name="position" Type="nvarchar" MaxLength="30" />
+          <Property Name="Full_Amount" Type="int" />
+          <Property Name="Full_GW" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="Full_NW" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="End_Amount" Type="int" />
+          <Property Name="End_GW" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="End_NW" Type="decimal" Precision="18" Scale="2" />
+          <Property Name="L_W_H" Type="nvarchar" MaxLength="20" />
+          <Property Name="ship_quantity" Type="int" />
+          <Property Name="ship_date" Type="nvarchar" MaxLength="10" />
+          <Property Name="transportation" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock_In">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="wono" Type="varchar" MaxLength="20" />
+          <Property Name="quantity" Type="int" />
+          <Property Name="position" Type="varchar" MaxLength="20" />
+          <Property Name="mark" Type="nvarchar" MaxLength="255" />
+          <Property Name="inputdate" Type="varchar" MaxLength="20" />
+          <Property Name="package" Type="varchar" MaxLength="20" />
+          <Property Name="Igroup" Type="nvarchar" MaxLength="255" />
+          <Property Name="nowono" Type="nchar" MaxLength="1" />
+          <Property Name="box_quantity" Type="int" />
+          <Property Name="transportation" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock_Order">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderGuid" Type="nvarchar" MaxLength="50" />
+          <Property Name="UserId" Type="nchar" MaxLength="5" />
+          <Property Name="wono" Type="nvarchar" MaxLength="20" />
+          <Property Name="eng_sr" Type="nvarchar" MaxLength="20" />
+          <Property Name="sales_order" Type="nvarchar" MaxLength="20" />
+          <Property Name="cust_wono" Type="nvarchar" MaxLength="50" />
+          <Property Name="exp_shipquantity" Type="int" />
+          <Property Name="ship_quantity" Type="int" />
+          <Property Name="sap_mark" Type="nvarchar" MaxLength="255" />
+          <Property Name="stock_quantity" Type="int" />
+          <Property Name="sap_in" Type="nvarchar" MaxLength="20" />
+          <Property Name="company_name" Type="nvarchar" MaxLength="50" />
+          <Property Name="address" Type="nvarchar" MaxLength="200" />
+          <Property Name="company_code" Type="nchar" MaxLength="4" />
+          <Property Name="chk_date" Type="date" />
+          <Property Name="Igroup" Type="nvarchar" MaxLength="255" />
+          <Property Name="del_flag" Type="nchar" MaxLength="1" />
+          <Property Name="record" Type="nvarchar" MaxLength="255" />
+          <Property Name="box_quantity" Type="int" />
+          <Property Name="transportation" Type="varchar" MaxLength="50" />
+          <Property Name="position" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock_SC">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="OrderGuid" Type="nvarchar" MaxLength="50" />
+          <Property Name="UserId" Type="nchar" MaxLength="5" />
+          <Property Name="wono" Type="nvarchar" MaxLength="20" />
+          <Property Name="eng_sr" Type="nvarchar" MaxLength="20" />
+          <Property Name="sales_order" Type="nvarchar" MaxLength="20" />
+          <Property Name="cust_wono" Type="nvarchar" MaxLength="50" />
+          <Property Name="exp_shipquantity" Type="int" />
+          <Property Name="ship_quantity" Type="int" />
+          <Property Name="sap_mark" Type="nvarchar" MaxLength="255" />
+          <Property Name="stock_quantity" Type="int" />
+          <Property Name="sap_in" Type="nvarchar" MaxLength="255" />
+          <Property Name="company_name" Type="nvarchar" MaxLength="50" />
+          <Property Name="address" Type="nvarchar" MaxLength="200" />
+          <Property Name="company_code" Type="nchar" MaxLength="4" />
+          <Property Name="IsApproved" Type="nchar" MaxLength="1" />
+          <Property Name="Igroup" Type="nvarchar" MaxLength="255" />
+          <Property Name="exp_shipdate" Type="nvarchar" MaxLength="12" />
+          <Property Name="order_item" Type="nvarchar" MaxLength="2" />
+          <Property Name="inputdate" Type="nvarchar" MaxLength="10" />
+          <Property Name="position" Type="varchar" MaxLength="20" />
+          <Property Name="box_quantity" Type="int" />
+          <Property Name="transportation" Type="varchar" MaxLength="50" />
+        </EntityType>
+        <EntityType Name="E_Weight">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="EngSr" Type="nvarchar" MaxLength="20" />
+          <Property Name="Full_Amount" Type="int" />
+          <Property Name="Full_GW" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Full_NW" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="End_Amount" Type="int" />
+          <Property Name="End_GW" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="End_NW" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="L_W_H" Type="nvarchar" MaxLength="20" />
+          <Property Name="Bettery_Lab" Type="nvarchar" MaxLength="20" />
+          <Property Name="Wono_cust" Type="nvarchar" MaxLength="50" />
+          <Property Name="Item_Cust" Type="nvarchar" MaxLength="50" />
+          <Property Name="Mark" Type="nvarchar" MaxLength="50" />
+          <Property Name="Repeat" Type="nvarchar" MaxLength="10" />
+          <Property Name="Chk" Type="nvarchar" MaxLength="5" />
+        </EntityType>
+        <EntityType Name="E_ZRSD13">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="gi_date" Type="nvarchar" MaxLength="10" />
+          <Property Name="cust_name" Type="nvarchar" MaxLength="50" />
+          <Property Name="sales_order" Type="nvarchar" MaxLength="7" />
+          <Property Name="order_item" Type="nvarchar" MaxLength="2" />
+          <Property Name="item" Type="nvarchar" MaxLength="20" />
+          <Property Name="spec_desc" Type="nvarchar" MaxLength="255" />
+          <Property Name="cust_wono" Type="nvarchar" MaxLength="50" />
+          <Property Name="quantity" Type="int" />
+          <Property Name="dn_number" Type="nvarchar" MaxLength="20" />
+          <Property Name="dn_item" Type="nvarchar" MaxLength="12" />
+          <Property Name="ship_mark" Type="nvarchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="E_ZRSD14P">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="wono" Type="nvarchar" MaxLength="50" />
+          <Property Name="due_date" Type="date" />
+          <Property Name="item" Type="nvarchar" MaxLength="20" />
+          <Property Name="wono_cust" Type="nvarchar" MaxLength="50" />
+          <Property Name="spec_product" Type="nvarchar" MaxLength="500" />
+          <Property Name="order_quantity" Type="int" />
+          <Property Name="shipped_quantity" Type="int" />
+          <Property Name="unshipped_quantity" Type="int" />
+          <Property Name="borrow_count" Type="int" />
+          <Property Name="prod_notes" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="E_ZRSD19">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="wono" Type="nvarchar" MaxLength="20" />
+          <Property Name="order_cust" Type="nvarchar" MaxLength="50" />
+          <Property Name="wono_cust" Type="nvarchar" MaxLength="50" />
+          <Property Name="item" Type="nvarchar" MaxLength="50" />
+          <Property Name="spec_product" Type="nvarchar" MaxLength="500" />
+          <Property Name="order_quantity" Type="int" />
+          <Property Name="shipped_quantity" Type="int" />
+          <Property Name="unshipped_quantity" Type="int" />
+          <Property Name="borrow_count" Type="int" />
+          <Property Name="wono_openCount" Type="int" />
+          <Property Name="wono_inStoreCount" Type="int" />
+          <Property Name="due_date" Type="date" />
+          <Property Name="prod_notes" Type="nvarchar" MaxLength="500" />
+          <Property Name="prod_notes2" Type="nvarchar" MaxLength="500" />
+        </EntityType>
+        <EntityType Name="Invoicing">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="wono" Type="nvarchar" MaxLength="12" />
+          <Property Name="wono_cust" Type="nvarchar" MaxLength="50" />
+          <Property Name="avalueDN" Type="nvarchar" MaxLength="15" />
+          <Property Name="engsr" Type="nvarchar" MaxLength="12" />
+          <Property Name="amount" Type="int" />
+          <Property Name="position" Type="nvarchar" MaxLength="10" />
+          <Property Name="date" Type="date" />
+          <Property Name="mark" Type="nvarchar" MaxLength="100" />
+          <Property Name="i_1" Type="nvarchar" MaxLength="50" />
+          <Property Name="i_2" Type="int" />
+          <Property Name="i_3" Type="nvarchar" MaxLength="50" />
+          <Property Name="i_4" Type="nvarchar" MaxLength="50" />
+        </EntityType>
+        <EntityContainer Name="E_StoreHouseModelStoreContainer">
+          <EntitySet Name="E_Compyany" EntityType="Self.E_Compyany" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_Dropshipping" EntityType="Self.E_Dropshipping" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_Kf10" EntityType="Self.E_Kf10" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_KQ30" EntityType="Self.E_KQ30" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_Member" EntityType="Self.E_Member" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_MemberRole" EntityType="Self.E_MemberRole" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_Outbound_Details" EntityType="Self.E_Outbound_Details" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_Package" EntityType="Self.E_Package" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_QC" EntityType="Self.E_QC" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_StoreChartjs" EntityType="Self.E_StoreChartjs" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_StoreHouse_Role" EntityType="Self.E_StoreHouse_Role" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_StoreHouseStock" EntityType="Self.E_StoreHouseStock" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_StoreHouseStock_BOS" EntityType="Self.E_StoreHouseStock_BOS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_StoreHouseStock_In" EntityType="Self.E_StoreHouseStock_In" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_StoreHouseStock_Order" EntityType="Self.E_StoreHouseStock_Order" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_StoreHouseStock_SC" EntityType="Self.E_StoreHouseStock_SC" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_Weight" EntityType="Self.E_Weight" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_ZRSD13" EntityType="Self.E_ZRSD13" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_ZRSD14P" EntityType="Self.E_ZRSD14P" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="E_ZRSD19" EntityType="Self.E_ZRSD19" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Invoicing" EntityType="Self.Invoicing" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="E_StoreHouseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="E_Kf10">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Material" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Material_Desc" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Specification" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Plnt" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="SLoc" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="S" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="SL" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Batch" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="BUn" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Unrestricted" Type="Int32" />
+          <Property Name="Stock_in_Transfer" Type="Int32" />
+          <Property Name="I_Q_I" Type="Int32" />
+          <Property Name="Restricted_Use" Type="Int32" />
+          <Property Name="Blocked" Type="Int32" />
+          <Property Name="RE" Type="Int32" />
+          <Property Name="Docu" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_KQ30">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Material" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Material_Desc" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="Specification" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Plnt" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="SLoc" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="S" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="SL" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Batch" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="BUn" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Unrestricted" Type="Int32" />
+          <Property Name="Stock_in_Transfer" Type="Int32" />
+          <Property Name="I_Q_I" Type="Int32" />
+          <Property Name="Restricted_Use" Type="Int32" />
+          <Property Name="Blocked" Type="Int32" />
+          <Property Name="RE" Type="Int32" />
+          <Property Name="Docu" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_Weight">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EngSr" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Full_Amount" Type="Int32" />
+          <Property Name="Full_GW" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Full_NW" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="End_Amount" Type="Int32" />
+          <Property Name="End_GW" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="End_NW" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="L_W_H" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Bettery_Lab" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Wono_cust" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Item_Cust" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Repeat" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="Mark" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Chk" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_ZRSD14P">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="wono" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="due_date" Type="DateTime" Precision="0" />
+          <Property Name="item" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="wono_cust" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="spec_product" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="order_quantity" Type="Int32" />
+          <Property Name="shipped_quantity" Type="Int32" />
+          <Property Name="unshipped_quantity" Type="Int32" />
+          <Property Name="borrow_count" Type="Int32" />
+          <Property Name="prod_notes" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_ZRSD19">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="wono" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="order_cust" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="wono_cust" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="item" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="spec_product" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="order_quantity" Type="Int32" />
+          <Property Name="shipped_quantity" Type="Int32" />
+          <Property Name="unshipped_quantity" Type="Int32" />
+          <Property Name="borrow_count" Type="Int32" />
+          <Property Name="wono_openCount" Type="Int32" />
+          <Property Name="wono_inStoreCount" Type="Int32" />
+          <Property Name="due_date" Type="DateTime" Precision="0" />
+          <Property Name="prod_notes" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="prod_notes2" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityContainer Name="E_StoreHouseEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="E_Kf10" EntityType="Self.E_Kf10" />
+          <EntitySet Name="E_KQ30" EntityType="Self.E_KQ30" />
+          <EntitySet Name="E_Weight" EntityType="Self.E_Weight" />
+          <EntitySet Name="E_ZRSD14P" EntityType="Self.E_ZRSD14P" />
+          <EntitySet Name="E_ZRSD19" EntityType="Self.E_ZRSD19" />
+          <EntitySet Name="Invoicing" EntityType="E_StoreHouseModel.Invoicing" />
+          <EntitySet Name="E_Outbound_Details" EntityType="E_StoreHouseModel.E_Outbound_Details" />
+          <EntitySet Name="E_Compyany" EntityType="E_StoreHouseModel.E_Compyany" />
+          <EntitySet Name="E_StoreHouseStock" EntityType="E_StoreHouseModel.E_StoreHouseStock" />
+          <EntitySet Name="E_StoreHouseStock_Order" EntityType="E_StoreHouseModel.E_StoreHouseStock_Order" />
+          <EntitySet Name="E_StoreHouseStock_SC" EntityType="E_StoreHouseModel.E_StoreHouseStock_SC" />
+          <EntitySet Name="E_StoreHouseStock_In" EntityType="E_StoreHouseModel.E_StoreHouseStock_In" />
+          <EntitySet Name="E_ZRSD13" EntityType="E_StoreHouseModel.E_ZRSD13" />
+          <EntitySet Name="E_Package" EntityType="E_StoreHouseModel.E_Package" />
+          <EntitySet Name="E_StoreHouseStock_BOS" EntityType="E_StoreHouseModel.E_StoreHouseStock_BOS" />
+          <EntitySet Name="E_StoreChartjs" EntityType="E_StoreHouseModel.E_StoreChartjs" />
+          <EntitySet Name="E_Dropshipping" EntityType="E_StoreHouseModel.E_Dropshipping" />
+          <EntitySet Name="E_Member" EntityType="E_StoreHouseModel.E_Member" />
+          <EntitySet Name="E_MemberRole" EntityType="E_StoreHouseModel.E_MemberRole" />
+          <EntitySet Name="E_StoreHouse_Role" EntityType="E_StoreHouseModel.E_StoreHouse_Role" />
+          <EntitySet Name="E_QC" EntityType="E_StoreHouseModel.E_QC" />
+          </EntityContainer>
+        <EntityType Name="Invoicing">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="wono" Type="String" MaxLength="12" FixedLength="false" Unicode="true" />
+          <Property Name="wono_cust" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="avalueDN" Type="String" MaxLength="15" FixedLength="false" Unicode="true" />
+          <Property Name="engsr" Type="String" MaxLength="12" FixedLength="false" Unicode="true" />
+          <Property Name="amount" Type="Int32" />
+          <Property Name="position" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="date" Type="DateTime" Precision="0" />
+          <Property Name="mark" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="i_1" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="i_2" Type="Int32" />
+          <Property Name="i_3" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="i_4" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="E_Outbound_Details">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="engsr" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="wono" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="sales_order" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="cust_wono" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="exp_shipquantity" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="ship_quantity" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="sap_mark" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="stock_quantity" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="sap_in" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="company_name" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="address" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="company_code" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_Compyany">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="code" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="company_No" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="company_Name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="address" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="company_Tel" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="tel_extension" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="contact" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock">
+          <Key>
+            <PropertyRef Name="serialno" />
+          </Key>
+          <Property Name="serialno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="sno" Type="Int32" />
+          <Property Name="wono" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="cust_wono" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="eng_sr" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="order_count" Type="Int32" />
+          <Property Name="quantity" Type="Int32" />
+          <Property Name="kf10" Type="Int32" />
+          <Property Name="kq30" Type="Int32" />
+          <Property Name="sap_in" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="position" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="acc_in" Type="Int32" />
+          <Property Name="outed" Type="Int32" />
+          <Property Name="notout" Type="Int32" />
+          <Property Name="borrow" Type="Int32" />
+          <Property Name="due_date" Type="DateTime" Precision="0" />
+          <Property Name="mark" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="inputdate" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="package" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="output_local" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="Igroup" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="del_flag" Type="String" MaxLength="1" FixedLength="false" Unicode="true" />
+          <Property Name="nowono" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
+          <Property Name="box_quantity" Type="Int32" />
+          <Property Name="transportation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock_Order">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderGuid" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="String" MaxLength="5" FixedLength="true" Unicode="true" />
+          <Property Name="wono" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="eng_sr" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="sales_order" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="cust_wono" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="exp_shipquantity" Type="Int32" />
+          <Property Name="ship_quantity" Type="Int32" />
+          <Property Name="sap_mark" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="stock_quantity" Type="Int32" />
+          <Property Name="sap_in" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="company_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="address" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="company_code" Type="String" MaxLength="4" FixedLength="true" Unicode="true" />
+          <Property Name="chk_date" Type="DateTime" Precision="0" />
+          <Property Name="Igroup" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="del_flag" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
+          <Property Name="record" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="box_quantity" Type="Int32" />
+          <Property Name="transportation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="position" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock_SC">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="OrderGuid" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="UserId" Type="String" MaxLength="5" FixedLength="true" Unicode="true" />
+          <Property Name="wono" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="eng_sr" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="sales_order" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="cust_wono" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="exp_shipquantity" Type="Int32" />
+          <Property Name="ship_quantity" Type="Int32" />
+          <Property Name="sap_mark" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="stock_quantity" Type="Int32" />
+          <Property Name="sap_in" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="company_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="address" Type="String" MaxLength="200" FixedLength="false" Unicode="true" />
+          <Property Name="company_code" Type="String" MaxLength="4" FixedLength="true" Unicode="true" />
+          <Property Name="IsApproved" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
+          <Property Name="Igroup" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="exp_shipdate" Type="String" MaxLength="12" FixedLength="false" Unicode="true" />
+          <Property Name="order_item" Type="String" MaxLength="2" FixedLength="false" Unicode="true" />
+          <Property Name="inputdate" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="position" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="box_quantity" Type="Int32" />
+          <Property Name="transportation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock_In">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="wono" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="quantity" Type="Int32" />
+          <Property Name="position" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="mark" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="inputdate" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="package" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Igroup" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="nowono" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
+          <Property Name="box_quantity" Type="Int32" />
+          <Property Name="transportation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="E_ZRSD13">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="gi_date" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="cust_name" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="sales_order" Type="String" MaxLength="7" FixedLength="false" Unicode="true" />
+          <Property Name="order_item" Type="String" MaxLength="2" FixedLength="false" Unicode="true" />
+          <Property Name="item" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="spec_desc" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="quantity" Type="Int32" />
+          <Property Name="dn_number" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="dn_item" Type="String" MaxLength="12" FixedLength="false" Unicode="true" />
+          <Property Name="ship_mark" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="cust_wono" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_Package">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Package_View" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="Package" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="code" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_StoreHouseStock_BOS">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="date" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="eng_sr" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="quantity" Type="Int32" />
+          <Property Name="position" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Full_Amount" Type="Int32" />
+          <Property Name="Full_GW" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="Full_NW" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="End_Amount" Type="Int32" />
+          <Property Name="End_GW" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="End_NW" Type="Decimal" Precision="18" Scale="2" />
+          <Property Name="L_W_H" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="ship_quantity" Type="Int32" />
+          <Property Name="ship_date" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="transportation" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="E_StoreChartjs">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="date" Type="String" MaxLength="10" Unicode="true" FixedLength="true" />
+          <Property Name="OFR" Type="Int32" />
+        </EntityType>
+        <EntityType Name="E_Dropshipping">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="date" Type="String" MaxLength="10" FixedLength="false" Unicode="true" />
+          <Property Name="DN" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="eng_sr" Type="String" MaxLength="20" FixedLength="false" Unicode="true" />
+          <Property Name="quantity" Type="Int32" />
+          <Property Name="freight" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="checkOK" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="E_Member">
+          <Key>
+            <PropertyRef Name="fId" />
+          </Key>
+          <Property Name="fId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="fUserId" Type="String" MaxLength="5" FixedLength="false" Unicode="true" />
+          <Property Name="fPwd" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="fName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_MemberRole">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="USER_ID" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="ROLE_ID" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="EXPIRED_DATE" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityType Name="E_StoreHouse_Role">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ROLE_NAME" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="ROLE_DESC" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="CREATE_USERID" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="ROLE_ID" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
+        </EntityType>
+        <EntityType Name="E_QC">
+          <Key>
+            <PropertyRef Name="sno" />
+          </Key>
+          <Property Name="sno" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="QCinspect" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ship_serialno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="product_serialno" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="error_code" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="describe" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="status" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="issample" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="ispass" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="inspect_result" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="op_user" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="outsourcing" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="wono" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GUID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="error2" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="product_date" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="iclass" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+        </EntityType>
+        </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="E_StoreHouseModelStoreContainer" CdmEntityContainer="E_StoreHouseEntities">
+          <EntitySetMapping Name="E_Kf10">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_Kf10">
+              <MappingFragment StoreEntitySet="E_Kf10">
+                <ScalarProperty Name="Docu" ColumnName="Docu" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+                <ScalarProperty Name="Material" ColumnName="Material" />
+                <ScalarProperty Name="Material_Desc" ColumnName="Material_Desc" />
+                <ScalarProperty Name="Specification" ColumnName="Specification" />
+                <ScalarProperty Name="Plnt" ColumnName="Plnt" />
+                <ScalarProperty Name="SLoc" ColumnName="SLoc" />
+                <ScalarProperty Name="S" ColumnName="S" />
+                <ScalarProperty Name="SL" ColumnName="SL" />
+                <ScalarProperty Name="Batch" ColumnName="Batch" />
+                <ScalarProperty Name="BUn" ColumnName="BUn" />
+                <ScalarProperty Name="Unrestricted" ColumnName="Unrestricted" />
+                <ScalarProperty Name="Stock_in_Transfer" ColumnName="Stock_in_Transfer" />
+                <ScalarProperty Name="I_Q_I" ColumnName="I_Q_I" />
+                <ScalarProperty Name="Restricted_Use" ColumnName="Restricted_Use" />
+                <ScalarProperty Name="Blocked" ColumnName="Blocked" />
+                <ScalarProperty Name="RE" ColumnName="RE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_KQ30">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_KQ30">
+              <MappingFragment StoreEntitySet="E_KQ30">
+                <ScalarProperty Name="Docu" ColumnName="Docu" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+                <ScalarProperty Name="Material" ColumnName="Material" />
+                <ScalarProperty Name="Material_Desc" ColumnName="Material_Desc" />
+                <ScalarProperty Name="Specification" ColumnName="Specification" />
+                <ScalarProperty Name="Plnt" ColumnName="Plnt" />
+                <ScalarProperty Name="SLoc" ColumnName="SLoc" />
+                <ScalarProperty Name="S" ColumnName="S" />
+                <ScalarProperty Name="SL" ColumnName="SL" />
+                <ScalarProperty Name="Batch" ColumnName="Batch" />
+                <ScalarProperty Name="BUn" ColumnName="BUn" />
+                <ScalarProperty Name="Unrestricted" ColumnName="Unrestricted" />
+                <ScalarProperty Name="Stock_in_Transfer" ColumnName="Stock_in_Transfer" />
+                <ScalarProperty Name="I_Q_I" ColumnName="I_Q_I" />
+                <ScalarProperty Name="Restricted_Use" ColumnName="Restricted_Use" />
+                <ScalarProperty Name="Blocked" ColumnName="Blocked" />
+                <ScalarProperty Name="RE" ColumnName="RE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_Weight">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_Weight">
+              <MappingFragment StoreEntitySet="E_Weight">
+                <ScalarProperty Name="Chk" ColumnName="Chk" />
+                <ScalarProperty Name="Mark" ColumnName="Mark" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+                <ScalarProperty Name="EngSr" ColumnName="EngSr" />
+                <ScalarProperty Name="Full_Amount" ColumnName="Full_Amount" />
+                <ScalarProperty Name="Full_GW" ColumnName="Full_GW" />
+                <ScalarProperty Name="Full_NW" ColumnName="Full_NW" />
+                <ScalarProperty Name="End_Amount" ColumnName="End_Amount" />
+                <ScalarProperty Name="End_GW" ColumnName="End_GW" />
+                <ScalarProperty Name="End_NW" ColumnName="End_NW" />
+                <ScalarProperty Name="L_W_H" ColumnName="L_W_H" />
+                <ScalarProperty Name="Bettery_Lab" ColumnName="Bettery_Lab" />
+                <ScalarProperty Name="Wono_cust" ColumnName="Wono_cust" />
+                <ScalarProperty Name="Item_Cust" ColumnName="Item_Cust" />
+                <ScalarProperty Name="Repeat" ColumnName="Repeat" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_ZRSD14P">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_ZRSD14P">
+              <MappingFragment StoreEntitySet="E_ZRSD14P">
+                <ScalarProperty Name="sno" ColumnName="sno" />
+                <ScalarProperty Name="wono" ColumnName="wono" />
+                <ScalarProperty Name="due_date" ColumnName="due_date" />
+                <ScalarProperty Name="item" ColumnName="item" />
+                <ScalarProperty Name="wono_cust" ColumnName="wono_cust" />
+                <ScalarProperty Name="spec_product" ColumnName="spec_product" />
+                <ScalarProperty Name="order_quantity" ColumnName="order_quantity" />
+                <ScalarProperty Name="shipped_quantity" ColumnName="shipped_quantity" />
+                <ScalarProperty Name="unshipped_quantity" ColumnName="unshipped_quantity" />
+                <ScalarProperty Name="borrow_count" ColumnName="borrow_count" />
+                <ScalarProperty Name="prod_notes" ColumnName="prod_notes" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_ZRSD19">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_ZRSD19">
+              <MappingFragment StoreEntitySet="E_ZRSD19">
+                <ScalarProperty Name="sno" ColumnName="sno" />
+                <ScalarProperty Name="wono" ColumnName="wono" />
+                <ScalarProperty Name="order_cust" ColumnName="order_cust" />
+                <ScalarProperty Name="wono_cust" ColumnName="wono_cust" />
+                <ScalarProperty Name="item" ColumnName="item" />
+                <ScalarProperty Name="spec_product" ColumnName="spec_product" />
+                <ScalarProperty Name="order_quantity" ColumnName="order_quantity" />
+                <ScalarProperty Name="shipped_quantity" ColumnName="shipped_quantity" />
+                <ScalarProperty Name="unshipped_quantity" ColumnName="unshipped_quantity" />
+                <ScalarProperty Name="borrow_count" ColumnName="borrow_count" />
+                <ScalarProperty Name="wono_openCount" ColumnName="wono_openCount" />
+                <ScalarProperty Name="wono_inStoreCount" ColumnName="wono_inStoreCount" />
+                <ScalarProperty Name="due_date" ColumnName="due_date" />
+                <ScalarProperty Name="prod_notes" ColumnName="prod_notes" />
+                <ScalarProperty Name="prod_notes2" ColumnName="prod_notes2" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Invoicing">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.Invoicing">
+              <MappingFragment StoreEntitySet="Invoicing">
+                <ScalarProperty Name="i_4" ColumnName="i_4" />
+                <ScalarProperty Name="i_3" ColumnName="i_3" />
+                <ScalarProperty Name="i_2" ColumnName="i_2" />
+                <ScalarProperty Name="i_1" ColumnName="i_1" />
+                <ScalarProperty Name="mark" ColumnName="mark" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="position" ColumnName="position" />
+                <ScalarProperty Name="amount" ColumnName="amount" />
+                <ScalarProperty Name="engsr" ColumnName="engsr" />
+                <ScalarProperty Name="avalueDN" ColumnName="avalueDN" />
+                <ScalarProperty Name="wono_cust" ColumnName="wono_cust" />
+                <ScalarProperty Name="wono" ColumnName="wono" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_Outbound_Details">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_Outbound_Details">
+              <MappingFragment StoreEntitySet="E_Outbound_Details">
+                <ScalarProperty Name="company_code" ColumnName="company_code" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="company_name" ColumnName="company_name" />
+                <ScalarProperty Name="sap_in" ColumnName="sap_in" />
+                <ScalarProperty Name="stock_quantity" ColumnName="stock_quantity" />
+                <ScalarProperty Name="sap_mark" ColumnName="sap_mark" />
+                <ScalarProperty Name="ship_quantity" ColumnName="ship_quantity" />
+                <ScalarProperty Name="exp_shipquantity" ColumnName="exp_shipquantity" />
+                <ScalarProperty Name="cust_wono" ColumnName="cust_wono" />
+                <ScalarProperty Name="sales_order" ColumnName="sales_order" />
+                <ScalarProperty Name="wono" ColumnName="wono" />
+                <ScalarProperty Name="engsr" ColumnName="engsr" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_Compyany">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_Compyany">
+              <MappingFragment StoreEntitySet="E_Compyany">
+                <ScalarProperty Name="contact" ColumnName="contact" />
+                <ScalarProperty Name="tel_extension" ColumnName="tel_extension" />
+                <ScalarProperty Name="company_Tel" ColumnName="company_Tel" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="company_Name" ColumnName="company_Name" />
+                <ScalarProperty Name="company_No" ColumnName="company_No" />
+                <ScalarProperty Name="code" ColumnName="code" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_StoreHouseStock">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_StoreHouseStock">
+              <MappingFragment StoreEntitySet="E_StoreHouseStock">
+                <ScalarProperty Name="transportation" ColumnName="transportation" />
+                <ScalarProperty Name="box_quantity" ColumnName="box_quantity" />
+                <ScalarProperty Name="nowono" ColumnName="nowono" />
+                <ScalarProperty Name="del_flag" ColumnName="del_flag" />
+                <ScalarProperty Name="Igroup" ColumnName="Igroup" />
+                <ScalarProperty Name="output_local" ColumnName="output_local" />
+                <ScalarProperty Name="package" ColumnName="package" />
+                <ScalarProperty Name="inputdate" ColumnName="inputdate" />
+                <ScalarProperty Name="mark" ColumnName="mark" />
+                <ScalarProperty Name="due_date" ColumnName="due_date" />
+                <ScalarProperty Name="borrow" ColumnName="borrow" />
+                <ScalarProperty Name="notout" ColumnName="notout" />
+                <ScalarProperty Name="outed" ColumnName="outed" />
+                <ScalarProperty Name="acc_in" ColumnName="acc_in" />
+                <ScalarProperty Name="position" ColumnName="position" />
+                <ScalarProperty Name="sap_in" ColumnName="sap_in" />
+                <ScalarProperty Name="kq30" ColumnName="kq30" />
+                <ScalarProperty Name="kf10" ColumnName="kf10" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+                <ScalarProperty Name="order_count" ColumnName="order_count" />
+                <ScalarProperty Name="eng_sr" ColumnName="eng_sr" />
+                <ScalarProperty Name="cust_wono" ColumnName="cust_wono" />
+                <ScalarProperty Name="wono" ColumnName="wono" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+                <ScalarProperty Name="serialno" ColumnName="serialno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_StoreHouseStock_Order">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_StoreHouseStock_Order">
+              <MappingFragment StoreEntitySet="E_StoreHouseStock_Order">
+                <ScalarProperty Name="position" ColumnName="position" />
+                <ScalarProperty Name="transportation" ColumnName="transportation" />
+                <ScalarProperty Name="box_quantity" ColumnName="box_quantity" />
+                <ScalarProperty Name="record" ColumnName="record" />
+                <ScalarProperty Name="del_flag" ColumnName="del_flag" />
+                <ScalarProperty Name="Igroup" ColumnName="Igroup" />
+                <ScalarProperty Name="chk_date" ColumnName="chk_date" />
+                <ScalarProperty Name="company_code" ColumnName="company_code" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="company_name" ColumnName="company_name" />
+                <ScalarProperty Name="sap_in" ColumnName="sap_in" />
+                <ScalarProperty Name="stock_quantity" ColumnName="stock_quantity" />
+                <ScalarProperty Name="sap_mark" ColumnName="sap_mark" />
+                <ScalarProperty Name="ship_quantity" ColumnName="ship_quantity" />
+                <ScalarProperty Name="exp_shipquantity" ColumnName="exp_shipquantity" />
+                <ScalarProperty Name="cust_wono" ColumnName="cust_wono" />
+                <ScalarProperty Name="sales_order" ColumnName="sales_order" />
+                <ScalarProperty Name="eng_sr" ColumnName="eng_sr" />
+                <ScalarProperty Name="wono" ColumnName="wono" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="OrderGuid" ColumnName="OrderGuid" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_StoreHouseStock_SC">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_StoreHouseStock_SC">
+              <MappingFragment StoreEntitySet="E_StoreHouseStock_SC">
+                <ScalarProperty Name="transportation" ColumnName="transportation" />
+                <ScalarProperty Name="box_quantity" ColumnName="box_quantity" />
+                <ScalarProperty Name="position" ColumnName="position" />
+                <ScalarProperty Name="inputdate" ColumnName="inputdate" />
+                <ScalarProperty Name="order_item" ColumnName="order_item" />
+                <ScalarProperty Name="exp_shipdate" ColumnName="exp_shipdate" />
+                <ScalarProperty Name="Igroup" ColumnName="Igroup" />
+                <ScalarProperty Name="IsApproved" ColumnName="IsApproved" />
+                <ScalarProperty Name="company_code" ColumnName="company_code" />
+                <ScalarProperty Name="address" ColumnName="address" />
+                <ScalarProperty Name="company_name" ColumnName="company_name" />
+                <ScalarProperty Name="sap_in" ColumnName="sap_in" />
+                <ScalarProperty Name="stock_quantity" ColumnName="stock_quantity" />
+                <ScalarProperty Name="sap_mark" ColumnName="sap_mark" />
+                <ScalarProperty Name="ship_quantity" ColumnName="ship_quantity" />
+                <ScalarProperty Name="exp_shipquantity" ColumnName="exp_shipquantity" />
+                <ScalarProperty Name="cust_wono" ColumnName="cust_wono" />
+                <ScalarProperty Name="sales_order" ColumnName="sales_order" />
+                <ScalarProperty Name="eng_sr" ColumnName="eng_sr" />
+                <ScalarProperty Name="wono" ColumnName="wono" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="OrderGuid" ColumnName="OrderGuid" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_StoreHouseStock_In">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_StoreHouseStock_In">
+              <MappingFragment StoreEntitySet="E_StoreHouseStock_In">
+                <ScalarProperty Name="transportation" ColumnName="transportation" />
+                <ScalarProperty Name="box_quantity" ColumnName="box_quantity" />
+                <ScalarProperty Name="nowono" ColumnName="nowono" />
+                <ScalarProperty Name="Igroup" ColumnName="Igroup" />
+                <ScalarProperty Name="package" ColumnName="package" />
+                <ScalarProperty Name="inputdate" ColumnName="inputdate" />
+                <ScalarProperty Name="mark" ColumnName="mark" />
+                <ScalarProperty Name="position" ColumnName="position" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+                <ScalarProperty Name="wono" ColumnName="wono" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_ZRSD13">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_ZRSD13">
+              <MappingFragment StoreEntitySet="E_ZRSD13">
+                <ScalarProperty Name="cust_wono" ColumnName="cust_wono" />
+                <ScalarProperty Name="ship_mark" ColumnName="ship_mark" />
+                <ScalarProperty Name="dn_item" ColumnName="dn_item" />
+                <ScalarProperty Name="dn_number" ColumnName="dn_number" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+                <ScalarProperty Name="spec_desc" ColumnName="spec_desc" />
+                <ScalarProperty Name="item" ColumnName="item" />
+                <ScalarProperty Name="order_item" ColumnName="order_item" />
+                <ScalarProperty Name="sales_order" ColumnName="sales_order" />
+                <ScalarProperty Name="cust_name" ColumnName="cust_name" />
+                <ScalarProperty Name="gi_date" ColumnName="gi_date" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_Package">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_Package">
+              <MappingFragment StoreEntitySet="E_Package">
+                <ScalarProperty Name="code" ColumnName="code" />
+                <ScalarProperty Name="Package" ColumnName="Package" />
+                <ScalarProperty Name="Package_View" ColumnName="Package_View" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_StoreHouseStock_BOS">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_StoreHouseStock_BOS">
+              <MappingFragment StoreEntitySet="E_StoreHouseStock_BOS">
+                <ScalarProperty Name="transportation" ColumnName="transportation" />
+                <ScalarProperty Name="ship_date" ColumnName="ship_date" />
+                <ScalarProperty Name="ship_quantity" ColumnName="ship_quantity" />
+                <ScalarProperty Name="L_W_H" ColumnName="L_W_H" />
+                <ScalarProperty Name="End_NW" ColumnName="End_NW" />
+                <ScalarProperty Name="End_GW" ColumnName="End_GW" />
+                <ScalarProperty Name="End_Amount" ColumnName="End_Amount" />
+                <ScalarProperty Name="Full_NW" ColumnName="Full_NW" />
+                <ScalarProperty Name="Full_GW" ColumnName="Full_GW" />
+                <ScalarProperty Name="Full_Amount" ColumnName="Full_Amount" />
+                <ScalarProperty Name="position" ColumnName="position" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+                <ScalarProperty Name="eng_sr" ColumnName="eng_sr" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_StoreChartjs">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_StoreChartjs">
+              <MappingFragment StoreEntitySet="E_StoreChartjs">
+                <ScalarProperty Name="OFR" ColumnName="OFR" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_Dropshipping">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_Dropshipping">
+              <MappingFragment StoreEntitySet="E_Dropshipping">
+                <ScalarProperty Name="checkOK" ColumnName="checkOK" />
+                <ScalarProperty Name="freight" ColumnName="freight" />
+                <ScalarProperty Name="quantity" ColumnName="quantity" />
+                <ScalarProperty Name="eng_sr" ColumnName="eng_sr" />
+                <ScalarProperty Name="DN" ColumnName="DN" />
+                <ScalarProperty Name="date" ColumnName="date" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_Member">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_Member">
+              <MappingFragment StoreEntitySet="E_Member">
+                <ScalarProperty Name="fName" ColumnName="fName" />
+                <ScalarProperty Name="fPwd" ColumnName="fPwd" />
+                <ScalarProperty Name="fUserId" ColumnName="fUserId" />
+                <ScalarProperty Name="fId" ColumnName="fId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_MemberRole">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_MemberRole">
+              <MappingFragment StoreEntitySet="E_MemberRole">
+                <ScalarProperty Name="EXPIRED_DATE" ColumnName="EXPIRED_DATE" />
+                <ScalarProperty Name="ROLE_ID" ColumnName="ROLE_ID" />
+                <ScalarProperty Name="USER_ID" ColumnName="USER_ID" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_StoreHouse_Role">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_StoreHouse_Role">
+              <MappingFragment StoreEntitySet="E_StoreHouse_Role">
+                <ScalarProperty Name="ROLE_ID" ColumnName="ROLE_ID" />
+                <ScalarProperty Name="CREATE_USERID" ColumnName="CREATE_USERID" />
+                <ScalarProperty Name="ROLE_DESC" ColumnName="ROLE_DESC" />
+                <ScalarProperty Name="ROLE_NAME" ColumnName="ROLE_NAME" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="E_QC">
+            <EntityTypeMapping TypeName="E_StoreHouseModel.E_QC">
+              <MappingFragment StoreEntitySet="E_QC">
+                <ScalarProperty Name="iclass" ColumnName="iclass" />
+                <ScalarProperty Name="product_date" ColumnName="product_date" />
+                <ScalarProperty Name="error2" ColumnName="error2" />
+                <ScalarProperty Name="GUID" ColumnName="GUID" />
+                <ScalarProperty Name="wono" ColumnName="wono" />
+                <ScalarProperty Name="outsourcing" ColumnName="outsourcing" />
+                <ScalarProperty Name="op_user" ColumnName="op_user" />
+                <ScalarProperty Name="inspect_result" ColumnName="inspect_result" />
+                <ScalarProperty Name="ispass" ColumnName="ispass" />
+                <ScalarProperty Name="issample" ColumnName="issample" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="describe" ColumnName="describe" />
+                <ScalarProperty Name="error_code" ColumnName="error_code" />
+                <ScalarProperty Name="product_serialno" ColumnName="product_serialno" />
+                <ScalarProperty Name="ship_serialno" ColumnName="ship_serialno" />
+                <ScalarProperty Name="QCinspect" ColumnName="QCinspect" />
+                <ScalarProperty Name="sno" ColumnName="sno" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="無" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

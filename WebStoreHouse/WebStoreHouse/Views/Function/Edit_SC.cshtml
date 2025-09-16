@@ -1,0 +1,225 @@
+﻿@model WebStoreHouse.ViewModels.CVM13_Stock
+@{
+    ViewBag.Title = "出貨明細修改";
+        }
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <script>        
+       //透過 Ajax 取得選擇的資料
+        function getSelectedData() {
+            var wono = $("#sno option:selected").text();
+            
+            $("#wono").val(wono);
+            var selectedValue = $('#sno').val();        
+        // 呼叫AJAX取得新的資料
+        $.ajax({
+            url: '@Url.Action("Edit_Update")',
+            type: 'POST',
+            dataType: "json",
+            data: { sno: selectedValue },
+            success: function (result) {
+                // 更新編輯畫面中的資料
+                $('#eng_sr').val(result.eng_sr);
+                $('#stock_quantity').val(result.quantity);
+                $('#cust_wono').val(result.cust_wono);
+                $('#position').val(result.position);
+                $('#box_quantity').val(result.box_quantity);
+
+                // 檢查數量是否合法
+                var expShipQty = $('#exp_shipquantity').val();
+                var stockQty = $('#stock_quantity').val();
+                if (expShipQty - stockQty < 0) {
+                    // 數量不合法，顯示錯誤訊息
+                    $('#errorMsg').html('預計出貨數量不能小於成倉數量');
+                    $('#submitButton').prop('disabled', true);
+                } else {
+                    // 數量合法，清空錯誤訊息
+                    $('#errorMsg').html('');
+                    $('#submitButton').prop('disabled', false);
+                }
+            }
+        });
+    }
+
+    // 綁定數量欄位變更事件，用於即時檢查數量是否合法
+    $('#exp_shipquantity, #stock_quantity').on('change', function () {
+        var expShipQty = $('#exp_shipquantity').val();
+        var stockQty = $('#stock_quantity').val();
+        if (expShipQty - stockQty < 0) {
+            // 數量不合法，顯示錯誤訊息
+            $('#errorMsg').html('預計出貨數量不能小於成倉數量');
+            $('#submitButton').prop('disabled', true);
+        } else {
+            // 數量合法，清空錯誤訊息
+            $('#errorMsg').html('');
+            $('#submitButton').prop('disabled', false);
+        }
+    });
+       
+    </script>
+</head>
+
+
+<form id="scForm" name="scForm" method="post">    
+    @Html.AntiForgeryToken()
+    
+    <div class="form-horizontal">
+        <h4>出貨明細修改</h4>
+        <hr />
+
+        @foreach (var item in Model.storeHouseStock_SCs)
+        {
+            @*@Html.HiddenFor(model => item.sno)*@
+            <div class="form-group" hidden="hidden">
+                <label class="control-label col-md-2">執行人員</label>
+                <div class="col-md-10">
+                    <input class="form-control" disabled="disabled" value="@item.UserId" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">工單</label>
+                <div class="col-md-10">
+                    <select id="sno" name="sno" class="form-control" onchange="getSelectedData()">
+                        <option value="">請選擇...</option>
+                        <option value="">無工單出貨</option>
+                        @foreach (var stock in Model.storeHouseStocks)
+                        {
+                            <option value="@stock.sno">@stock.wono</option>
+                        }
+                    </select>
+                    <input id="wono" name="wono" value="" type="hidden" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">庫位</label>
+                <div class="col-md-10">
+                    <input class="form-control" disabled="disabled" id="position" name="position" value="@item.position" />
+                    @Html.ValidationMessageFor(model => item.position, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">機種名稱</label>
+                <div class="col-md-10">
+                    <input class="form-control" disabled="disabled" id="eng_sr" name="eng_sr" value="@item.eng_sr" />
+                    @Html.ValidationMessageFor(model => item.eng_sr, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">業務單號</label>
+                <div class="col-md-10">
+                    <input class="form-control" disabled="disabled" value="@item.sales_order" />
+                    @Html.ValidationMessageFor(model => item.sales_order, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">客戶單號</label>
+                <div class="col-md-10">
+                    <input class="form-control" disabled="disabled" id="cust_wono" name="cust_wono" value="@item.cust_wono" />
+                    @Html.ValidationMessageFor(model => item.cust_wono, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">箱數</label>
+                <div class="col-md-10">
+                    <input class="form-control" disabled="disabled" id="box_quantity" name="box_quantity" value="@item.box_quantity" />
+                    @Html.ValidationMessageFor(model => item.box_quantity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">預計出貨數量</label>
+                <div class="col-md-10">
+                    <input class="form-control" id="exp_shipquantity" name="exp_shipquantity" value="@item.exp_shipquantity" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" autocomplete="off" />
+                    @Html.ValidationMessageFor(model => item.exp_shipquantity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">成倉數量</label>
+                <div class="col-md-10">
+                    <input class="form-control" disabled="disabled" id="stock_quantity" name="stock_quantity" value="@item.stock_quantity" />
+                    @Html.ValidationMessageFor(model => item.stock_quantity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">出貨方式</label>
+                <div class="col-md-10">
+                    <input class="form-control" id="transportation" name="transportation" value="@item.transportation" autocomplete="off" />
+                    @Html.ValidationMessageFor(model => item.transportation, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">SAP備註</label>
+                <div class="col-md-10">
+                    <input class="form-control" disabled="disabled" id="sap_mark" name="sap_mark" value="@item.sap_mark" />
+                    @Html.ValidationMessageFor(model => item.sap_mark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-md-2">公司代碼</label>
+                <div class="col-md-10">
+                    <input class="form-control" id="company_code" name="company_code" value="@item.company_code" autocomplete="off" />
+                    @Html.ValidationMessageFor(model => item.company_code, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-10">
+                <input type="submit" id="submit-btn" value="Submit" class="btn-default" onclick="return false;" />
+            </div>
+        </div>
+    </div>
+    
+</form>
+<script>
+    var form = document.getElementById('scForm');
+    var exp_shipquantity = document.getElementById('exp_shipquantity');
+    var cust_wono = document.getElementById('cust_wono');
+    var box_quantity = document.getElementById('box_quantity');
+    var stock_quantity = document.getElementById('stock_quantity');
+    var sap_mark = document.getElementById('sap_mark');
+    var transportation = document.getElementById('transportation');
+    var position = document.getElementById('position');
+    var eng_sr = document.getElementById('eng_sr');
+    var button = document.getElementById('submit-btn');
+    //var wono = $('#wono').val();
+    
+    
+    button.addEventListener('click', function (e) {
+        // 當用戶提交表單時，先將 disabled 屬性設置為 false
+        exp_shipquantity.disabled = false;
+        cust_wono.disabled = false;
+        box_quantity.disabled = false;
+        stock_quantity.disabled = false;
+        sap_mark.disabled = false;
+        position.disabled = false;
+        eng_sr.disabled = false;
+        transportation.disabled = false;
+        form.submit();
+        
+    });
+
+    exp_shipquantity.addEventListener("blur", function () {
+        
+        var valueA = parseFloat(exp_shipquantity.value);        
+        var valueB = parseFloat(stock_quantity.value);
+//        
+        if (valueB - valueA < 0) {
+            // 如果小於B欄位的值，顯示錯誤訊息
+            alert("預計出貨數量不可大於庫存數量!!");
+            return;
+        }
+    });
+
+
+</script>

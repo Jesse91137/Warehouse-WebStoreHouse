@@ -1,0 +1,122 @@
+﻿
+@model IEnumerable<WebStoreHouse.Models.E_StoreHouseStock_Order>
+
+@{
+    ViewBag.Title = "出貨明細";
+}
+<head>
+    <script src="~/Scripts/jquery-3.4.1.min.js"></script>
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid black;
+        }
+
+        th {
+            background-color: #ddd;
+        }
+        @@media print {
+              table, th, td {
+                border: 1px solid black;
+              }
+            }
+    </style>
+</head>
+<h2>出貨明細</h2>
+@*<input type="button" value="列印" onclick="printTable()" />*@
+<button id="print-btn">列印</button>
+<p>@Html.ActionLink("匯出Excel", "ExportToExcel")</p>
+<table class="table table-bordered" id="table-to-print">
+    <tr>
+        <th>工單</th>
+        <th>機種</th>
+        <th>業務單號</th>
+        <th>客戶單號</th>
+        <th>出貨數量</th>
+        <th>箱數</th>
+        <th>SAP備註</th>
+        <th>出貨方式</th>
+        <th>公司名稱</th>
+        <th>地址</th>
+        @if (@ViewBag.RoleId == "A")
+        {<th></th>}
+    </tr>
+
+    @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.wono)</td>
+                <td>@Html.DisplayFor(modelItem => item.eng_sr) </td>
+                <td>@Html.DisplayFor(modelItem => item.sales_order)</td>
+                <td>@Html.DisplayFor(modelItem => item.cust_wono)</td>
+                <td>@Html.DisplayFor(modelItem => item.exp_shipquantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.box_quantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.sap_mark)</td>
+                <td>@Html.DisplayFor(modelItem => item.transportation)</td>
+                <td>@Html.DisplayFor(modelItem => item.company_name)</td>
+                <td>@Html.DisplayFor(modelItem => item.address)</td>
+                @if (@ViewBag.RoleId == "A")
+                    {
+                        <td>
+                            @Html.ActionLink("刪除", "DeleteOrder", new { sno = item.sno, wono = item.wono, quantity = item.exp_shipquantity, guid = item.OrderGuid }, new { @class = "delete-link" })
+                        </td>
+                    }
+
+            </tr>
+        }
+
+</table>
+<script>
+    $(function () {
+        $('#print-btn').click(function () {
+            // 產生一個暫時的 div 用來儲存要列印的內容
+            var printContent = $('<div>').append($('#table-to-print').clone());
+
+            // 隱藏不需要列印的欄位
+            printContent.find('th:last-child, td:last-child').remove();
+
+            // 開始列印
+            var printWindow = window.open('', '', 'height=600,width=800');
+            //printWindow.document.write('<html><head><title>Print</title>');
+            printWindow.document.write('<style>@@media print { table, th, td { border: 1px solid black; } }</style>');
+            printWindow.document.write('</head><body>');
+            printWindow.document.write(printContent.html());
+            printWindow.document.write('</body></html>');
+            printWindow.document.close();
+            printWindow.print();
+        });
+    });
+
+
+    $(function () {
+        $('.delete-link').click(function (event) {
+            event.preventDefault(); // 阻止默認行為，即跳轉到刪除操作的 URL
+            var deleteUrl = $(this).attr('href');
+            var reason = prompt('請輸入刪除原因：');
+            if (reason) {
+                // 使用 AJAX 向後端傳送刪除原因
+                $.ajax({
+                    url: deleteUrl,
+                    method: 'POST',
+                    data: { reason: reason },
+                    success: function () {
+                        // 刪除成功，重新載入頁面
+                        location.reload();
+                    },
+                    error: function () {
+                        alert('刪除失敗，請重試。');
+                    }
+                });
+            }
+        });
+    });
+
+</script>
