@@ -84,3 +84,4 @@ Thumbs.db
 *.DotSettings.user
 *.DotSettings
 .vscode/
+Properties/
