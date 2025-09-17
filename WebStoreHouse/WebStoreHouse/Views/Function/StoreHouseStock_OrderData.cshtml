@@ -1,4 +1,6 @@
-﻿@*@model System.Data.DataSet*@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
 @model WebStoreHouse.ViewModels.StockOrderDataAndQcDataViewModels
 
 @{
@@ -7,163 +9,666 @@
 <h2>資料查詢</h2>
 <div class="row">
     <div class="col-xs-2">
-        <h4>@Html.ActionLink("訂單資料查詢", "StoreHouseStock_OrderData", new { li = "O" })</h4>
-        <h4>@Html.ActionLink("ZRSD19查詢", "StoreHouseStock_OrderData", new { li = "Z" })</h4>
-        <h4>@Html.ActionLink("Kf10、Kq30查詢", "StoreHouseStock_OrderData", new { li = "K" })</h4>
+        <h4>@Html.ActionLink("訂單資料查詢", "StoreHouseStock_OrderData", new { li = "O" }, new { @class = "btn btn-primary" })</h4>
+        <h4>@Html.ActionLink("ZRSD19查詢", "StoreHouseStock_OrderData", new { li = "Z" }, new { @class = "btn btn-primary" })</h4>
+        <h4>@Html.ActionLink("Kf10、Kq30查詢", "StoreHouseStock_OrderData", new { li = "K" }, new { @class = "btn btn-primary" })</h4>
         @*<h4>@Html.ActionLink("QC查詢", "StoreHouseStock_OrderData", new { li = "Q" })</h4>*@
+        <button id="btnShowStockInQuery" class="btn btn-primary" style="width:50%; text-align:left;">入庫資料查詢</button>
+        <button id="btnShowStockOutQuery" class="btn btn-primary" style="width:50%; text-align:left; margin-top:8px;">出庫資料查詢</button>
+
     </div>
     <div class="col-xs-10">
-        @if (ViewBag.List == "Z")
-        {
-            using (Html.BeginForm())
+        <div id="mainQueryPanel">
+            <!--- ZRSD19查詢 -------------------------------------------------------------------------------------------->
+            @if (ViewBag.List == "Z")
             {
-                <label for="wono">工單:</label>
-                @Html.TextBox("wono", null, new { @class = "form-control input-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "display:inline-block; width: 150px;" })
-                <label for="order_cust">客戶單號:</label>
-                @Html.TextBox("order_cust", null, new { @class = "form-control input-sm", @id = "order_cust", @placeholder = "請輸入客戶單號", style = "display:inline-block; width: 150px;" })
-                <label for="wono_cust">客戶工單:</label>
-                @Html.TextBox("wono_cust", null, new { @class = "form-control input-sm", @id = "wono_cust", @placeholder = "請輸入客戶工單", style = "display:inline-block; width: 150px;" })
-                <label for="engsr">機種名稱:</label>
-                @Html.TextBox("engsr", null, new { @class = "form-control input-sm", @id = "engsr", @placeholder = "請輸入機種名稱", style = "display:inline-block; width: 150px;" })
-                <button type="submit" class="btn btn-default">查詢</button>
-            }
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>wono</th>
-                        <th>order_cust</th>
-                        <th>wono_cust</th>
-                        <th>item</th>
-                        <th>spec_product</th>
-                        <th>order_quantity</th>
-                        <th>shipped_quantity</th>
-                        <th>unshipped_quantity</th>
-                        <th>borrow_count</th>
-                        <th>wono_openCount</th>
-                        <th>wono_inStoreCount</th>
-                        <th>due_date</th>
-                        <th>prod_notes</th>
-                        <th>prod_notes2</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (System.Data.DataRow row in Model.StockData.Tables[0].Rows)
+                <div class="query-form mb-4 p-4 rounded shadow-sm" style="background: #f8f9fa; width: 100%; max-width: none;">
+                    @using (Html.BeginForm())
                     {
-                        <tr>
-                            <td>@row["wono"]</td>
-                            <td>@row["order_cust"]</td>
-                            <td>@row["wono_cust"]</td>
-                            <td>@row["item"]</td>
-                            <td>@row["spec_product"]</td>
-                            <td>@row["order_quantity"]</td>
-                            <td>@row["shipped_quantity"]</td>
-                            <td>@row["unshipped_quantity"]</td>
-                            <td>@row["borrow_count"]</td>
-                            <td>@row["wono_openCount"]</td>
-                            <td>@row["wono_inStoreCount"]</td>
-                            <td>@row["due_date"]</td>
-                            <td>@row["prod_notes"]</td>
-                            <td>@row["prod_notes2"]</td>
-                        </tr>
+                        <div style="display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:16px;width:100%;overflow-x:auto;min-width:700px;">
+                            <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
+                                <label for="wono" class="form-label mb-0" style="white-space:nowrap;">工單</label>
+                                @Html.TextBox("wono", null, new { @class = "form-control form-control-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "width:120px;" })
+                            </div>
+                            <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
+                                <label for="order_cust" class="form-label mb-0" style="white-space:nowrap;">客戶單號</label>
+                                @Html.TextBox("order_cust", null, new { @class = "form-control form-control-sm", @id = "order_cust", @placeholder = "請輸入客戶單號", style = "width:120px;" })
+                            </div>
+                            <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
+                                <label for="wono_cust" class="form-label mb-0" style="white-space:nowrap;">客戶工單</label>
+                                @Html.TextBox("wono_cust", null, new { @class = "form-control form-control-sm", @id = "wono_cust", @placeholder = "請輸入客戶工單", style = "width:120px;" })
+                            </div>
+                            <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
+                                <label for="engsr" class="form-label mb-0" style="white-space:nowrap;">機種名稱</label>
+                                @Html.TextBox("engsr", null, new { @class = "form-control form-control-sm", @id = "engsr", @placeholder = "請輸入機種名稱", style = "width:120px;" })
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4">查詢</button>
+                        </div>
                     }
-                </tbody>
-            </table>
-        }
-        else if (ViewBag.List == "O")
-        {
-            using (Html.BeginForm())
-            {
-                <label for="indate">日期:</label>
-                @Html.TextBox("indate", null, new { @class = "form-control input-sm", @id = "indate", @placeholder = "YYYY-MM-DD", style = "display:inline-block; width: 100px;" })
-                <label for="indate2">～</label>
-                @Html.TextBox("indate2", null, new { @class = "form-control input-sm", @id = "indate2", @placeholder = "YYYY-MM-DD", style = "display:inline-block; width: 100px;" })
-
-                <label for="engsr">機種名稱:</label>
-                @Html.TextBox("engsr", null, new { @class = "form-control input-sm", @id = "engsr", @placeholder = "請輸入工程號", style = "display:inline-block; width: 150px;" })
-
-                <label for="wono">工單:</label>
-                @Html.TextBox("wono", null, new { @class = "form-control input-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "display:inline-block; width: 150px;" })
-
-                <label for="mark">備註:</label>
-                @Html.TextBox("mark", null, new { @class = "form-control input-sm", @id = "mark", @placeholder = "請輸入標籤", style = "display:inline-block; width: 150px;" })
-
-                <button type="submit" class="btn btn-default">查詢</button>
-            }
-
-            if (Model != null && Model.StockData.Tables[0].Rows.Count > 0)
-            {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>訂單日期</th>
-                            <th>工單號碼</th>
-                            <th>機種名稱</th>
-                            <th>客戶單號</th>
-                            <th>出貨數</th>
-                            <th>SAP備註</th>
-                            <th>地址</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (System.Data.DataRow row in Model.StockData.Tables[0].Rows)
-                        {
+                </div>
+                <br />
+                <div class="table-responsive" style="overflow-y:auto;overflow-x:auto;">
+                    <table class="table table-striped table-hover table-bordered align-middle sticky-header-table" style="font-size:15px; border-collapse:separate;">
+                        <thead class="table-dark">
                             <tr>
-                                <td>@DateTime.Parse(row["chk_date"].ToString()).ToShortDateString()</td>
-                                <td>@row["wono"]</td>
-                                <td>@row["eng_sr"]</td>
-                                <td>@row["cust_wono"]</td>
-                                <td>@row["exp_shipquantity"]</td>
-                                <td>@row["sap_mark"]</td>
-                                <td>@row["address"]</td>
+                                <th>wono</th>
+                                <th>order_cust</th>
+                                <th>wono_cust</th>
+                                <th>item</th>
+                                <th>spec_product</th>
+                                <th>order_quantity</th>
+                                <th>shipped_quantity</th>
+                                <th>unshipped_quantity</th>
+                                <th>borrow_count</th>
+                                <th>wono_openCount</th>
+                                <th>wono_inStoreCount</th>
+                                <th>due_date</th>
+                                <th>prod_notes</th>
+                                <th>prod_notes2</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (System.Data.DataRow row in Model.StockData.Tables[0].Rows)
+                            {
+                                <tr>
+                                    <td>@row["wono"]</td>
+                                    <td>@row["order_cust"]</td>
+                                    <td>@row["wono_cust"]</td>
+                                    <td>@row["item"]</td>
+                                    <td>@row["spec_product"]</td>
+                                    <td>@row["order_quantity"]</td>
+                                    <td>@row["shipped_quantity"]</td>
+                                    <td>@row["unshipped_quantity"]</td>
+                                    <td>@row["borrow_count"]</td>
+                                    <td>@row["wono_openCount"]</td>
+                                    <td>@row["wono_inStoreCount"]</td>
+                                    <td>@row["due_date"]</td>
+                                    <td>@row["prod_notes"]</td>
+                                    <td>@row["prod_notes2"]</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             }
-        }
-        else if (ViewBag.List == "K")
-        {
-            @*using (Html.BeginForm())
+            else if (ViewBag.List == "O")
             {
-                <label for="engsr">機種名稱:</label>
-                @Html.TextBox("Material", null, new { @class = "form-control input-sm", @id = "Material", @placeholder = "請輸入工程號", style = "display:inline-block; width: 150px;" })
-
-                <label for="wono">工單:</label>
-                @Html.TextBox("Docu", null, new { @class = "form-control input-sm", @id = "Docu", @placeholder = "請輸入工單號碼", style = "display:inline-block; width: 150px;" })
-
-                <label for="mark">備註:</label>
-                @Html.TextBox("SLoc", null, new { @class = "form-control input-sm", @id = "SLoc", @placeholder = "請輸入倉別", style = "display:inline-block; width: 150px;" })
-
-                <button type="submit" class="btn btn-default">查詢</button>
-            }*@
-            if (Model != null && Model.StockData.Tables[0].Rows.Count > 0)
+                <div class="query-form mb-4 p-4 rounded shadow-sm" style="background:#f8f9fa;width:100%;max-width:none;">
+                    @using (Html.BeginForm())
+                    {
+                        <div style="display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:12px;width:100%;overflow-x:auto;min-width:900px;">
+                            <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
+                                <label for="indate" class="form-label mb-0" style="white-space:nowrap;">日期</label>
+                                @Html.TextBox("indate", null, new { @class = "form-control form-control-sm", @id = "indate", @placeholder = "YYYY-MM-DD", style = "width:120px;" })
+                            </div>
+                            <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
+                                <label for="indate2" class="form-label mb-0" style="white-space:nowrap;">～</label>
+                                @Html.TextBox("indate2", null, new { @class = "form-control form-control-sm", @id = "indate2", @placeholder = "YYYY-MM-DD", style = "width:120px;" })
+                            </div>
+                            <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
+                                <label for="engsr" class="form-label mb-0" style="white-space:nowrap;">機種名稱</label>
+                                @Html.TextBox("engsr", null, new { @class = "form-control form-control-sm", @id = "engsr", @placeholder = "請輸入工程號", style = "width:140px;" })
+                            </div>
+                            <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
+                                <label for="wono" class="form-label mb-0" style="white-space:nowrap;">工單</label>
+                                @Html.TextBox("wono", null, new { @class = "form-control form-control-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "width:140px;" })
+                            </div>
+                            <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
+                                <label for="mark" class="form-label mb-0" style="white-space:nowrap;">備註</label>
+                                @Html.TextBox("mark", null, new { @class = "form-control form-control-sm", @id = "mark", @placeholder = "請輸入標籤", style = "width:140px;" })
+                            </div>
+                            <button type="submit" class="btn btn-primary px-4">查詢</button>
+                        </div>
+                    }
+                </div>
+                <br />
+                if (Model != null && Model.StockData.Tables[0].Rows.Count > 0)
+                {
+                    <div class="table-responsive" style="overflow:auto;">
+                        <table class="table table-striped table-hover table-bordered align-middle sticky-header-table" style="font-size:15px;">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>訂單日期</th>
+                                    <th>工單號碼</th>
+                                    <th>機種名稱</th>
+                                    <th>客戶單號</th>
+                                    <th>出貨數</th>
+                                    <th>SAP備註</th>
+                                    <th>地址</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (System.Data.DataRow row in Model.StockData.Tables[0].Rows)
+                                {
+                                    <tr>
+                                        <td>@DateTime.Parse(row["chk_date"].ToString()).ToShortDateString()</td>
+                                        <td>@row["wono"]</td>
+                                        <td>@row["eng_sr"]</td>
+                                        <td>@row["cust_wono"]</td>
+                                        <td>@row["exp_shipquantity"]</td>
+                                        <td>@row["sap_mark"]</td>
+                                        <td>@row["address"]</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            }
+            else if (ViewBag.List == "K")
             {
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>倉別</th>
-                            <th>工單號碼</th>
-                            <th>機種名稱</th>
-                            <th>數量</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (System.Data.DataRow row in Model.StockData.Tables[0].Rows)
-                        {
+                @*using (Html.BeginForm())
+                    {
+                        <label for="engsr">機種名稱:</label>
+                        @Html.TextBox("Material", null, new { @class = "form-control input-sm", @id = "Material", @placeholder = "請輸入工程號", style = "display:inline-block; width: 150px;" })
+
+                        <label for="wono">工單:</label>
+                        @Html.TextBox("Docu", null, new { @class = "form-control input-sm", @id = "Docu", @placeholder = "請輸入工單號碼", style = "display:inline-block; width: 150px;" })
+
+                        <label for="mark">備註:</label>
+                        @Html.TextBox("SLoc", null, new { @class = "form-control input-sm", @id = "SLoc", @placeholder = "請輸入倉別", style = "display:inline-block; width: 150px;" })
+
+                        <button type="submit" class="btn btn-default">查詢</button>
+                    }*@
+                if (Model != null && Model.StockData.Tables[0].Rows.Count > 0)
+                {
+                    <table class="table">
+                        <thead>
                             <tr>
-                                <td>@row["SLoc"]</td>
-                                <td>@row["Docu"]</td>
-                                <td>@row["Material"]</td>
-                                <td>@row["Unrestricted"]</td>
+                                <th>倉別</th>
+                                <th>工單號碼</th>
+                                <th>機種名稱</th>
+                                <th>數量</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach (System.Data.DataRow row in Model.StockData.Tables[0].Rows)
+                            {
+                                <tr>
+                                    <td>@row["SLoc"]</td>
+                                    <td>@row["Docu"]</td>
+                                    <td>@row["Material"]</td>
+                                    <td>@row["Unrestricted"]</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
             }
-        }
-        @*else if (ViewBag.List == "Q")
-        {
-            @Html.Partial("_QCDataPartial",Model.QCData)
-        }*@
+        </div>
+
+        <div id="stockInQueryPanel" class="card mt-3" style="display:none;">
+            <div class="d-flex justify-content-start" style="width:100%;">
+                <form id="stockInQueryForm" style="display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;width:100%;">
+                    <label for="inputdate" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">入庫日期</label>
+                    <input type="date" class="form-control mb-0" id="inputdate" name="inputdate" style="width:130px;margin-right:12px;">
+                    <label for="wono" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">工單</label>
+                    <input type="text" class="form-control mb-0" id="wono" name="wono" placeholder="請輸入工單" style="width:130px;margin-right:12px;">
+                    <label for="engsr" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">機種</label>
+                    <input type="text" class="form-control mb-0" id="engsr" name="engsr" placeholder="請輸入機種" style="width:130px;margin-right:12px;">
+                    <button type="button" id="btnStockInSearch" class="btn btn-success" style="margin-right:12px;">查詢</button>
+                    <button type="button" id="btnStockInExport" class="btn btn-secondary">匯出</button>
+                </form>
+                <br />
+                <div class="mt-4 w-100 table-responsive" style="overflow:auto;">
+                    <table class="table table-bordered table-hover sticky-header-table" id="stockInResultTable" style="font-size:15px;">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>入庫日期</th>
+                                <th>工單</th>
+                                <th>機種</th>
+                                <th>數量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 查詢結果將由 JS 動態產生 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="stockInPagination" class="mt-2" style="display:block; min-height:40px; margin-top:16px; margin-bottom:16px; text-align:center;"></div>
+            </div>
+        </div>
+        <!--------- 出庫資料查詢 ---------------------------------------------------------------------------------------------------->
+        <div id="stockOutQueryPanel" class="card mt-3" style="display:none;">
+            <div class="d-flex justify-content-start" style="width:100%;">
+                <form id="stockOutQueryForm" style="display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;width:100%;">
+                    <label for="outputdate" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">出庫日期</label>
+                    <input type="date" class="form-control mb-0" id="outputdate" name="outputdate" style="width:130px;margin-right:12px;">
+                    <label for="wono_out" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">工單</label>
+                    <input type="text" class="form-control mb-0" id="wono_out" name="wono_out" placeholder="請輸入工單" style="width:130px;margin-right:12px;">
+                    <label for="engsr_out" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">機種</label>
+                    <input type="text" class="form-control mb-0" id="engsr_out" name="engsr_out" placeholder="請輸入機種" style="width:130px;margin-right:12px;">
+                    <button type="button" id="btnStockOutSearch" class="btn btn-success" style="margin-right:12px;">查詢</button>
+                    <button type="button" id="btnStockOutExport" class="btn btn-secondary">匯出</button>
+                </form>
+                <br />
+                <div class="mt-4 w-100 table-responsive" style="overflow:auto;">
+                    <table class="table table-bordered table-hover sticky-header-table" id="stockOutResultTable" style="font-size:15px;">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>出庫日期</th>
+                                <th>工單</th>
+                                <th>機種</th>
+                                <th>數量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- 查詢結果將由 JS 動態產生 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div id="stockOutPagination" class="mt-2" style="display:block; min-height:40px; margin-top:16px; margin-bottom:16px; text-align:center;"></div>
+            </div>
+        </div>
+        <script>
+            // 顯示查詢面板，並隱藏主資料區塊
+            document.getElementById('btnShowStockInQuery').addEventListener('click', function () {
+                document.getElementById('stockInQueryPanel').style.display = 'block';
+                var mainPanel = document.getElementById('mainQueryPanel');
+                if (mainPanel) mainPanel.style.display = 'none';
+                var outPanel = document.getElementById('stockOutQueryPanel');
+                if (outPanel) outPanel.style.display = 'none';
+            });
+            document.getElementById('btnShowStockOutQuery').addEventListener('click', function () {
+                document.getElementById('stockOutQueryPanel').style.display = 'block';
+                var mainPanel = document.getElementById('mainQueryPanel');
+                if (mainPanel) mainPanel.style.display = 'none';
+                var inPanel = document.getElementById('stockInQueryPanel');
+                if (inPanel) inPanel.style.display = 'none';
+            });
+            // 切換查詢時隱藏出庫資料查詢區塊，顯示主資料區塊
+            document.querySelectorAll('.col-xs-2 a').forEach(function (link) {
+                link.addEventListener('click', function () {
+                    var panel = document.getElementById('stockOutQueryPanel');
+                    if (panel) panel.style.display = 'none';
+                    var mainPanel = document.getElementById('mainQueryPanel');
+                    if (mainPanel) mainPanel.style.display = 'block';
+                });
+            });
+            /**
+             * 分頁顯示查詢結果，每頁 30 筆
+             * stockInData: 入庫查詢結果資料陣列
+             * stockInPageSize: 每頁顯示筆數
+             * stockInCurrentPage: 目前頁碼
+             * stockInTotalCount: 查詢結果總筆數
+             */
+            var stockInData = [];
+            var stockInPageSize = 30;
+            var stockInCurrentPage = 1;
+            var stockInTotalCount = 0;
+
+
+             @* 根據目前頁碼渲染入庫資料表格
+                 @param {number} page - 目前頁碼
+             *@
+            function renderStockInTable(page) {
+                var tbody = document.querySelector('#stockInResultTable tbody');
+                tbody.innerHTML = '';
+                if (!stockInData || stockInData.length === 0) {
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = '<td colspan="4">查無資料</td>';
+                    tbody.appendChild(tr);
+                    document.getElementById('stockInPagination').innerHTML = '';
+                } else {
+                    for (var i = 0; i < stockInData.length; i++) {
+                        var row = stockInData[i];
+                        var tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${row.InputDate ? row.InputDate.split('T')[0] : ''}</td><td>${row.WorkOrder}</td><td>${row.Model}</td><td>${row.Quantity}</td>`;
+                        tbody.appendChild(tr);
+                    }
+                    renderStockInPagination(page);
+                }
+            }
+
+             @*
+               渲染分頁元件
+             @param {number} currentPage - 目前頁碼
+             *@
+            function renderStockInPagination(currentPage) {
+                var paginationDiv = document.getElementById('stockInPagination');
+                paginationDiv.innerHTML = '';
+                var totalPages = Math.ceil(stockInTotalCount / stockInPageSize);
+                if (totalPages <= 1) return;
+                var nav = document.createElement('nav');
+                nav.setAttribute('aria-label', '分頁導航');
+                nav.style.display = 'block';
+                nav.style.width = 'auto';
+                var ul = document.createElement('ul');
+                ul.className = 'pagination';
+                ul.style.margin = '0 auto';
+
+                // 上一頁
+                var prevLi = document.createElement('li');
+                prevLi.className = currentPage === 1 ? 'disabled' : '';
+                var prevA = document.createElement('a');
+                prevA.href = '#';
+                prevA.innerHTML = '&laquo;';
+                prevA.style.cursor = 'pointer';
+                prevA.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (currentPage > 1) {
+                        stockInCurrentPage = currentPage - 1;
+                        fetchStockInData(stockInCurrentPage);
+                    }
+                });
+                prevLi.appendChild(prevA);
+                ul.appendChild(prevLi);
+
+                // 頁碼區
+                var pageList = [];
+                if (totalPages <= 7) {
+                    for (var i = 1; i <= totalPages; i++) {
+                        pageList.push(i);
+                    }
+                } else {
+                    pageList.push(1);
+                    if (currentPage > 4) pageList.push('...');
+                    for (var i = Math.max(2, currentPage - 2); i <= Math.min(totalPages - 1, currentPage + 2); i++) {
+                        pageList.push(i);
+                    }
+                    if (currentPage < totalPages - 3) pageList.push('...');
+                    pageList.push(totalPages);
+                }
+                pageList.forEach(function (p) {
+                    if (p === '...') {
+                        var ellipsisLi = document.createElement('li');
+                        ellipsisLi.className = 'disabled';
+                        var ellipsisA = document.createElement('a');
+                        ellipsisA.innerHTML = '...';
+                        ellipsisLi.appendChild(ellipsisA);
+                        ul.appendChild(ellipsisLi);
+                    } else {
+                        var li = document.createElement('li');
+                        if (p === currentPage) {
+                            li.className = 'active';
+                        }
+                        var a = document.createElement('a');
+                        a.href = '#';
+                        a.textContent = p;
+                        a.style.cursor = 'pointer';
+                        a.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            var page = parseInt(this.textContent);
+                            stockInCurrentPage = page;
+                            fetchStockInData(page);
+                        });
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                    }
+                });
+
+                // 下一頁
+                var nextLi = document.createElement('li');
+                nextLi.className = currentPage === totalPages ? 'disabled' : '';
+                var nextA = document.createElement('a');
+                nextA.href = '#';
+                nextA.innerHTML = '&raquo;';
+                nextA.style.cursor = 'pointer';
+                nextA.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (currentPage < totalPages) {
+                        stockInCurrentPage = currentPage + 1;
+                        fetchStockInData(stockInCurrentPage);
+                    }
+                });
+                nextLi.appendChild(nextA);
+                ul.appendChild(nextLi);
+
+                nav.appendChild(ul);
+                paginationDiv.style.textAlign = 'center';
+                paginationDiv.appendChild(nav);
+            }
+
+   /*------- 取得入庫查詢資料 --------------------------------------------------------------------------------------------------------------------------*/
+             @*
+              取得入庫查詢資料，並更新表格與分頁
+              @param {number} page - 查詢頁碼
+             *@
+            function fetchStockInData(page) {
+                var inputdate = document.getElementById('inputdate').value;
+                var wono = document.getElementById('wono').value;
+                var engsr = document.getElementById('engsr').value;
+                var query = {};
+                if (inputdate) {
+                    query.inputdate_start = inputdate;
+                } else if (wono) {
+                    query.wono = wono;
+                } else if (engsr) {
+                    query.engsr = engsr;
+                }
+                query.page = page || 1;
+                fetch('/Function/StoreHouseStockEntryQuery?' + new URLSearchParams(query), {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        stockInData = data.data || [];
+                        stockInTotalCount = data.total || 0;
+                        renderStockInTable(page);
+                    })
+                    .catch(err => {
+                        alert('查詢失敗: ' + err);
+                    });
+            }
+
+            // 入庫資料查詢功能：點擊查詢按鈕時執行查詢
+            document.getElementById('btnStockInSearch').addEventListener('click', function () {
+                stockInCurrentPage = 1;
+                fetchStockInData(stockInCurrentPage);
+            });
+
+            // 入庫資料匯出 Excel 功能 ------------------------------------------------------------------------------------------------------------------------
+            document.getElementById('btnStockInExport').addEventListener('click', function () {
+                var inputdate = document.getElementById('inputdate').value;
+                var wono = document.getElementById('wono').value;
+                var engsr = document.getElementById('engsr').value;
+                var query = {};
+                if (inputdate) {
+                    query.inputdate_start = inputdate;
+                } else if (wono) {
+                    query.wono = wono;
+                } else if (engsr) {
+                    query.engsr = engsr;
+                }
+                var url = '/Function/StoreHouseStockEntryExport?' + new URLSearchParams(query).toString();
+                window.open(url, '_blank');
+            });
+
+            // 出庫查詢分頁/資料 -----------------------------------------------------------------------------------------------------------------------------------
+            var stockOutData = [];
+            var stockOutPageSize = 30;
+            var stockOutCurrentPage = 1;
+            var stockOutTotalCount = 0;
+            function renderStockOutTable(page) {
+                var tbody = document.querySelector('#stockOutResultTable tbody');
+                tbody.innerHTML = '';
+                if (!stockOutData || stockOutData.length === 0) {
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = '<td colspan="4">查無資料</td>';
+                    tbody.appendChild(tr);
+                    document.getElementById('stockOutPagination').innerHTML = '';
+                } else {
+                    for (var i = 0; i < stockOutData.length; i++) {
+                        var row = stockOutData[i];
+                        var tr = document.createElement('tr');
+                        tr.innerHTML = `<td>${row.OutputDate ? row.OutputDate.split('T')[0] : ''}</td><td>${row.WorkOrder}</td><td>${row.Model}</td><td>${row.Quantity}</td>`;
+                        tbody.appendChild(tr);
+                    }
+                    renderStockOutPagination(page);
+                }
+            }
+
+            /** 出庫查詢換頁 ---------------------------------------------------------------------------------------------------------------------------------- */
+            function renderStockOutPagination(currentPage) {
+                var paginationDiv = document.getElementById('stockOutPagination');
+                paginationDiv.innerHTML = '';
+                var totalPages = Math.ceil(stockOutTotalCount / stockOutPageSize);
+                if (totalPages <= 1) return;
+                var nav = document.createElement('nav');
+                nav.setAttribute('aria-label', '分頁導航');
+                nav.style.display = 'block';
+                nav.style.width = 'auto';
+                var ul = document.createElement('ul');
+                ul.className = 'pagination';
+                ul.style.margin = '0 auto';
+                var prevLi = document.createElement('li');
+                prevLi.className = currentPage === 1 ? 'disabled' : '';
+                var prevA = document.createElement('a');
+                prevA.href = '#';
+                prevA.innerHTML = '&laquo;';
+                prevA.style.cursor = 'pointer';
+                prevA.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (currentPage > 1) {
+                        stockOutCurrentPage = currentPage - 1;
+                        fetchStockOutData(stockOutCurrentPage);
+                    }
+                });
+                prevLi.appendChild(prevA);
+                ul.appendChild(prevLi);
+                var pageList = [];
+                if (totalPages <= 7) {
+                    for (var i = 1; i <= totalPages; i++) {
+                        pageList.push(i);
+                    }
+                } else {
+                    pageList.push(1);
+                    if (currentPage > 4) pageList.push('...');
+                    for (var i = Math.max(2, currentPage - 2); i <= Math.min(totalPages - 1, currentPage + 2); i++) {
+                        pageList.push(i);
+                    }
+                    if (currentPage < totalPages - 3) pageList.push('...');
+                    pageList.push(totalPages);
+                }
+                pageList.forEach(function (p) {
+                    if (p === '...') {
+                        var ellipsisLi = document.createElement('li');
+                        ellipsisLi.className = 'disabled';
+                        var ellipsisA = document.createElement('a');
+                        ellipsisA.innerHTML = '...';
+                        ellipsisLi.appendChild(ellipsisA);
+                        ul.appendChild(ellipsisLi);
+                    } else {
+                        var li = document.createElement('li');
+                        if (p === currentPage) {
+                            li.className = 'active';
+                        }
+                        var a = document.createElement('a');
+                        a.href = '#';
+                        a.textContent = p;
+                        a.style.cursor = 'pointer';
+                        a.addEventListener('click', function (e) {
+                            e.preventDefault();
+                            var page = parseInt(this.textContent);
+                            stockOutCurrentPage = page;
+                            fetchStockOutData(page);
+                        });
+                        li.appendChild(a);
+                        ul.appendChild(li);
+                    }
+                });
+                var nextLi = document.createElement('li');
+                nextLi.className = currentPage === totalPages ? 'disabled' : '';
+                var nextA = document.createElement('a');
+                nextA.href = '#';
+                nextA.innerHTML = '&raquo;';
+                nextA.style.cursor = 'pointer';
+                nextA.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    if (currentPage < totalPages) {
+                        stockOutCurrentPage = currentPage + 1;
+                        fetchStockOutData(stockOutCurrentPage);
+                    }
+                });
+                nextLi.appendChild(nextA);
+                ul.appendChild(nextLi);
+                nav.appendChild(ul);
+                paginationDiv.style.textAlign = 'center';
+                paginationDiv.appendChild(nav);
+            }
+
+            /*--- 出庫資料查詢 ----------------------------------------------------------------------------------------------------------------------------------------*/
+            function fetchStockOutData(page) {
+                var outputdate = document.getElementById('outputdate').value;
+                var wono = document.getElementById('wono_out').value;
+                var engsr = document.getElementById('engsr_out').value;
+                var query = {};
+                if (outputdate) {
+                    query.outputdate_start = outputdate;
+                } else if (wono) {
+                    query.wono = wono;
+                } else if (engsr) {
+                    query.engsr = engsr;
+                }
+                query.page = page || 1;
+                fetch('/Function/StoreHouseStockOutQuery?' + new URLSearchParams(query), {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        stockOutData = data.data || [];
+                        stockOutTotalCount = data.total || 0;
+                        renderStockOutTable(page);
+                    })
+                    .catch(err => {
+                        alert('查詢失敗: ' + err);
+                    });
+            }
+            document.getElementById('btnStockOutSearch').addEventListener('click', function () {
+                stockOutCurrentPage = 1;
+                fetchStockOutData(stockOutCurrentPage);
+            });
+
+            /** 出庫資料匯出 ----------------------------------------------------------------------------------------------------------------------------------------- */
+            document.getElementById('btnStockOutExport').addEventListener('click', function () {
+                var outputdate = document.getElementById('outputdate').value;
+                var wono = document.getElementById('wono_out').value;
+                var engsr = document.getElementById('engsr_out').value;
+                var query = {};
+                if (outputdate) {
+                    query.outputdate_start = outputdate;
+                } else if (wono) {
+                    query.wono = wono;
+                } else if (engsr) {
+                    query.engsr = engsr;
+                }
+                var url = '/Function/StoreHouseStockOutExport?' + new URLSearchParams(query).toString();
+                window.open(url, '_blank');
+            });
+        </script>
     </div>
 </div>
+<style>
+    /* 固定表格標題 thead */
+    .sticky-header-table {
+        border-collapse: separate !important;
+    }
+
+        .sticky-header-table thead {
+            display: table-header-group;
+        }
+
+        .sticky-header-table th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background: #212529;
+            color: #fff;
+        }
+
+        .sticky-header-table th, .sticky-header-table td {
+            white-space: nowrap;
+        }
+
+        .sticky-header-table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+    .table-responsive {
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: 600px;
+    }
+</style>

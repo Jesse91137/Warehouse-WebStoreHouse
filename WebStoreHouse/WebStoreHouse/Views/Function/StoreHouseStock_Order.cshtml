@@ -1,13 +1,15 @@
 ﻿
+@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
 @model IEnumerable<WebStoreHouse.Models.E_StoreHouseStock_Order>
-
 @{
     ViewBag.Title = "出貨明細";
 }
 <head>
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
     <link href="~/Content/bootstrap.css" rel="stylesheet" />
-    
+
     <style>
         table {
             border-collapse: collapse;
@@ -23,17 +25,20 @@
         th {
             background-color: #ddd;
         }
+
         @@media print {
-              table, th, td {
+            table, th, td {
                 border: 1px solid black;
-              }
             }
+        }
     </style>
 </head>
 <h2>出貨明細</h2>
-@*<input type="button" value="列印" onclick="printTable()" />*@
-<button id="print-btn">列印</button>
-<p>@Html.ActionLink("匯出Excel", "ExportToExcel")</p>
+<p></p>
+<button id="print-btn" class="btn btn-warning">列印</button>
+<p></p>
+@Html.ActionLink("匯出Excel", "ExportToExcel", null, new { @class = "btn btn-primary" })
+<p></p>
 <table class="table table-bordered" id="table-to-print">
     <tr>
         <th>工單</th>
@@ -47,31 +52,33 @@
         <th>公司名稱</th>
         <th>地址</th>
         @if (@ViewBag.RoleId == "A")
-        {<th></th>}
+        {
+            <th></th>
+        }
     </tr>
 
     @foreach (var item in Model)
-        {
-            <tr>
-                <td>@Html.DisplayFor(modelItem => item.wono)</td>
-                <td>@Html.DisplayFor(modelItem => item.eng_sr) </td>
-                <td>@Html.DisplayFor(modelItem => item.sales_order)</td>
-                <td>@Html.DisplayFor(modelItem => item.cust_wono)</td>
-                <td>@Html.DisplayFor(modelItem => item.exp_shipquantity)</td>
-                <td>@Html.DisplayFor(modelItem => item.box_quantity)</td>
-                <td>@Html.DisplayFor(modelItem => item.sap_mark)</td>
-                <td>@Html.DisplayFor(modelItem => item.transportation)</td>
-                <td>@Html.DisplayFor(modelItem => item.company_name)</td>
-                <td>@Html.DisplayFor(modelItem => item.address)</td>
-                @if (@ViewBag.RoleId == "A")
-                    {
-                        <td>
-                            @Html.ActionLink("刪除", "DeleteOrder", new { sno = item.sno, wono = item.wono, quantity = item.exp_shipquantity, guid = item.OrderGuid }, new { @class = "delete-link" })
-                        </td>
-                    }
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.wono)</td>
+            <td>@Html.DisplayFor(modelItem => item.eng_sr) </td>
+            <td>@Html.DisplayFor(modelItem => item.sales_order)</td>
+            <td>@Html.DisplayFor(modelItem => item.cust_wono)</td>
+            <td>@Html.DisplayFor(modelItem => item.exp_shipquantity)</td>
+            <td>@Html.DisplayFor(modelItem => item.box_quantity)</td>
+            <td>@Html.DisplayFor(modelItem => item.sap_mark)</td>
+            <td>@Html.DisplayFor(modelItem => item.transportation)</td>
+            <td>@Html.DisplayFor(modelItem => item.company_name)</td>
+            <td>@Html.DisplayFor(modelItem => item.address)</td>
+            @if (@ViewBag.RoleId == "A")
+            {
+                <td>
+                    @Html.ActionLink("刪除", "DeleteOrder", new { sno = item.sno, wono = item.wono, quantity = item.exp_shipquantity, guid = item.OrderGuid }, new { @class = "btn btn-danger" })
+                </td>
+            }
 
-            </tr>
-        }
+        </tr>
+    }
 
 </table>
 <script>

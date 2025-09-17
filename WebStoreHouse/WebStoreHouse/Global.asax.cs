@@ -26,14 +26,14 @@ namespace WebStoreHouse
                     Response.Clear();
                     if (Response.StatusCode == 404)
                     {
-                        Response.Redirect("/HomeController/Invoicing");
+                        Response.Redirect("/Home/Login");
                     }
                 }
             }
         }
         protected void Session_Start(object sender, EventArgs e)
         {
-            Session.Timeout = 480; // ©µªø Session ¹L´Á®É¶¡¬° 60 ¤ÀÄÁ
+            Session.Timeout = 480; // è¨­å®š Session ä¿æŒæ™‚é–“ç‚º 480 åˆ†é˜
         }
 
     }

@@ -1,16 +1,16 @@
 ﻿using PagedList;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using WebStoreHouse.Models;
 using WebStoreHouse.ViewModels;
 
 namespace WebStoreHouse.Controllers
 {
+    /// <summary>
+    /// 資料維護
+    /// </summary>
     public class MaintainController : Controller
     {
         E_StoreHouseEntities db = new E_StoreHouseEntities();
@@ -20,16 +20,26 @@ namespace WebStoreHouse.Controllers
         {
             return View();
         }
-        public ActionResult StoreHouseStock_Maintain(string li,int page = 1)
+        /// <summary>
+        /// 首頁
+        /// </summary>
+        /// <param name="li"></param>
+        /// <param name="page"></param>
+        /// <returns></returns>
+        public ActionResult StoreHouseStock_Maintain(string li, int page = 1)
         {
             int currentPage = page < 1 ? 1 : page;
             DataSet ds = new DataSet();
 
             //取得會員帳號指定fUserId
-            if (!Login_Authentication()){
-                return RedirectToAction("Login", "Home");}
+            if (!Login_Authentication())
+            {
+                return RedirectToAction("Login", "Home");
+            }
 
             ViewBag.List = li;
+            /* 員工資料維護 */
+            #region 員工資料維護
             if (li == "M")
             {
                 //sqlstr = @"select a.fUserId,a.fName,c.ROLE_DESC,b.ROLE_ID from E_Member a
@@ -47,39 +57,54 @@ namespace WebStoreHouse.Controllers
                                 orderby a.fUserId
                                 select new MaintainViewModels
                                 {
-                                    fId=a.fId,
-                                    fUserId=a.fUserId,
-                                    fName=a.fName,
+                                    fId = a.fId,
+                                    fUserId = a.fUserId,
+                                    fName = a.fName,
                                     ROLE_DESC = e != null ? e.ROLE_DESC : null,
                                     ROLE_ID = c != null ? c.ROLE_ID : null
                                 };
                     var result = query.ToPagedList(currentPage, pageSize); // Replace "10" with the desired page size
-                    return View("StoreHouseStock_Maintain", "_LayoutMember",result);
+                    return View("StoreHouseStock_Maintain", "_LayoutMember", result);
                 }
             }
-            else if (li == "C")
+            #endregion
+            else if (li == "C")/* 公司資料維護 */
+            #region 公司資料維護
             {
                 //sqlstr = @"select* from E_Compyany";
                 //ds = dbMethod.ExecuteDataSet(sqlstr, CommandType.Text, null);
                 using (var context = new E_StoreHouseEntities()) // Replace "YourDbContext" with the actual name of your DbContext class
                 {
-                    var query = from f in context.E_Compyany.OrderBy(x=>x.sno) // Typo: should be "E_Company"?
+                    var query = from f in context.E_Compyany.OrderBy(x => x.sno) // Typo: should be "E_Company"?
                                 select f;
                     var result = query.ToPagedList(currentPage, pageSize); // Replace "10" with the desired page size
                     return View("StoreHouseStock_Maintain", "_LayoutMember", result);
                 }
             }
+            #endregion
             else
             {
                 return View("StoreHouseStock_Maintain", "_LayoutMember");
             }
         }
+        #region 員工
+        /// <summary>
+        /// 新增員工 View
+        /// </summary>
+        /// <returns></returns>
         public ActionResult CreateMember()
         {
             return View("CreateMember", "_LayoutMember");
         }
+        /// <summary>
+        /// 新增/編輯 員工
+        /// </summary>
+        /// <param name="fUserId">工號</param>
+        /// <param name="fName">姓名</param>
+        /// <param name="ROLE_ID">角色ID</param>
+        /// <returns></returns>
         [HttpPost]
-        public ActionResult CreateMember(string fUserId, string fName,string ROLE_ID)
+        public ActionResult CreateMember(string fUserId, string fName, string ROLE_ID)
         {
             var repeat = db.E_Member.Where(u => u.fUserId == fUserId).FirstOrDefault();
             if (repeat != null)
@@ -112,6 +137,11 @@ namespace WebStoreHouse.Controllers
 
             return RedirectToAction("StoreHouseStock_Maintain", new { li = "M" });
         }
+        /// <summary>
+        /// 取得員工資料
+        /// </summary>
+        /// <param name="fId"></param>
+        /// <returns></returns>
         public ActionResult Edit_Member(int fId)
         {
             using (var context = new E_StoreHouseEntities()) // Replace "YourDbContext" with the actual name of your DbContext class
@@ -132,11 +162,18 @@ namespace WebStoreHouse.Controllers
                                 ROLE_ID = c != null ? c.ROLE_ID : null
                             };
                 var result = query.ToList(); // Replace "10" with the desired page size
-                return View("Edit_Member","_LayoutMember",result);
+                return View("Edit_Member", "_LayoutMember", result);
             }
         }
+        /// <summary>
+        /// 編輯員工資料
+        /// </summary>
+        /// <param name="fUserId">工號</param>
+        /// <param name="fName">姓名</param>
+        /// <param name="ROLE_ID">角色ID</param>
+        /// <returns></returns>
         [HttpPost]
-        public ActionResult Edit_Member(string fUserId,string fName,string ROLE_ID)
+        public ActionResult Edit_Member(string fUserId, string fName, string ROLE_ID)
         {
             //人員名單
             var member = db.E_Member.Where(m => m.fUserId == fUserId).FirstOrDefault();
@@ -153,6 +190,11 @@ namespace WebStoreHouse.Controllers
 
             return RedirectToAction("StoreHouseStock_Maintain", new { li = "M" });
         }
+        /// <summary>
+        /// 刪除員工
+        /// </summary>
+        /// <param name="fId"></param>
+        /// <returns></returns>
         public ActionResult Del_Member(int fId)
         {
             using (var context = new E_StoreHouseEntities())
@@ -173,11 +215,27 @@ namespace WebStoreHouse.Controllers
             }
             return RedirectToAction("StoreHouseStock_Maintain", new { li = "M" });
         }
-
+        #endregion
+        #region 公司資料
+        /// <summary>
+        /// 新增公司資料 View
+        /// </summary>
+        /// <returns></returns>
         public ActionResult CreateCompInfo()
         {
             return View("CreateCompInfo", "_LayoutMember");
         }
+        /// <summary>
+        /// 新增/編輯 公司資料
+        /// </summary>
+        /// <param name="code">代碼</param>
+        /// <param name="company_No">公司編號</param>
+        /// <param name="company_Name">公司名稱</param>
+        /// <param name="address">地址</param>
+        /// <param name="company_Tel">公司電話</param>
+        /// <param name="tel_extension">分機</param>
+        /// <param name="contact">聯絡人</param>
+        /// <returns></returns>
         [HttpPost]
         public ActionResult CreateCompInfo(string code, string company_No, string company_Name
             , string address, string company_Tel, string tel_extension, string contact)
@@ -198,7 +256,7 @@ namespace WebStoreHouse.Controllers
             }
             else
             {
-                //人員名單
+                //公司資料
                 E_Compyany comp = new E_Compyany();
                 comp.code = code;
                 comp.company_No = company_No;
@@ -209,22 +267,39 @@ namespace WebStoreHouse.Controllers
                 comp.contact = contact;
                 db.E_Compyany.Add(comp);
                 db.SaveChanges();
-            }            
+            }
             return RedirectToAction("StoreHouseStock_Maintain", new { li = "M" });
         }
+        /// <summary>
+        /// 取得公司資料 View
+        /// </summary>
+        /// <param name="sno"></param>
+        /// <returns></returns>
         public ActionResult Edit_CompInfo(int sno)
         {
             using (var context = new E_StoreHouseEntities())
-                {
-                    var query = from f in context.E_Compyany.OrderBy(x=>x.sno).Where(s=>s.sno == sno)
-                                select f;
-                    var result = query.ToList();
-                    return View("Edit_CompInfo", "_LayoutMember",result);
-                }
+            {
+                var query = from f in context.E_Compyany.OrderBy(x => x.sno).Where(s => s.sno == sno)
+                            select f;
+                var result = query.ToList();
+                return View("Edit_CompInfo", "_LayoutMember", result);
+            }
         }
+        /// <summary>
+        /// 編輯公司資料
+        /// </summary>
+        /// <param name="sno"></param>
+        /// <param name="code">代碼</param>
+        /// <param name="company_No">公司編號</param>
+        /// <param name="company_Name">公司名稱</param>
+        /// <param name="address">地址</param>
+        /// <param name="company_Tel">公司電話</param>
+        /// <param name="tel_extension">分機</param>
+        /// <param name="contact">聯絡人</param>
+        /// <returns></returns>
         [HttpPost]
-        public ActionResult Edit_CompInfo(int sno,string code,string company_No,string company_Name
-            ,string address,string company_Tel,string tel_extension,string contact)
+        public ActionResult Edit_CompInfo(int sno, string code, string company_No, string company_Name
+            , string address, string company_Tel, string tel_extension, string contact)
         {
             //公司資料
             var comp = db.E_Compyany.Where(s => s.sno == sno).FirstOrDefault();
@@ -240,14 +315,20 @@ namespace WebStoreHouse.Controllers
 
             return RedirectToAction("StoreHouseStock_Maintain", new { li = "C" });
         }
+        /// <summary>
+        /// 刪除公司資料
+        /// </summary>
+        /// <param name="sno"></param>
+        /// <returns></returns>
         public ActionResult DelCompInfo(int sno)
         {
-            var comp = db.E_Compyany.FirstOrDefault(s => s.sno==sno);
+            var comp = db.E_Compyany.FirstOrDefault(s => s.sno == sno);
             db.E_Compyany.Remove(comp);
             db.SaveChanges();
 
             return RedirectToAction("StoreHouseStock_Maintain", new { li = "C" });
         }
+        #endregion
         #region Login 驗證相關Class
         public bool Login_Authentication()
         {

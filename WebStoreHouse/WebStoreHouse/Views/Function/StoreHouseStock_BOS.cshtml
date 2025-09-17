@@ -1,8 +1,11 @@
-﻿@model System.Data.DataSet
-
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+@model System.Data.DataSet
 @{
     ViewBag.Title = "已銷單庫存";
 }
+
 <head>
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
     <link href="~/Content/bootstrap.css" rel="stylesheet" />
@@ -13,7 +16,8 @@
             width: 100%;
         }
 
-        th, td {
+        th,
+        td {
             text-align: left;
             padding: 8px;
             border: 1px solid black;
@@ -24,13 +28,39 @@
         }
 
         @@media print {
-            table, th, td {
+
+            table,
+            th,
+            td {
                 border: 1px solid black;
             }
         }
     </style>
 </head>
 <h2>已銷單庫存</h2>
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-warning" style="margin-bottom:20px;">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+@using (Html.BeginForm("StoreHouseStock_BOS", "Function", FormMethod.Get, new
+{
+    @class = "form-inline",
+    style = "margin-bottom:20px;"
+}))
+{
+    <label for="engsr">機種名稱：</label>
+    <input type="text" id="engsr" name="engsr" value="@Request.QueryString["engsr"]" class="form-control"
+           style="width:180px; margin-right:10px;" />
+    <button type="submit" class="btn btn-primary" id="searchBtn" style="margin-right:10px;">查詢</button>
+    <button type="button" class="btn btn-success"
+            onclick="location.href='@Url.Action("ExportBOSExcel", "Function", new { engsr = Request.QueryString["engsr"] })'">
+        匯出
+    </button>
+}
 <table class="table table-bordered">
     <tr>
         @*<th></th>*@
@@ -61,20 +91,29 @@
             <td>@row["Full_GW"]</td>
             <td>@row["Full_NW"]</td>
             @if (ViewBag.RoleId != "V")
-                {
-                    <td>
-                        @Html.ActionLink("庫位異動", "Edit_BOS", new { eng_sr = @row["eng_sr"] }) |
-                        @Html.ActionLink("已銷出貨", "BOS_toShip", new { eng_sr = @row["eng_sr"], position = @row["position"] })
-                    </td>
-                }
-            
+            {
+                <td>
+                    @Html.ActionLink("庫位異動", "Edit_BOS", new { eng_sr = @row["eng_sr"] }) |
+                    @Html.ActionLink("已銷出貨", "BOS_toShip", new { eng_sr = @row["eng_sr"], position = @row["position"] })
+                </td>
+            }
+
         </tr>
     }
 </table>
-@*
-    <script>
-        $(document).ready(function () {
-        $(document).on('click', '#detailBtn', function () {
+
+<script>
+    $(document).ready(function () {
+        $(function () {
+            // 只允許查詢按鈕 click 觸發查詢
+            $("#searchBtn").on("click", function (e) {
+                e.preventDefault();
+                $(this).closest("form").submit();
+            });
+        });
+
+
+        @*$(document).on('click', '#detailBtn', function () {
             var key = $(this).data('engsr');
             //var key2 = $(this).data('position');
             $.ajax({
@@ -87,21 +126,20 @@
                     $('#myModal').modal('show');
                 }
             });
-        });
+        });*@
     });
 
-    </script>
-    <div id="myModal" class="modal fade">
-        <div class="modal-dialog" style="width: 100%; " ">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">資料明細</h4>
-                </div>
-                <div class="modal-body">
-                    <!-- 在這裡顯示詳細資訊 -->
-                </div>
+</script>
+<!--<div id="myModal" class="modal fade">
+    <div class="modal-dialog" style="width: 100%; " ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">資料明細</h4>
             </div>
+            <div class="modal-body">-->
+<!-- 在這裡顯示詳細資訊 -->
+<!--</div>
         </div>
     </div>
-*@
+</div>-->

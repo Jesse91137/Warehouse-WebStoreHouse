@@ -1,6 +1,11 @@
-﻿@model WebStoreHouse.Models.E_StoreHouseStock_BOS
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+@model WebStoreHouse.Models.E_StoreHouseStock_BOS
 
-@{ ViewBag.Title = "已銷單庫存轉出貨";}
+@{
+    ViewBag.Title = "已銷單庫存轉出貨";
+}
 
 @using (Html.BeginForm())
 {
@@ -23,7 +28,8 @@
         <div class="form-group">
             <label class="control-label col-md-2">預計出貨數量</label>
             <div class="col-md-10">
-                <input class="form-control" id="ship_quantity" name="ship_quantity" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" autocomplete="off" />
+                <input class="form-control" id="ship_quantity" name="ship_quantity"
+                    onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" autocomplete="off" />
                 @*@Html.EditorFor(model => model.ship_quantity, new { htmlAttributes = new { @class = "form-control" } })*@
                 @Html.ValidationMessageFor(model => model.ship_quantity, "", new { @class = "text-danger" })
             </div>
@@ -59,7 +65,7 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </div>
     </div>

@@ -1,6 +1,9 @@
-﻿@using PagedList
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+@using PagedList
 @using PagedList.Mvc
-@model  IPagedList<WebStoreHouse.Models.E_StoreHouseStock_SC>
+@model IPagedList<WebStoreHouse.Models.E_StoreHouseStock_SC>
 
 @{
     ViewBag.Title = "預計出貨";
@@ -13,33 +16,94 @@
     <style>
         table {
             border-collapse: collapse;
+            margin-left: 0;
+            width: 100%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
         }
 
-        th, td {
+        th,
+        td {
             text-align: left;
-            padding: 8px;
-            border: 1px solid black;
-            width: auto;
+            padding: 10px 12px;
+            border: 1px solid #e0e0e0;
         }
+
+        tr {
+            transition: background 0.2s;
+        }
+
+            tr:hover {
+                background: #f5f7fa;
+            }
 
         th {
             white-space: nowrap;
-            background-color: #ddd;
+            background-color: #f0f0f0;
+            font-weight: 600;
+            font-size: 15px;
         }
 
         .empty-row {
             background-color: rgba(255, 255, 128, .5);
         }
 
+        .btn {
+            border-radius: 4px;
+            font-size: 14px;
+            padding: 6px 16px;
+            font-weight: 500;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-warning {
+            background: #ffb74d;
+            color: #fff;
+            border: none;
+        }
+
+            .btn-warning:hover {
+                background: #ffa726;
+                color: #fff;
+            }
+
+        .btn-danger {
+            background: #e57373;
+            color: #fff;
+            border: none;
+        }
+
+            .btn-danger:hover {
+                background: #d32f2f;
+                color: #fff;
+            }
+
+        .btn-primary {
+            background: #1976d2;
+            color: #fff;
+            border: none;
+        }
+
+            .btn-primary:hover {
+                background: #1565c0;
+                color: #fff;
+            }
+
         @@media print {
-            table, th, td {
+
+            table,
+            th,
+            td {
                 border: 1px solid black;
             }
         }
     </style>
 </head>
 <h2>預計出貨</h2>
-<p></p>
+
 @Html.PagedListPager(Model, page => Url.Action("StoreHouseStock_SC", new { page }))
 <form action="@Url.Action("ListView")" method="post">
     <table class="table table-bordered">
@@ -59,49 +123,58 @@
             <th>地址</th>
             @if (ViewBag.RoleId != "V")
             {
-                <th></th>
+                <th style="width: 65px;"></th>
             }
         </tr>
-            @foreach (var item in Model)
+        @foreach (var item in Model)
+        {
+            <tr class="@((item.sales_order == "N/A") ? "empty-row" : "")">
+                <td style="white-space: nowrap;">@Html.DisplayFor(modelItem => item.exp_shipdate)</td>
+                <td>@Html.DisplayFor(modelItem => item.eng_sr) </td>
+                <td>@Html.DisplayFor(modelItem => item.wono)</td>
+                <td>@Html.DisplayFor(modelItem => item.sales_order)</td>
+                <td>@Html.DisplayFor(modelItem => item.cust_wono)</td>
+                <td>@Html.DisplayFor(modelItem => item.box_quantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.exp_shipquantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.stock_quantity)</td>
+                <td>@Html.DisplayFor(modelItem => item.sap_mark)</td>
+                <td>@Html.DisplayFor(modelItem => item.transportation)</td>
+                <td>@Html.DisplayFor(modelItem => item.order_item)</td>
+                <td>@Html.DisplayFor(modelItem => item.company_name)</td>
+                <td>@Html.DisplayFor(modelItem => item.address)</td>
+                @if (ViewBag.RoleId != "V")
                 {
-                    <tr class="@((item.sales_order=="N/A") ? "empty-row" : "")">
-                        <td style="white-space: nowrap;">@Html.DisplayFor(modelItem => item.exp_shipdate)</td>
-                        <td>@Html.DisplayFor(modelItem => item.eng_sr) </td>
-                        <td>@Html.DisplayFor(modelItem => item.wono)</td>
-                        <td>@Html.DisplayFor(modelItem => item.sales_order)</td>
-                        <td>@Html.DisplayFor(modelItem => item.cust_wono)</td>
-                        <td>@Html.DisplayFor(modelItem => item.box_quantity)</td>
-                        <td>@Html.DisplayFor(modelItem => item.exp_shipquantity)</td>
-                        <td>@Html.DisplayFor(modelItem => item.stock_quantity)</td>
-                        <td>@Html.DisplayFor(modelItem => item.sap_mark)</td>
-                        <td>@Html.DisplayFor(modelItem => item.transportation)</td>
-                        <td>@Html.DisplayFor(modelItem => item.order_item)</td>
-                        <td>@Html.DisplayFor(modelItem => item.company_name)</td>
-                        <td>@Html.DisplayFor(modelItem => item.address)</td>
-                        @if (ViewBag.RoleId != "V")
+                    <td style="white-space: nowrap;">
+                        @if (item.sales_order == "N/A")
+                        {//無單號出貨
+                            @Html.ActionLink("編輯 ", "Edit_SCbos", new { sno = item.sno, sales_order = item.sales_order }, new
                             {
-                                <td style="white-space: nowrap;">
-                                    @if (item.sales_order == "N/A")
-                                    {//無單號出貨
-                                        @Html.ActionLink("編輯 ", "Edit_SCbos", new { sno = item.sno, sales_order = item.sales_order })
-                                    }
-                                    else
-                                    {//正常單號出貨
-                                        @Html.ActionLink("編輯 ", "Edit_SC", new { sno = item.sno, sales_order = item.sales_order, ssno = item.sno })
-                                    }
+                               @class = "btn btn-warning"
+                            })
+                        }
+                        else
+                        {//正常單號出貨
+                            @Html.ActionLink("編輯 ", "Edit_SC", new
+                            {
+                                sno = item.sno,
+                                sales_order = item.sales_order,
+                                ssno = item.sno
+                           }, new { @class = "btn btn-warning" })
+                        }
 
-                                    @if (@ViewBag.RoleId == "A")
-                                    {
-                                        @Html.ActionLink("| 刪除", "Delete_SC", new { sno = item.sno })}
-                                </td>
-                            }
-                    </tr>
+                        @if (@ViewBag.RoleId == "A")
+                        {
+                            @Html.ActionLink(" 刪除", "Delete_SC", new { sno = item.sno }, new { @class = "btn btn-danger" })
+                        }
+                    </td>
                 }
+            </tr>
+        }
     </table>
 </form>
 @Html.PagedListPager(Model, page => Url.Action("StoreHouseStock_SC", new { page }))
 <form action="@Url.Action("OrderConfirm")" method="post">
     <div class="form-group">
-        <input type="submit" value="出貨確認" class="btn btn-default" />
+        <input type="submit" value="出貨確認" class="btn btn-primary" />
     </div>
 </form>

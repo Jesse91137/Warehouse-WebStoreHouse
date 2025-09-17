@@ -1,12 +1,16 @@
-﻿@model WebStoreHouse.Models.E_Dropshipping
-@{ ViewBag.Title = "";}
-@using (Html.BeginForm()) 
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+@model WebStoreHouse.Models.E_Dropshipping
+@{ ViewBag.Title = "直出資料建立";}
+@using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
+        <br />
         <p></p>
-        <h2>直出資料建立</h2>
+        <h4>直出資料建立</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
@@ -20,7 +24,15 @@
         <div class="form-group">
             <label class="control-label col-md-2">DN</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DN, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
+                @Html.EditorFor(model => model.DN, new
+                {
+                    htmlAttributes = new
+                    {
+                        @class = "form-control",
+                        autocomplete =
+                "off"
+                    }
+                })
                 @Html.ValidationMessageFor(model => model.DN, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -28,7 +40,15 @@
         <div class="form-group">
             <label class="control-label col-md-2">機種名稱</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.eng_sr, new { htmlAttributes = new { @class = "form-control" , autocomplete = "off" } })
+                @Html.EditorFor(model => model.eng_sr, new
+                {
+                    htmlAttributes = new
+                    {
+                        @class = "form-control",
+                        autocomplete =
+                            "off"
+                    }
+                })
                 @Html.ValidationMessageFor(model => model.eng_sr, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -36,7 +56,8 @@
         <div class="form-group">
             <label class="control-label col-md-2">數量</label>
             <div class="col-md-10">
-                <input class="form-control" id="quantity" name="quantity" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" autocomplete="off"/>                
+                <input class="form-control" id="quantity" name="quantity" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
+                       autocomplete="off" />
                 @Html.ValidationMessageFor(model => model.quantity, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -44,14 +65,23 @@
         <div class="form-group">
             <label class="control-label col-md-2">貨運行</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.freight, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
+                @Html.EditorFor(model => model.freight, new
+                {
+                    htmlAttributes = new
+                    {
+                        @class = "form-control",
+                        autocomplete =
+                            "off"
+                    }
+                })
                 @Html.ValidationMessageFor(model => model.freight, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+            <div class="col-md-offset-2 col-md-10">                
+                <input type="submit" value="Create" class="btn btn-primary" />
+                <button type="button" class="btn btn-warning" onclick="window.location.href='@Url.Action("StoreHouseDropshipping", "Function")'">取消</button>
             </div>
         </div>
     </div>

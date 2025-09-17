@@ -53,7 +53,7 @@ namespace WebStoreHouse.Controllers
                     //使用session變數記錄歡迎詞
                     Session["WelCome"] = "員工 : " + member.fName;
                     //使用session變數紀錄登入會員物件
-                    Session["Member"] = member;                    
+                    Session["Member"] = member;
                 }
             }
             catch (Exception m)
@@ -100,29 +100,37 @@ namespace WebStoreHouse.Controllers
             {
                 OFR = data
             };
-            Dev.Add(model);            
+            Dev.Add(model);
             #endregion
             //若session["Member"]=null 表示會員未登入
             if (Session["Member"] == null)
-            {                
+            {
                 //指定Index.cshtml套用_layout.cshtml, View 使用products                
                 return View("Index", "_Layout", Dev);
             }
             //會員登入狀態
             //指定Index.cshtml套用_layoutMember.cshtml, View 使用products                        
             return View("Index", "_LayoutMember", Dev);
-        }        
+        }
         int pagesize = 50;
         public ActionResult Invoicing(int page = 1)
         {
             int currentPage = page < 1 ? 1 : page;
-            InvoicingViewModel IVM = new InvoicingViewModel() 
+            try
             {
-                invoicing = db.Invoicing.ToList()
-            };            
-            var result = IVM.invoicing.ToPagedList(currentPage, pagesize);
-            //var Invo = db.Invoicing.ToList();
-            return View(result);
+                InvoicingViewModel IVM = new InvoicingViewModel()
+                {
+                    invoicing = db.Invoicing.ToList()
+                };
+                var result = IVM.invoicing.ToPagedList(currentPage, pagesize);
+                return View(result);
+            }
+            catch (Exception ex)
+            {
+                // WHY: 捕捉例外，避免 500 Internal Server Error，並將錯誤訊息顯示於 ViewBag
+                ViewBag.ErrorMessage = "載入發票資料時發生錯誤：" + ex.Message;
+                return View();
+            }
         }
         public ActionResult About()
         {
@@ -163,6 +171,6 @@ namespace WebStoreHouse.Controllers
             //};
             return View();
         }
-        
+
     }
 }

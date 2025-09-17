@@ -2,7 +2,6 @@
 @using PagedList.Mvc
 @model PagedList.IPagedList<dynamic>
 
-
 @{
     ViewBag.Title = "員工查詢";
 }
@@ -10,31 +9,32 @@
 <h2>@ViewBag.DepName</h2>
 
 <div class="row">
-    <div class="col-xs-4">
+    <div class="col-md-2">
         <h4>@Html.ActionLink("公司資料維護", "StoreHouseStock_Maintain", new { li = "C" })</h4>
         <p></p>
         @if (ViewBag.RoleId == "A")
-            {
-                <p></p>
-                <h4>@Html.ActionLink("員工資料維護", "StoreHouseStock_Maintain", new { li = "M" })</h4>
-            }
+        {
+            <p></p>
+            <h4>@Html.ActionLink("員工資料維護", "StoreHouseStock_Maintain", new { li = "M" })</h4>
+        }
     </div>
-    @if (ViewBag.List == "M")
-    {
-        <p>
-            @Html.ActionLink("建立人員名單", "CreateMember")
-        </p>
-        <div class="col-xs-8">
-            @Html.PagedListPager(Model, page => Url.Action("StoreHouseStock_Maintain", new { li = ViewBag.List, page }))
-            <table class="table">
-                <tr>
-                    <th>員工編號</th>
-                    <th>姓名</th>
-                    <th>權限描述</th>
-                    <th>權限代號</th>
-                    <th></th>
-                </tr>
-                @foreach (var item in Model)
+    <div class="col-md-10">
+        @if (ViewBag.List == "M")
+        {
+            <div class="maintain-table-container">
+                <div class="btn-group">
+                    @Html.ActionLink("建立人員名單", "CreateMember", null, new { @class = "btn btn-primary" })
+                </div>
+                @Html.PagedListPager(Model, page => Url.Action("StoreHouseStock_Maintain", new { li = ViewBag.List, page }))
+                <table class="table">
+                    <tr>
+                        <th>員工編號</th>
+                        <th>姓名</th>
+                        <th>權限描述</th>
+                        <th>權限代號</th>
+                        <th></th>
+                    </tr>
+                    @foreach (var item in Model)
                     {
                         <tr>
                             <td>@item.fUserId</td>
@@ -42,36 +42,42 @@
                             <td>@item.ROLE_DESC</td>
                             <td>@item.ROLE_ID</td>
                             <td>
-                                @Html.ActionLink("編輯", "Edit_Member", new { fId = item.fId })
+                                @Html.ActionLink("編輯", "Edit_Member", new { fId = item.fId }, new { @class = "btn btn-warning" })
                                 @if (@ViewBag.RoleId == "A")
-                                    {
-                                        @Html.ActionLink(" | 刪除", "Del_Member", new { fId = item.fId })
-                                    }
+                                {
+                                    @Html.ActionLink(" 刪除", "Del_Member", new { fId = item.fId }, new { @class = "btn btn-danger" })
+                                }
                             </td>
                         </tr>
                     }
-            </table>
-        </div>
-    }
-    else if (ViewBag.List == "C")
-    {
-        <p>
-            @if (ViewBag.RoleId != "V"){@Html.ActionLink("建立公司名單", "CreateCompInfo")}
-        </p>
-        <div class="col-xs-8">
-            @Html.PagedListPager(Model, page => Url.Action("StoreHouseStock_Maintain", new { li = ViewBag.List, page }))
-            <table class="table">
-                <tr>
-                    <th>簡碼</th>
-                    <th>公司代號</th>
-                    <th>公司名稱</th>
-                    <th>聯絡電話</th>
-                    <th>分機</th>
-                    <th>聯絡人</th>
-                    @if (ViewBag.RoleId != "V"){<th></th>}
-                </tr>
+                </table>
+            </div>
+        }
+        else if (ViewBag.List == "C")
+        {
+            <div class="maintain-table-container">
+                <div class="btn-group">
+                    @if (ViewBag.RoleId != "V")
+                    {
+                        @Html.ActionLink("建立公司名單", "CreateCompInfo", null, new { @class = "btn btn-primary" })
+                    }
+                </div>
+                @Html.PagedListPager(Model, page => Url.Action("StoreHouseStock_Maintain", new { li = ViewBag.List, page }))
+                <table class="table">
+                    <tr>
+                        <th>簡碼</th>
+                        <th>公司代號</th>
+                        <th>公司名稱</th>
+                        <th>聯絡電話</th>
+                        <th>分機</th>
+                        <th>聯絡人</th>
+                        @if (ViewBag.RoleId != "V")
+                        {
+                            <th></th>
+                        }
+                    </tr>
 
-                @foreach (var item in Model)
+                    @foreach (var item in Model)
                     {
                         <tr>
                             <td>@item.code</td>
@@ -81,18 +87,48 @@
                             <td>@item.tel_extension</td>
                             <td>@item.contact</td>
                             @if (ViewBag.RoleId != "V")
-                                {
-                                    <td>
-                                            @Html.ActionLink("編輯", "Edit_CompInfo", new { sno = item.sno })
-                                        @if (ViewBag.RoleId == "A")
-                                            { 
-                                            @Html.ActionLink("| 刪除", "Del_CompInfo", new { sno = item.sno })
-                                            }
-                                    </td>
-                                }
+                            {
+                                <td>
+                                    @Html.ActionLink("編輯", "Edit_CompInfo", new { sno = item.sno }, new { @class = "btn btn-warning" })
+                                    @if (ViewBag.RoleId == "A")
+                                    {
+                                        @Html.ActionLink(" 刪除", "Del_CompInfo", new { sno = item.sno }, new { @class = "btn btn-danger" })
+                                    }
+                                </td>
+                            }
                         </tr>
                     }
-            </table>
-        </div>
-    }
+                </table>
+            </div>
+        }
+    </div>
 </div>
+
+<style>
+    .maintain-table-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+    }
+
+        .maintain-table-container .btn-group {
+            margin-bottom: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .maintain-table-container table {
+            width: auto;
+            min-width: 600px;
+            margin-left: 0;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .maintain-table-container th,
+        .maintain-table-container td {
+            text-align: left;
+            vertical-align: middle;
+        }
+</style>

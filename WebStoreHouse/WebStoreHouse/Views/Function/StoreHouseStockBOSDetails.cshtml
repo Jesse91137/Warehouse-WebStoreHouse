@@ -1,4 +1,7 @@
-﻿@model List<WebStoreHouse.Models.E_StoreHouseStock>
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+@model List<WebStoreHouse.Models.E_StoreHouseStock>
 
 <table class="table">
     <tr>
@@ -28,7 +31,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.inputdate)
             </td>
-            <td>@Html.ActionLink("Edit","EditStock_P",new { sno=item.sno})</td>
+            <td>@Html.ActionLink("Edit", "EditStock_P", new { sno = item.sno })</td>
         </tr>
     }
 </table>

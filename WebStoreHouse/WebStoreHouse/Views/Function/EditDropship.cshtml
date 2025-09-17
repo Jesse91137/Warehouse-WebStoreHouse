@@ -1,10 +1,14 @@
-﻿@model WebStoreHouse.Models.E_Dropshipping
-@{ ViewBag.Title = "";}
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+@model WebStoreHouse.Models.E_Dropshipping
+@{ ViewBag.Title = "預計直出編輯";}
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
+        <br />
         <p></p>
         <h4>預計直出編輯</h4>
         <hr />
@@ -38,7 +42,8 @@
         <div class="form-group">
             <label class="control-label col-md-2">數量</label>
             <div class="col-md-10">
-                <input class="form-control" id="quantity" name="quantity" value="@Model.quantity" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" />
+                <input class="form-control" id="quantity" name="quantity" value="@Model.quantity"
+                       onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" />
                 @Html.ValidationMessageFor(model => model.quantity, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -53,7 +58,8 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
+                <input type="submit" value="Save" class="btn btn-primary" />
+                <button type="button" class="btn btn-warning" onclick="window.location.href='@Url.Action("StoreHouseDropshipping", "Function")'">取消</button>
             </div>
         </div>
     </div>

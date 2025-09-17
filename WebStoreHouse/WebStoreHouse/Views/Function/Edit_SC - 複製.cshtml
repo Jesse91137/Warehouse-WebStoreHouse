@@ -1,9 +1,12 @@
-﻿@model  WebStoreHouse.Models.E_StoreHouseStock_SC
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+@model WebStoreHouse.Models.E_StoreHouseStock_SC
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <hr />
         <h4>出貨明細修改</h4>
@@ -12,100 +15,107 @@
         @Html.HiddenFor(model => model.sno)
 
 
-    <div class="form-group">
-        <label class="control-label col-md-2">執行人員</label>
-        <div class="col-md-10">
-            @Html.EditorFor(model => model.UserId, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
+        <div class="form-group">
+            <label class="control-label col-md-2">執行人員</label>
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.UserId, new { htmlAttributes = new { @class = "form-control", @disabled =
+                "disabled" } })
             @Html.ValidationMessageFor(model => model.UserId, "", new { @class = "text-danger" })
         </div>
     </div>
 
-        <div class="form-group">
-            <label class="control-label col-md-2">工單</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.wono, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
-                @Html.ValidationMessageFor(model => model.wono, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">機種名稱</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.eng_sr, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
-                @Html.ValidationMessageFor(model => model.eng_sr, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">業務單號</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.sales_order, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
-                @Html.ValidationMessageFor(model => model.sales_order, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">客戶單號</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.cust_wono, new { htmlAttributes = new { @class = "form-control" , @disabled = "disabled" } })
-                @Html.ValidationMessageFor(model => model.cust_wono, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">預計出貨數量</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.exp_shipquantity, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.exp_shipquantity, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">實際出貨數量</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.ship_quantity, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ship_quantity, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">SAP備註</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.sap_mark, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.sap_mark, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">成倉數量</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.stock_quantity, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })
-                @Html.ValidationMessageFor(model => model.stock_quantity, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">SAP入庫</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.sap_in, new { htmlAttributes = new { @class = "form-control" , @disabled = "disabled"} })
-                @Html.ValidationMessageFor(model => model.sap_in, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label class="control-label col-md-2">公司代碼</label>
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.company_code, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.company_code, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="存檔" class="btn btn-default" />
-            </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">工單</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.wono, new { htmlAttributes = new { @class = "form-control", @disabled =
+                        "disabled" } })
+            @Html.ValidationMessageFor(model => model.wono, "", new { @class = "text-danger" })
         </div>
     </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">機種名稱</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.eng_sr, new { htmlAttributes = new { @class = "form-control", @disabled =
+                        "disabled" } })
+            @Html.ValidationMessageFor(model => model.eng_sr, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">業務單號</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.sales_order, new { htmlAttributes = new { @class = "form-control", @disabled
+                        = "disabled" } })
+            @Html.ValidationMessageFor(model => model.sales_order, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">客戶單號</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.cust_wono, new { htmlAttributes = new { @class = "form-control" , @disabled =
+                        "disabled" } })
+            @Html.ValidationMessageFor(model => model.cust_wono, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">預計出貨數量</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.exp_shipquantity, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.exp_shipquantity, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">實際出貨數量</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.ship_quantity, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.ship_quantity, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">SAP備註</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.sap_mark, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.sap_mark, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">成倉數量</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.stock_quantity, new { htmlAttributes = new { @class = "form-control",
+                        @disabled = "disabled" } })
+            @Html.ValidationMessageFor(model => model.stock_quantity, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">SAP入庫</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.sap_in, new { htmlAttributes = new { @class = "form-control" , @disabled =
+                        "disabled"} })
+            @Html.ValidationMessageFor(model => model.sap_in, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label col-md-2">公司代碼</label>
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.company_code, new { htmlAttributes = new { @class = "form-control" } })
+            @Html.ValidationMessageFor(model => model.company_code, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="存檔" class="btn btn-default" />
+        </div>
+    </div>
+</div>
 }
 
 <div>

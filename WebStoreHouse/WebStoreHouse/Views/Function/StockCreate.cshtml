@@ -1,5 +1,10 @@
-﻿@model WebStoreHouse.Models.E_StoreHouseStock
-
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+@model WebStoreHouse.Models.E_StoreHouseStock
+@{
+    ViewBag.Title = "倉庫庫存新增";
+}
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="~/Content/bootstrap.css" rel="stylesheet" />
@@ -10,7 +15,8 @@
             width: 100%;
         }
 
-        th, td {
+        th,
+        td {
             text-align: left;
             padding: 8px;
             border: 1px solid black;
@@ -21,7 +27,10 @@
         }
 
         @@media print {
-            table, th, td {
+
+            table,
+            th,
+            td {
                 border: 1px solid black;
             }
         }
@@ -32,14 +41,17 @@
 {
     @Html.AntiForgeryToken()
     <script>
+        // 清空 Input
         function clearTextBox() {
-            document.getElementById("wono").value = "";
+            document.getElementById("wono").value = "";// 工單編號的輸入框
+            document.getElementById("item").value = "";// 機種的輸入框
         }
 
-        
         $(document).ready(function () {
+            // 無業單新增-勾選
             var isActiveChecked = $('input[name="isActive"]').is(':checked');
 
+            //檢查E_ZRSD19/E_ZRSD14P.工單是否存在並顯示機種
             function checkInputData() {
                 var input = $("#wono").val();
                 $.ajax({
@@ -48,21 +60,26 @@
                     data: { input: input },
                     success: function (response) {
                         if (response.result == "not found") {
+                            $("#item").val("");
                             alert("沒有找到相關資料！");
+                        } else {
+                            $("#item").val(response.result);
                         }
                     },
                     error: function () {
+                        $("#item").val("");
                         alert("請求失敗！");
                     }
                 });
             }
-
+            //工單輸入查詢
             $("#wono").on("blur", function () {
                 if (!isActiveChecked) {
                     checkInputData();
                 }
             });
 
+            // 無業單新增-change
             $('input[name="isActive"]').on("change", function () {
                 isActiveChecked = $(this).is(":checked");
                 if (isActiveChecked) {
@@ -72,6 +89,21 @@
                     $("#wono").on("blur", checkInputData);
                 }
             });
+
+            //清除錯誤訊息
+            // 只清空後端錯誤訊息（id='errMsg'）
+            $('button[name="buttonName"]').on('click', function () {
+                var errMsgClick = $("#errMsg").text();
+                if (errMsgClick && errMsgClick.trim() !== "") {
+                    $("#errMsg").text("");
+                }
+            });
+
+            // 頁面載入時，若有錯誤訊息則自動觸發工單查詢
+            var errMsgOnLoad = $("#errMsg").text();
+            if (errMsgOnLoad && errMsgOnLoad.trim() !== "") {
+                checkInputData();
+            }
         });
 
     </script>
@@ -91,9 +123,13 @@
             <label class="control-label col-md-2">群組</label>
             <div class="col-md-10">
                 <label class="control-label col-md-2" hidden="hidden">@TempData["IGroup"]</label>
-                @if (!string.IsNullOrEmpty(Session["IGroup"].ToString()))
+                @{
+                    var iGroup = Session["IGroup"] as string;
+                }
+                @if (!string.IsNullOrEmpty(iGroup))
                 {
-                    <input type="submit" value="Group" class="btn btn-default" id="buttonName" name="buttonName" disabled="disabled" />
+                    <input type="submit" value="Group" class="btn btn-default" id="buttonName" name="buttonName"
+                           disabled="disabled" />
                     <input type="submit" value="unGroup" class="btn btn-default" id="buttonName" name="buttonName" />
                 }
                 else
@@ -106,37 +142,48 @@
 
         <div class="form-group">
             <label class="control-label col-md-2">工單</label>
-            <div class="col-md-10">
-                <input class="form-control" id="wono" name="wono" autocomplete="off" />
-                @*@Html.EditorFor(model => model.wono, new { htmlAttributes = new { @class = "form-control", id = "wono", autocomplete = "off" } })*@
-                @Html.ValidationMessageFor(model => model.wono, "", new { @class = "text-danger" })
+            <div class="col-md-10" style="display: flex; align-items: center; gap: 10px;">
+                <input class="form-control" id="wono" name="wono" autocomplete="off"
+                       style="width: 200px; display: inline-block;" value="@(Model.wono ?? string.Empty)" />
+                @Html.ValidationMessageFor(Model => Model.wono, "", new { @class = "text-danger" })
+                <label class="control-label" for="item" style="margin-left: 10px;">機種</label>
+                <input class="form-control" id="item" name="item" readonly
+                       style="width: 200px; display: inline-block; background-color: #f5f5f5;"
+                       value="@(Model.eng_sr ?? string.Empty)" />
             </div>
         </div>
 
         <div class="form-group">
             <label class="control-label col-md-2">數量</label>
             <div class="col-md-10">
-                <input class="form-control" id="quantity" name="quantity" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')" autocomplete="off" />
-                @*@Html.EditorFor(model => model.quantity, new { htmlAttributes = new { @class = "form-control" , @onkeyup = "value=value.replace(/^(0+)|[^\d]+/g,'')" } })*@
-                @Html.ValidationMessageFor(model => model.quantity, "", new { @class = "text-danger" })
+                <input class="form-control" id="quantity" name="quantity" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
+                       autocomplete="off" value="@(Model.quantity != null ? Model.quantity.ToString() : string.Empty)" />
+                @Html.ValidationMessageFor(Model => Model.quantity, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             <label class="control-label col-md-2">箱數</label>
             <div class="col-md-10">
-                <input class="form-control" id="box_quantity" name="box_quantity" autocomplete="off" value="0"
+                <input class="form-control" id="box_quantity" name="box_quantity" autocomplete="off"
+                       value="@(Model.box_quantity != null ? Model.box_quantity.ToString() : "0")"
                        onkeyup="if (value!='' && value!='0' && !/^([1-9][0-9]*)$/.test(value)) value=value.replace(/^0|[^\d]/g,'')" />
-                @*@Html.EditorFor(model => model.quantity, new { htmlAttributes = new { @class = "form-control" , @onkeyup = "value=value.replace(/^(0+)|[^\d]+/g,'')" } })*@
-                @Html.ValidationMessageFor(model => model.box_quantity, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(Model => Model.box_quantity, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
             <label class="control-label col-md-2">儲位</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.position, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
-                @Html.ValidationMessageFor(model => model.position, "", new { @class = "text-danger" })
+                @Html.EditorFor(Model => Model.position, new
+                {
+                    htmlAttributes = new
+                    {
+                        @class = "form-control",
+                        autocomplete = "off"
+                    }
+                        })
+                @Html.ValidationMessageFor(Model => Model.position, "", new { @class = "text-danger" })
             </div>
         </div>
 
@@ -144,9 +191,9 @@
             <label class="control-label col-md-2">包裝</label>
             <div class="col-md-10">
                 <select id="package" name="package" class="form-control">
-                    <option value="">請選擇...</option>
-                    <option value="Tary">1　|　Tray盤(Tray)</option>
-                    <option value="Box">2　|　箱(Box)</option>
+                    <option value="" @(string.IsNullOrEmpty(Model.package) ? "selected" : "")>請選擇...</option>
+                    <option value="Tary" @(Model.package == "Tary" ? "selected" : "")>1　|　Tray盤(Tray)</option>
+                    <option value="Box" @(Model.package == "Box" ? "selected" : "")>2　|　箱(Box)</option>
                 </select>
             </div>
         </div>
@@ -154,25 +201,34 @@
         <div class="form-group">
             <label class="control-label col-md-2">備註</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.mark, new { htmlAttributes = new { @class = "form-control", autocomplete = "off" } })
-                @Html.ValidationMessageFor(model => model.mark, "", new { @class = "text-danger" })
+                @Html.EditorFor(Model => Model.mark, new
+                            {
+                        htmlAttributes = new
+                        {
+                            @class = "form-control",
+                            autocomplete =
+                        "off"
+                        }
+                            })
+                @Html.ValidationMessageFor(Model => Model.mark, "", new { @class = "text-danger" })
             </div>
             <label class="control-label col-md-2"></label>
             <div class="col-md-10">
             </div>
         </div>
-        
-        <div class="form-group">
 
+        <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                @if (!string.IsNullOrEmpty(Session["IGroup"].ToString()))
-                {
-                    <button type="submit" name="buttonName" value="Again" class="btn btn-default">再一筆</button>
+                @{
+                    var iGroup2 = Session["IGroup"] as string;
                 }
-                <button type="submit" name="buttonName" value="End" class="btn btn-default">結束送出</button>&emsp; &emsp;
-                <label class="text-danger">@ViewBag.err</label>
-                @*<input type="submit" value="Again" class="btn btn-default" name="buttonName" />
-                <input type="submit" value="End" class="btn btn-default" name="buttonName" />*@
+                @if (!string.IsNullOrWhiteSpace(iGroup2))
+                {
+                    <button type="submit" name="buttonName" value="Again" class="btn btn-primary">再一筆</button>
+                }
+                <button type="submit" name="buttonName" value="End" class="btn btn-primary">結束送出</button>
+                <button type="button" class="btn btn-warning" onclick="window.location.href='@Url.Action("StoreHouseStock", "Function")'">取消</button>&emsp; &emsp;
+                <label class="text-danger" id="errMsg">@ViewBag.err</label>
             </div>
         </div>
 

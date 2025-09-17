@@ -1,8 +1,12 @@
-﻿@model List<string>
+﻿@{
+    Layout = "~/Views/Shared/_LayoutMember.cshtml";
+}
+@model List<string>
 
 @{
     ViewBag.Title = "出貨單列印";
 }
+
 <head>
     <script src="~/Scripts/jquery-3.4.1.min.js"></script>
     <link href="~/Content/bootstrap.css" rel="stylesheet" />
@@ -13,7 +17,8 @@
             width: 100%;
         }
 
-        th, td {
+        th,
+        td {
             text-align: left;
             padding: 8px;
             border: 1px solid black;
@@ -24,7 +29,11 @@
         }
 
         @@media print {
-            table, tr, th, td {
+
+            table,
+            tr,
+            th,
+            td {
                 border: none;
             }
         }
@@ -36,12 +45,16 @@
 @using (Html.BeginForm())
 {
     <label for="wono">公司代號:</label>
-    @Html.TextBox("code", null, new { @class = "form-control input-sm", @id = "code", @placeholder = "請輸入公司代號", style = "display:inline-block; width: 150px;" })
-    <label for="order_cust">聯絡人:</label>
-    @Html.TextBox("contact", null, new { @class = "form-control input-sm", @id = "contact", @placeholder = "請輸入聯絡人", style = "display:inline-block; width: 150px;" })
-    @*<label for="engsr">機種名稱:</label>
+
+    @Html.TextBox("code", null, new { @class = "form-control input-sm", @id = "code", @placeholder = "請輸入公司代號", style =
+    "display:inline-block; width: 150px;" })
+<label for="order_cust">聯絡人:</label>
+
+@Html.TextBox("contact", null, new { @class = "form-control input-sm", @id = "contact", @placeholder = "請輸入聯絡人", style =
+"display:inline-block; width: 150px;" })
+@*<label for="engsr">機種名稱:</label>
         @Html.TextBox("engsr", null, new { @class = "form-control input-sm", @id = "engsr", @placeholder = "請輸入機種名稱", style = "display:inline-block; width: 150px;" })*@
-    <button type="submit" class="btn btn-default">查詢</button>
+<button type="submit" class="btn btn-default">查詢</button>
 }
 <p></p>
 
