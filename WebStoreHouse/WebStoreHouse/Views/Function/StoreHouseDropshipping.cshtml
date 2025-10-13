@@ -1,7 +1,7 @@
 ﻿@{
     Layout = "~/Views/Shared/_LayoutMember.cshtml";
 }
-@model IEnumerable<WebStoreHouse.Models.E_Dropshipping>
+@model IEnumerable<WebStoreHouse.Models.EDropshippingQDto>
 @{ ViewBag.Title = "預計直出";}
 <p></p>
 <h2>預計直出</h2>
@@ -32,18 +32,46 @@
 
 @using (Html.BeginForm())
 {
-    <label for="indate">日期:</label>
-    @Html.TextBox("date", null, new { @class = "form-control input-sm", @id = "date", @placeholder = "YYYY-MM-DD", style = "display:inline-block; width: 100px;" })
+    <label for="wono" style="font-weight:bold;">工單號碼：</label>
+    @Html.TextBox("wono", null, new { @class = "form-control input-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "display:inline-block; width: 180px; margin-right: 15px;" })
+    <label for="eng_sr" style="font-weight:bold;">機種名稱：</label>
+    @Html.TextBox("eng_sr", null, new { @class = "form-control input-sm", @id = "eng_sr", @placeholder = "請輸入機種名稱", style = "display:inline-block; width: 180px; margin-right: 15px;" })
+    if (ViewBag.TotalCount != null)
+    {
+        <label for="indate" style="margin-left:30px;">總數：</label>
+        <span id="totalCount" style="font-weight:bold; color:#007b00; margin-right:70px;">@ViewBag.TotalCount</span>
+    }
+    
+    <label for="indate">出貨日期：</label>
+    @Html.TextBox("startDate", null, new { @class = "form-control input-sm", @id = "startDate", @placeholder = "YYYY-MM-DD", style = "display:inline-block; width: 100px; margin-right: 10px;" })
+    <label for="endDate">至</label>
+    @Html.TextBox("endDate", null, new { @class = "form-control input-sm", @id = "endDate", @placeholder = "YYYY-MM-DD", style = "display:inline-block; width: 100px; margin-left: 10px;" })
     <button type="submit" class="btn btn-warning">查詢</button>
+    <button type="button" class="btn btn-success" style="margin-left:10px;" onclick="exportDropship()">匯出</button>
 }
+<script>
+    function exportDropship() {
+        // 讀取查詢欄位值
+        var wono = encodeURIComponent(document.getElementById('wono').value || '');
+        var eng_sr = encodeURIComponent(document.getElementById('eng_sr').value || '');
+        var startDate = encodeURIComponent(document.getElementById('startDate').value || '');
+        var endDate = encodeURIComponent(document.getElementById('endDate').value || '');
+        // 建立下載連結，讓瀏覽器處理下載
+        var url = '@Url.Action("ExportDropship", "Function")' + '?wono=' + wono + '&eng_sr=' + eng_sr + '&startDate=' + startDate + '&endDate=' + endDate;
+        // 開啟新視窗或導向以觸發下載對話
+        window.location.href = url;
+    }
+</script>
 <p></p>
 
 <table class="table">
     <tr>
+        <th>工單號碼</th>
         <th>日期</th>
         <th>DN</th>
         <th>機種名稱</th>
         <th>數量</th>
+        <th>滿箱數</th>
         <th>貨運行</th>
         <th>確認</th>
         @if (ViewBag.RoleId != "V")
@@ -56,6 +84,7 @@
     @foreach (var item in Model)
     {
         <tr class="@((item.checkOK.GetValueOrDefault()) ? "empty-row" : "")">
+            <td>@Html.DisplayFor(modelItem => item.wono)</td>
             <td>
                 @Html.DisplayFor(modelItem => item.date)
             </td>
@@ -69,20 +98,30 @@
                 @Html.DisplayFor(modelItem => item.quantity)
             </td>
             <td>
+                @if (item.Full_Amount.GetValueOrDefault() > 0)
+                {
+                    <span style="color:blue;">@Html.DisplayFor(modelItem => item.Full_Amount)</span>
+                }
+                else
+                {
+                    @Html.DisplayFor(modelItem => item.Full_Amount)
+                }
+            </td>
+            <td>
                 @Html.DisplayFor(modelItem => item.freight)
             </td>
             <td>
                 @Html.CheckBox("checkOK", item.checkOK.GetValueOrDefault(), new { value = item.checkOK, disabled = "disabled" })
             </td>
-            @if (@ViewBag.RoleId != "V")
+            @if (ViewBag.RoleId != "V")
             {
                 <td>
                     @Html.ActionLink("Edit", "EditDropship", new { sno = item.sno }, new { @class = "btn btn-warning" })
-                    @if (@ViewBag.RoleId == "A")
+                    @if (ViewBag.RoleId == "A")
                     {
                         @Html.ActionLink(" Delete", "DeleteDropship", new { sno = item.sno }, new { @class = "btn btn-danger" })
                     }
-                    @Html.ActionLink("  CheckOK", "CheckDropship", new { sno = item.sno }, new { @onclick = "return checkLink()", @class="btn btn-info" })
+                    @Html.ActionLink("  CheckOK", "CheckDropship", new { sno = item.sno }, new { @onclick = "return checkLink()", @class = "btn btn-info" })
                 </td>
             }
         </tr>

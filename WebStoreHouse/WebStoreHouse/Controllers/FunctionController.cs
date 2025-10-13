@@ -1,26 +1,56 @@
-﻿using System;
+﻿using DocumentFormat.OpenXml.Office2013.WebExtension;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using PagedList;
+using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Data;
+using System.Threading.Tasks;
+using System.Data.Entity;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using WebStoreHouse.Models;
+using WebStoreHouse.Services;
 using WebStoreHouse.ViewModels;
-using PagedList;
-using NPOI.SS.UserModel;
-using NPOI.XSSF.UserModel;
-using System.IO;
-using System.Data.Entity;
 
 namespace WebStoreHouse.Controllers
 {
     /// <summary>
     /// 倉庫庫存
     /// </summary>
+
     public class FunctionController : Controller
     {
+        /// <summary>
+        /// 資料庫存取物件，提供 Entity Framework 資料操作功能。
+        /// </summary>
         E_StoreHouseEntities db = new E_StoreHouseEntities();
+
+        /// <summary>
+        /// Email 通知服務介面，提供寄送 dropship 編輯/刪除通知的功能。
+        /// </summary>
+        private readonly IEmailNotificationService _emailService;
+
+        /// <summary>
+        /// 建構 FunctionController，注入 Email 通知服務。
+        /// </summary>
+        /// <param name="emailService">Email 通知服務介面。</param>
+        public FunctionController(IEmailNotificationService emailService)
+        {
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+        }
+
+        /// <summary>
+        /// 頁面分頁預設每頁筆數（倉庫庫存查詢）。
+        /// </summary>
         int pagesize = 50;
+
+        /// <summary>
+        /// 入庫資料查詢每頁筆數。
+        /// </summary>
         int entryPageSize = 30; // 入庫資料查詢每頁 30 筆
 
         // GET: Function
@@ -442,7 +472,7 @@ namespace WebStoreHouse.Controllers
             if (TempData["CheckData"] != null && !string.IsNullOrWhiteSpace(TempData["CheckData"].ToString()))
             {
                 ViewBag.err = "ZRSD19/ZRSD14P查無資料，無法新增!";
-                // 保留原欄位值
+                // 保留原欄位值並顯示錯誤
                 var model = new WebStoreHouse.Models.E_StoreHouseStock
                 {
                     wono = wono,
@@ -455,23 +485,9 @@ namespace WebStoreHouse.Controllers
                 return View("StockCreate", "_LayoutMember", model);
             }
 
-            // Group & unGroup
-            if (buttonName == "Group")
-            {
-                //取得NewGuid
-                Session["IGroup"] = Guid.NewGuid().ToString();
-                TempData["IGroup"] = Session["IGroup"];
-                var model = new WebStoreHouse.Models.E_StoreHouseStock
-                {
-                    wono = wono,
-                    quantity = quantity,
-                    position = position,
-                    mark = mark,
-                    package = package,
-                    box_quantity = box_quantity
-                };
-                return View("StockCreate", "_LayoutMember", model);
-            }
+            // 若沒有錯誤，建立新的 IGroup（群組識別）供後續使用
+            Session["IGroup"] = Guid.NewGuid().ToString();
+            TempData["IGroup"] = Session["IGroup"];
             if (buttonName == "unGroup")
             {
                 //移除NewGuid
@@ -932,6 +948,7 @@ namespace WebStoreHouse.Controllers
         #endregion
 
         #endregion
+
         #region 入庫資料查詢
         #region 查詢
         /// <summary>
@@ -1108,6 +1125,7 @@ namespace WebStoreHouse.Controllers
         }
         #endregion
         #endregion
+
         #region 出庫資料查詢
         #region 查詢
         /// <summary>
@@ -1163,7 +1181,7 @@ namespace WebStoreHouse.Controllers
                     int.TryParse(dr["exp_shipquantity"].ToString(), out qty);
                     allList.Add(new
                     {
-                        OutputDate = outputDate.ToString("yyyy-MM-dd"),
+                        OutputDate = outputDate.ToString("yyyy-MM-dd HH:mm:ss"),
                         WorkOrder = dr["wono"].ToString(),
                         Model = dr["eng_sr"].ToString(),
                         Quantity = qty
@@ -1238,7 +1256,7 @@ namespace WebStoreHouse.Controllers
                     int.TryParse(dr["exp_shipquantity"].ToString(), out qty);
                     data.Add(new
                     {
-                        OutputDate = outputDate.ToString("yyyy-MM-dd"),
+                        OutputDate = outputDate.ToString("yyyy-MM-dd HH:mm:ss"),
                         WorkOrder = dr["wono"].ToString(),
                         Model = dr["eng_sr"].ToString(),
                         Quantity = qty
@@ -1499,9 +1517,9 @@ namespace WebStoreHouse.Controllers
             {
                 db.SaveChanges();
             }
-            catch (Exception w)
+            catch (Exception)
             {
-
+                // 重新拋出例外以保留原行為
                 throw;
             }
 
@@ -1642,8 +1660,9 @@ namespace WebStoreHouse.Controllers
                         {
                             db.SaveChanges();
                         }
-                        catch (Exception editsc)
+                        catch (Exception)
                         {
+                            // 保持原本行為：向上拋出
                             throw;
                         }
 
@@ -1756,8 +1775,9 @@ namespace WebStoreHouse.Controllers
                 {
                     db.SaveChanges();
                 }
-                catch (Exception editsc)
+                catch (Exception)
                 {
+                    // 保持原本行為：向上拋出
                     throw;
                 }
 
@@ -1787,7 +1807,14 @@ namespace WebStoreHouse.Controllers
             }
             return Json(stocks, JsonRequestBehavior.AllowGet);
         }
-        //AJAX 更新工單資訊
+
+        /// <summary>
+        /// 依據工單序號 (sno) 查詢成倉庫存資料，回傳 JSON 格式。
+        /// </summary>
+        /// <param name="sno">工單序號</param>
+        /// <returns>
+        /// 若找到資料則回傳 JSON 格式的庫存資料，否則回傳 404 Not Found。
+        /// </returns>
         public ActionResult Edit_Update(int sno)
         {
             //取得會員帳號指定fUserId
@@ -1927,6 +1954,7 @@ namespace WebStoreHouse.Controllers
 
             return RedirectToAction("StoreHouseStock");
         }
+
         /// <summary>
         /// 確認出貨訂單，將預計出貨明細資料正式轉為訂單，並處理庫存扣帳與已銷單庫存。
         /// <para>1. 取得會員帳號，建立訂單識別碼。</para>
@@ -1971,8 +1999,9 @@ namespace WebStoreHouse.Controllers
             {
                 db.SaveChanges();
             }
-            catch (Exception tcarList)
+            catch (Exception)
             {
+                // 保持原本行為：向上拋出
                 throw;
             }
             //找出當日預計出貨資料(Y+當日)
@@ -2013,8 +2042,9 @@ namespace WebStoreHouse.Controllers
                 {
                     db.E_StoreHouseStock_Order.Add(order);
                 }
-                catch (Exception torder)
+                catch (Exception)
                 {
+                    // 保持原本行為：向上拋出
                     throw;
                 }
             }
@@ -2042,8 +2072,9 @@ namespace WebStoreHouse.Controllers
                     {
                         db.E_StoreHouseStock_BOS.Add(stock_BOS);
                     }
-                    catch (Exception torder)
+                    catch (Exception)
                     {
+                        // 保持原本行為：向上拋出
                         throw;
                     }
                 }
@@ -2407,7 +2438,7 @@ namespace WebStoreHouse.Controllers
                         db.SaveChanges();
                         transaction.Commit();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         transaction.Rollback();
                         //Log error message here
@@ -2474,49 +2505,76 @@ namespace WebStoreHouse.Controllers
         }
         #endregion
 
-        #region 直出資料
+        #region 預計直出資料
+
+        // 新增預計直出資料查詢條件：wono, eng_sr, startDate, endDate By 20251007 Jesse
         /// <summary>
-        /// 預計直出
+        /// 預計直出查詢（支援依 wono / eng_sr / startDate / endDate 篩選）
+        /// 優化重點：
+        /// 1. 將 SQL 建構邏輯抽整合以減少重複字串。
+        /// 2. 先回傳 checkOK=true 的資料（優先顯示），再接著回傳 checkOK=false 的資料，最後以複合鍵去重。
+        /// 3. 使用參數化查詢避免 SQL 注入並提升可維護性。
         /// </summary>
-        /// <param name="date"></param>
-        /// <returns></returns>
-        public ActionResult StoreHouseDropshipping(string date)
+        /// <param name="wono">工單號碼（模糊查詢）</param>
+        /// <param name="eng_sr">機種名稱（模糊查詢）</param>
+        /// <param name="startDate">起始日期（yyyy-MM-dd）</param>
+        /// <param name="endDate">結束日期（yyyy-MM-dd）</param>
+        /// <returns>回傳 StoreHouseDropshipping View，模型為 EDropshippingQDto 列表</returns>
+        public ActionResult StoreHouseDropshipping(string wono, string eng_sr, string startDate, string endDate)
         {
-            // 權限不足或未登入
+            // 權限檢查
             var authResult = Login_Authentication();
             if (authResult != null)
             {
                 return authResult;
             }
-            // 查詢所有的 E_Dropshipping 資料，或者根據日期篩選資料
-            string today = DateTime.Now.ToString("yyyy-MM-dd");
 
-            //找出今天資料&打勾
-            var result_1 = db.E_Dropshipping.Where(d => d.date == today && d.checkOK == true && (string.IsNullOrEmpty(date) || d.date == date))
-                                          .OrderBy(d => d.date)
-                                          .ToList();
-            //找出沒有打勾資料
-            var result_2 = db.E_Dropshipping.Where(c => c.checkOK == false && (string.IsNullOrEmpty(date) || c.date == date))
-                                          .OrderBy(c => c.date)
-                                          .ToList();
-            var combinedResult = result_1.Concat(result_2).ToList();
-            return View("StoreHouseDropshipping", "_LayoutMember", combinedResult);
+            List<EDropshippingQDto> finalResult = new List<EDropshippingQDto>();
+
+            try
+            {
+                finalResult = GetDropshipResults(wono, eng_sr, startDate, endDate);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", ex.Message);
+                finalResult = new List<EDropshippingQDto>();
+            }
+
+            // 若使用 wono 或 eng_sr 查詢，回傳合計數量供前端顯示
+            if (!string.IsNullOrWhiteSpace(wono) || !string.IsNullOrWhiteSpace(eng_sr))
+            {
+                int totalQty = finalResult.Sum(r => r.quantity ?? 0);
+                ViewBag.TotalCount = totalQty;
+            }
+
+            return View("StoreHouseDropshipping", "_LayoutMember", finalResult);
         }
+
         /// <summary>
-        /// 直出資料建立 - View
+        /// 預計直出資料建立 - View
         /// /// </summary>
         /// <returns></returns>
         public ActionResult CreateDropship()
         {
-            if (!string.IsNullOrEmpty(Session["Member"].ToString()))
+            // 權限不足或未登入
+            var authResult = Login_Authentication();
+            // 檢查是否已登入，若未登入則導向登入頁
+            if (authResult != null)
             {
-                return View("CreateDropship", "_LayoutMember");
+                return authResult;
             }
-            return View();
+            // 建立一個新的 E_Dropshipping 物件作為 View 的模型
+            var model = new E_Dropshipping();
+            // 回傳 CreateDropship 頁面，並套用 _LayoutMember 版型
+            return View("CreateDropship", "_LayoutMember", model);
+
         }
+
         /// <summary>
-        /// 直出資料建立
+        /// 預計直出資料建立
         /// </summary>
+        /// <param name="wono">工單號碼</param> //新增 工單號碼 By 20251007 Jesse
         /// <param name="date">日期</param>
         /// <param name="DN">DN</param>
         /// <param name="eng_sr">機種名稱</param>
@@ -2524,9 +2582,10 @@ namespace WebStoreHouse.Controllers
         /// <param name="freight">貨運行</param>
         /// <returns></returns>
         [HttpPost]
-        public ActionResult CreateDropship(string date, string DN, string eng_sr, int quantity, string freight)
+        public ActionResult CreateDropship(string wono, string date, string DN, string eng_sr, int quantity, string freight)
         {
             E_Dropshipping dropship = new E_Dropshipping();
+            dropship.wono = wono;
             dropship.date = date;
             dropship.DN = DN;
             dropship.eng_sr = eng_sr;
@@ -2537,8 +2596,9 @@ namespace WebStoreHouse.Controllers
             db.SaveChanges();
             return RedirectToAction("StoreHouseDropshipping");
         }
+
         /// <summary>
-        /// 直出資料編輯 - View
+        /// 預計直出資料編輯 - View
         /// </summary>
         /// <param name="sno"></param>
         /// <returns></returns>
@@ -2547,8 +2607,10 @@ namespace WebStoreHouse.Controllers
             var result = db.E_Dropshipping.Find(sno);
             return View(result);
         }
+
         /// <summary>
-        /// 直出資料編輯
+        /// 預計直出資料編輯
+        /// By 有編輯發送Email 20251007 Jesse
         /// </summary>
         /// <param name="sno">Key</param>
         /// <param name="date">日期</param>
@@ -2556,24 +2618,117 @@ namespace WebStoreHouse.Controllers
         /// <param name="eng_sr">機種名稱</param>
         /// <param name="quantity">數量</param>
         /// <param name="freight">貨運行</param>
+        /// <param name="wono">工單號碼</param> //新增 工單號碼 By 20251007 Jesse
         /// <returns></returns>
         [HttpPost]
-        public ActionResult EditDropship(int sno, string date, string DN, string eng_sr, int quantity, string freight)
+        public ActionResult EditDropship(int sno, string date, string DN, string eng_sr, int quantity, string freight, string wono)
         {
             var result = db.E_Dropshipping.Find(sno);
+            if (result == null)
+            {
+                // 若找不到資料則導回列表並顯示錯誤
+                TempData["ErrorMessage"] = "找不到指定的預計直出紀錄，無法編輯。";
+                return RedirectToAction("StoreHouseDropshipping");
+            }
+
+            // 更新欄位
             result.date = date;
             result.DN = DN;
             result.eng_sr = eng_sr;
             result.quantity = quantity;
             result.freight = freight;
-            db.SaveChanges();
+            result.wono = wono;
+
+            try
+            {
+                db.SaveChanges();
+
+                // 儲存成功後以背景工作方式寄信（非阻斷流程）
+                try
+                {
+                    // 使用快照避免將 EF tracked entity 傳到背景執行（可能造成生命週期/序列化問題）
+                    var snapshot = new E_Dropshipping
+                    {
+                        sno = result.sno,
+                        wono = result.wono,
+                        date = result.date,
+                        DN = result.DN,
+                        eng_sr = result.eng_sr,
+                        quantity = result.quantity,
+                        freight = result.freight
+                    };
+
+                    // 使用安全的背景啟動器來捕捉並記錄例外
+                    StartBackgroundTask(() => _emailService.SendDropshipEditedEmailAsync(snapshot), $"SendDropshipEditedEmailAsync sno={snapshot.sno}");
+                }
+                catch (Exception emailEx)
+                {
+                    // 只記錄錯誤訊息到 TempData，避免影響主要流程
+                    TempData["EmailError"] = "編輯預計直出寄送通知Email失敗: " + emailEx.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "儲存預計直出發生錯誤: " + ex.Message;
+            }
 
             return RedirectToAction("StoreHouseDropshipping");
         }
+
         /// <summary>
-        /// 直出資料確認是否存在
+        /// 預計直出資料刪除
+        /// By 有刪除發送Email 20251007 Jesse
         /// </summary>
-        /// <param name="sno"></param>
+        /// <param name="sno">序號</param>
+        /// <returns></returns>
+        public ActionResult DeleteDropship(int sno)
+        {
+            var result = db.E_Dropshipping.Find(sno);
+            if (result == null)
+            {
+                TempData["ErrorMessage"] = "找不到指定的預計直出紀錄，無法刪除。";
+                return RedirectToAction("StoreHouseDropshipping");
+            }
+
+            // 在刪除前擷取一份快照用於寄信內容
+            var snapshot = new E_Dropshipping
+            {
+                sno = result.sno,
+                wono = result.wono,
+                date = result.date,
+                DN = result.DN,
+                eng_sr = result.eng_sr,
+                quantity = result.quantity,
+                freight = result.freight
+            };
+
+            try
+            {
+                db.E_Dropshipping.Remove(result);
+                db.SaveChanges();
+
+                // 背景寄送刪除通知（非阻斷流程）
+                try
+                {
+                    StartBackgroundTask(() => _emailService.SendDropshipDeletedEmailAsync(snapshot), $"SendDropshipDeletedEmailAsync sno={snapshot.sno}");
+                }
+                catch (Exception bgEx)
+                {
+                    TempData["EmailError"] = "刪除預計直出通知Email失敗: " + bgEx.Message;
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "刪除預計直出發生錯誤: " + ex.Message;
+            }
+
+            return RedirectToAction("StoreHouseDropshipping");
+        }
+
+        /// <summary>
+        /// 預計直出資料確認是否存在
+        /// </summary>
+        /// <param name="sno">序號</param>
         /// <returns></returns>
         public ActionResult CheckDropship(int sno)
         {
@@ -2582,18 +2737,283 @@ namespace WebStoreHouse.Controllers
             db.SaveChanges();
             return RedirectToAction("StoreHouseDropshipping");
         }
-        /// <summary>
-        /// 直出資料刪除
-        /// </summary>
-        /// <param name="sno">Key</param>
-        /// <returns></returns>
-        public ActionResult DeleteDropship(int sno)
-        {
-            var result = db.E_Dropshipping.Find(sno);
-            db.E_Dropshipping.Remove(result);
-            db.SaveChanges();
 
-            return RedirectToAction("StoreHouseDropshipping");
+        /// <summary>
+        /// 匯出預計直出資料為 Excel檔案 By 新增 20251008 Jesse
+        /// </summary>
+        /// <param name="wono">工單號碼</param>
+        /// <param name="eng_sr">機種名稱</param>
+        /// <param name="startDate">出貨日期起</param>
+        /// <param name="endDate">出貨日期迄</param>
+        /// <returns></returns>
+        public ActionResult ExportDropship(string wono, string eng_sr, string startDate, string endDate)
+        {
+            // 權限檢查
+            var authResult = Login_Authentication();
+            if (authResult != null) return authResult;
+
+            // 依照 StoreHouseDropshipping 的完整查詢邏輯重用，確保匯出與畫面結果一致
+            List<EDropshippingQDto> finalResult = new List<EDropshippingQDto>();
+
+            try
+            {
+                finalResult = GetDropshipResults(wono, eng_sr, startDate, endDate);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("ExportDropship", ex.Message);
+                finalResult = new List<EDropshippingQDto>();
+            }
+
+
+            // 使用 NPOI 建立真正的 .xlsx 檔案（記憶體）
+            IWorkbook workbook = new XSSFWorkbook();
+            var sheet = workbook.CreateSheet("預計直出");
+
+            // 建立字體與樣式：標題粗體、數字格式
+            IFont boldFont = workbook.CreateFont();
+            boldFont.IsBold = true;
+
+            ICellStyle headerStyle = workbook.CreateCellStyle();
+            headerStyle.SetFont(boldFont);
+
+            IDataFormat dataFormat = workbook.CreateDataFormat();
+            ICellStyle integerStyle = workbook.CreateCellStyle();
+            integerStyle.DataFormat = dataFormat.GetFormat("0"); // 整數格式
+
+            // 標題列
+            var headerRow = sheet.CreateRow(0);
+            var headers = new[] { "工單號碼", "日期", "DN", "機種名稱", "數量", "滿箱數", "貨運行", "確認" };
+            // 標題不帶診斷資訊，使用原始標題文字
+            for (int i = 0; i < headers.Length; i++)
+            {
+                var cell = headerRow.CreateCell(i);
+                cell.SetCellValue(headers[i]);
+                cell.CellStyle = headerStyle;
+            }
+
+            int rowIndex = 1;
+            foreach (var r in finalResult)
+            {
+                var row = sheet.CreateRow(rowIndex++);
+                row.CreateCell(0).SetCellValue(r.wono ?? "");
+                row.CreateCell(1).SetCellValue(r.date ?? "");
+                row.CreateCell(2).SetCellValue(r.DN ?? "");
+                row.CreateCell(3).SetCellValue(r.eng_sr ?? "");
+
+                var cellQty = row.CreateCell(4);
+                if (r.quantity.HasValue)
+                {
+                    cellQty.SetCellType(CellType.Numeric);
+                    cellQty.SetCellValue((double)r.quantity.Value);
+                    cellQty.CellStyle = integerStyle;
+                }
+                else
+                {
+                    cellQty.SetCellValue(string.Empty);
+                }
+
+                var cellFull = row.CreateCell(5);
+                if (r.Full_Amount.HasValue)
+                {
+                    cellFull.SetCellType(CellType.Numeric);
+                    cellFull.SetCellValue((double)r.Full_Amount.Value);
+                    cellFull.CellStyle = integerStyle;
+                }
+                else
+                {
+                    cellFull.SetCellValue(string.Empty);
+                }
+
+                row.CreateCell(6).SetCellValue(r.freight ?? "");
+                row.CreateCell(7).SetCellValue(r.checkOK.GetValueOrDefault() ? "Y" : "");
+            }
+
+            // 自動調整欄寬：根據實際標題數目自動調整每一欄
+            int columnCount = headers.Length;
+            for (int i = 0; i < columnCount; i++)
+            {
+                try
+                {
+                    sheet.AutoSizeColumn(i);
+                }
+                catch
+                {
+                    // 某些環境下 AutoSizeColumn 可能失敗，忽略避免中斷匯出
+                }
+            }
+
+            // 凍結標題列（第一列）
+            // colSplit = 0 (不凍結左側欄), rowSplit = 1 (在第一列下方凍結)
+            sheet.CreateFreezePane(0, 1);
+
+            string fileName = "預計直出.xlsx";
+            using (var stream = new MemoryStream())
+            {
+                workbook.Write(stream);
+                var content = stream.ToArray();
+                return File(content, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
+            }
+        }
+
+        /// <summary>
+        /// 取得預計直出查詢結果（已去重，先取得 checkOK=1 再 checkOK=0，以保留已確認優先）
+        /// By 增加查詢條件及顯示欄[工單號碼]、[滿箱數] 20251007 Jesse
+        /// </summary>
+        /// <param name="wono">工單號碼（模糊查詢）</param>
+        /// <param name="eng_sr">機種名稱（模糊查詢）</param>
+        /// <param name="startDate">起始日期（yyyy-MM-dd）</param>
+        /// <param name="endDate">結束日期（yyyy-MM-dd）</param>
+        /// <returns>回傳已處理好的 EDropshippingQDto 集合</returns>
+        private List<EDropshippingQDto> GetDropshipResults(string wono, string eng_sr, string startDate, string endDate)
+        {
+            // SQL 基本查詢語句，查詢 E_Dropshipping 並左連 E_StoreHouseStock_BOS 取得滿箱數
+            string baseSql = @"SELECT a.[sno], a.[wono], a.[date], a.[DN], a.[eng_sr], a.[quantity], a.[freight], a.[checkOK], b.Full_Amount
+                                FROM E_Dropshipping a
+                                LEFT JOIN (
+                                    SELECT Distinct a.eng_sr,a.quantity,a.position,a.transportation,a.Full_Amount, a.Full_GW, a.Full_NW
+                                    FROM E_StoreHouseStock_BOS a 
+                                    LEFT JOIN E_Weight b on a.eng_sr=b.EngSr
+                                    WHERE a.quantity > 0
+                                ) b ON b.eng_sr = a.eng_sr
+                                WHERE 1=1";
+
+            // 取得今天日期字串
+            string today = DateTime.Now.ToString("yyyy-MM-dd");
+
+            // 建立 SQL 參數清單的委派，根據查詢條件決定要加入哪些參數
+            Func<bool, bool, bool, List<SqlParameter>> buildParams = (includeDateStart, includeDateEnd, includeToday) =>
+            {
+                var list = new List<SqlParameter>();
+                // 若有起始日期則加入 @startDate 參數
+                if (includeDateStart && !string.IsNullOrWhiteSpace(startDate)) list.Add(new SqlParameter("@startDate", startDate));
+                // 若有結束日期則加入 @endDate 參數
+                if (includeDateEnd && !string.IsNullOrWhiteSpace(endDate)) list.Add(new SqlParameter("@endDate", endDate));
+                // 若有工單號碼則加入 @wono 參數
+                if (!string.IsNullOrWhiteSpace(wono)) list.Add(new SqlParameter("@wono", wono + "%"));
+                // 若有機種名稱則加入 @eng_sr 參數
+                if (!string.IsNullOrWhiteSpace(eng_sr)) list.Add(new SqlParameter("@eng_sr", eng_sr + "%"));
+                // 若查詢今天則加入 @today 參數
+                if (includeToday) list.Add(new SqlParameter("@today", today));
+                return list;
+            };
+
+            // 建立 SQL 查詢語句與參數的委派，根據 checkOK 狀態與是否使用日期區間決定查詢內容
+            Func<int, bool, Tuple<string, SqlParameter[]>> buildQuery = (checkOKValue, useDateRangeParam) =>
+            {
+                var sb = new System.Text.StringBuilder(baseSql);
+
+                // 若使用日期區間查詢則加入起始與結束日期條件
+                if (useDateRangeParam)
+                {
+                    if (!string.IsNullOrWhiteSpace(startDate)) sb.Append(" AND a.date >= @startDate");
+                    if (!string.IsNullOrWhiteSpace(endDate)) sb.Append(" AND a.date <= @endDate");
+                }
+                else
+                {
+                    // 若 checkOK=1 則查詢今天
+                    if (checkOKValue == 1) sb.Append(" AND a.date = @today");
+                }
+
+                // 加入 checkOK 狀態條件
+                sb.Append(" AND a.checkOK = " + checkOKValue);
+
+                // 若有工單號碼則加入模糊查詢條件
+                if (!string.IsNullOrWhiteSpace(wono)) sb.Append(" AND a.wono LIKE @wono");
+                // 若有機種名稱則加入模糊查詢條件
+                if (!string.IsNullOrWhiteSpace(eng_sr)) sb.Append(" AND a.eng_sr LIKE @eng_sr");
+
+                // 依日期排序
+                sb.Append(" ORDER BY a.date");
+
+                // 根據查詢條件建立參數陣列
+                var parameters = useDateRangeParam
+                    ? buildParams(!string.IsNullOrWhiteSpace(startDate), !string.IsNullOrWhiteSpace(endDate), false).ToArray()
+                    : buildParams(false, false, checkOKValue == 1).ToArray();
+
+                return Tuple.Create(sb.ToString(), parameters);
+            };
+
+            // 判斷是否使用日期區間查詢
+            bool useDateRange = !string.IsNullOrWhiteSpace(startDate) || !string.IsNullOrWhiteSpace(endDate);
+
+            // 先查詢 checkOK=1（已確認）資料
+            var q1 = buildQuery(1, useDateRange);
+            var checkedList = db.Database.SqlQuery<EDropshippingQDto>(q1.Item1, q1.Item2).ToList();
+
+            // 再查詢 checkOK=0（未確認）資料
+            var q0 = buildQuery(0, useDateRange);
+            var uncheckedList = db.Database.SqlQuery<EDropshippingQDto>(q0.Item1, q0.Item2).ToList();
+
+            // 合併已確認與未確認資料，並以工單、日期、機種、DN、數量去重
+            var finalResult = checkedList.Concat(uncheckedList)
+                .GroupBy(r => new { r.wono, r.date, r.eng_sr, r.DN, r.quantity })
+                .Select(g => g.First())
+                .ToList();
+
+            // 回傳查詢結果
+            return finalResult;
+        }
+
+        /// <summary>
+        /// 啟動背景工作並於失敗時記錄錯誤至 /Log/email_errors.log。
+        /// By 新增記錄發送Email失敗記錄 20251008 Jesse
+        /// </summary>
+        /// <param name="taskFunc">要執行的非同步工作委派。</param>
+        /// <param name="contextMessage">錯誤記錄時的額外訊息（可選）。</param>
+        /// <remarks>
+        /// 此方法會以 Task.Run 啟動背景工作，若發生例外，將錯誤詳細資訊（包含檔名與行號）寫入 /Log/email_errors.log 檔案，
+        /// 並確保記錄失敗不影響主流程。適用於寄送 Email 等非阻斷性通知用途。
+        /// </remarks>
+        private void StartBackgroundTask(Func<Task> taskFunc, string contextMessage = null)
+        {
+            try
+            {
+                var task = System.Threading.Tasks.Task.Run(taskFunc);
+                task.ContinueWith(t =>
+                {
+                    try
+                    {
+                        // 儲存至 /Log/email_errors.log
+                        var basePath = Server != null ? Server.MapPath("~/Log") : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Log");
+                        System.IO.Directory.CreateDirectory(basePath);
+                        var logPath = System.IO.Path.Combine(basePath, "email_errors.log");
+                        var agg = t.Exception?.Flatten();
+                        var exText = agg != null ? agg.ToString() : t.Exception?.ToString();
+
+                        // 嘗試擷取第一個 stack frame 的檔名與行號（若有 PDB）
+                        string locationInfo = null;
+                        try
+                        {
+                            var first = agg?.InnerExceptions?.FirstOrDefault() ?? t.Exception;
+                            if (first != null)
+                            {
+                                var st = new StackTrace(first, true);
+                                var frame = st.GetFrames()?.FirstOrDefault();
+                                if (frame != null)
+                                {
+                                    var file = frame.GetFileName();
+                                    var line = frame.GetFileLineNumber();
+                                    if (!string.IsNullOrEmpty(file) && line > 0)
+                                        locationInfo = $" at {file}:{line}";
+                                }
+                            }
+                        }
+                        catch { }
+
+                        var msg = $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] {contextMessage ?? "BackgroundTask"} - Exception:{locationInfo}\n{exText}\n";
+                        System.IO.File.AppendAllText(logPath, msg);
+                    }
+                    catch
+                    {
+                        // 記錄失敗不應影響主流程
+                    }
+                }, System.Threading.Tasks.TaskContinuationOptions.OnlyOnFaulted);
+            }
+            catch
+            {
+                // 啟動背景工作失敗也不應阻斷主流程
+            }
         }
         #endregion
 

@@ -21,5 +21,6 @@ namespace WebStoreHouse.Models
         public Nullable<int> quantity { get; set; }
         public string freight { get; set; }
         public Nullable<bool> checkOK { get; set; }
+        public string wono { get; set; }
     }
 }
