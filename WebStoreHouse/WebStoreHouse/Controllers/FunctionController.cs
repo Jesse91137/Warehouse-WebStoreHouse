@@ -1,16 +1,16 @@
-﻿using DocumentFormat.OpenXml.Office2013.WebExtension;
-using NPOI.SS.UserModel;
+﻿using NPOI.SS.UserModel;
+using NPOI.SS.Util;
 using NPOI.XSSF.UserModel;
 using PagedList;
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
 using System.Data.Entity;
 using System.Data.SqlClient;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using WebStoreHouse.Models;
 using WebStoreHouse.Services;
@@ -21,9 +21,9 @@ namespace WebStoreHouse.Controllers
     /// <summary>
     /// 倉庫庫存
     /// </summary>
-
     public class FunctionController : Controller
     {
+        #region Fields
         /// <summary>
         /// 資料庫存取物件，提供 Entity Framework 資料操作功能。
         /// </summary>
@@ -35,15 +35,6 @@ namespace WebStoreHouse.Controllers
         private readonly IEmailNotificationService _emailService;
 
         /// <summary>
-        /// 建構 FunctionController，注入 Email 通知服務。
-        /// </summary>
-        /// <param name="emailService">Email 通知服務介面。</param>
-        public FunctionController(IEmailNotificationService emailService)
-        {
-            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
-        }
-
-        /// <summary>
         /// 頁面分頁預設每頁筆數（倉庫庫存查詢）。
         /// </summary>
         int pagesize = 50;
@@ -52,7 +43,20 @@ namespace WebStoreHouse.Controllers
         /// 入庫資料查詢每頁筆數。
         /// </summary>
         int entryPageSize = 30; // 入庫資料查詢每頁 30 筆
+        #endregion
 
+        #region Constructors
+        /// <summary>
+        /// 建構 FunctionController，注入 Email 通知服務。
+        /// </summary>
+        /// <param name="emailService">Email 通知服務介面。</param>
+        public FunctionController(IEmailNotificationService emailService)
+        {
+            _emailService = emailService ?? throw new ArgumentNullException(nameof(emailService));
+        }
+        #endregion
+
+        #region Action Methods
         // GET: Function
         /// <summary>
         /// Function
@@ -64,7 +68,7 @@ namespace WebStoreHouse.Controllers
         }
 
         #region 倉庫庫存
-        #region 首頁/查詢
+        #region 查詢倉庫庫存
         //view
         /// <summary>
         /// 查詢倉庫庫存
@@ -198,189 +202,6 @@ namespace WebStoreHouse.Controllers
             // 查詢後先依 eng_sr 排序，再分頁，確保每頁筆數正確
             var sortedStores = stores.OrderBy(s => s.eng_sr).ToList();
             return View("StoreHouseStock", "_LayoutMember", sortedStores.ToPagedList(currentPage, pagesize));
-        }
-        #endregion
-        #region  匯出倉庫庫存 Excel
-        /// <summary>
-        /// 匯出倉庫庫存 Excel
-        /// </summary>
-        /// <param name="wono">工單號碼</param>
-        /// <param name="order_cust">客戶業單</param>
-        /// <param name="engsr">機種名稱</param>
-        /// <param name="inputdate_start">入庫日期起</param>
-        /// <param name="inputdate_end">入庫日期迄</param>
-        /// <returns>Excel 檔案下載</returns>
-        [HttpGet]
-        public ActionResult ExportStoreHouseStock(string wono, string order_cust, string engsr, string inputdate_start, string inputdate_end)
-        {
-            // 登入驗證
-            var authResult = Login_Authentication();
-            if (authResult != null)
-            {
-                Response.StatusCode = 401;
-                return Content("未登入，請重新登入。", "text/plain");
-            }
-
-            // 20250821 因應歷史資料的入庫日期的呈現要完整日期，原本寫入入庫日期只存日期，改為存完整日期+時間，入庫日期修改顯示日期 By Jesse
-            // 查詢條件與 SQL 與 StoreHouseStock 相同
-            List<SqlParameter> parmL = new List<SqlParameter>();
-            string strsql = @"select serialno,sno,nowono,wono,cust_wono,eng_sr,order_count,quantity,box_quantity,kf10,kq30,
-                            sap_in,position,acc_in,outed,notout,borrow,due_date,mark,CONVERT(varchar(10), inputdate, 120) AS inputdate,package,output_local,Igroup 
-                            from E_StoreHouseStock where quantity >0 and (del_flag is null or del_flag <> 'D') and (igroup ='' or Igroup is null) ";
-            if (!string.IsNullOrWhiteSpace(wono))
-            {
-                strsql += " and wono = @wono ";
-                parmL.Add(new SqlParameter("wono", wono));
-            }
-            if (!string.IsNullOrWhiteSpace(order_cust))
-            {
-                strsql += " and cust_wono = @order_cust ";
-                parmL.Add(new SqlParameter("order_cust", order_cust));
-            }
-            if (!string.IsNullOrWhiteSpace(engsr))
-            {
-                strsql += " and eng_sr = @engsr ";
-                parmL.Add(new SqlParameter("engsr", engsr));
-            }
-            // 20250821 因應歷史資料的入庫日期的呈現要完整日期，原本寫入入庫日期只存日期，改為存完整日期+時間，入庫日期修改顯示日期 By Jesse
-            if (!string.IsNullOrWhiteSpace(inputdate_start))
-            {
-                strsql += " and CONVERT(varchar(10), inputdate, 120) >= @inputdate_start ";
-                parmL.Add(new SqlParameter("inputdate_start", inputdate_start));
-            }
-            if (!string.IsNullOrWhiteSpace(inputdate_end))
-            {
-                strsql += " and CONVERT(varchar(10), inputdate, 120) <= @inputdate_end ";
-                parmL.Add(new SqlParameter("inputdate_end", inputdate_end));
-            }
-
-            // 20250821 因應歷史資料的入庫日期的呈現要完整日期，原本寫入入庫日期只存日期，改為存完整日期+時間，入庫日期修改顯示日期 By Jesse
-            strsql += @" union
-                        select serialno,sno,nowono,wono,cust_wono,eng_sr,order_count,quantity,box_quantity,kf10,kq30,
-                        sap_in,position,acc_in,outed,notout,borrow,due_date,mark,CONVERT(varchar(10), inputdate, 120) AS inputdate,package,output_local,Igroup 
-                        from (Select *,ROW_NUMBER() Over (Partition By Igroup Order By CONVERT(varchar(10), inputdate, 120) Desc) As Sort 
-                        From E_StoreHouseStock where igroup <>'' and igroup is not null and (del_flag is null or del_flag <> 'D') 
-                        and quantity >0) s where sort=1 ";
-            if (!string.IsNullOrWhiteSpace(wono))
-            {
-                strsql += " and wono = @wono2 ";
-                parmL.Add(new SqlParameter("wono2", wono));
-            }
-            if (!string.IsNullOrWhiteSpace(order_cust))
-            {
-                strsql += " and cust_wono = @order_cust2 ";
-                parmL.Add(new SqlParameter("order_cust2", order_cust));
-            }
-            if (!string.IsNullOrWhiteSpace(engsr))
-            {
-                strsql += " and eng_sr = @engsr2 ";
-                parmL.Add(new SqlParameter("engsr2", engsr));
-            }
-            // 20250821 因應歷史資料的入庫日期的呈現要完整日期，原本寫入入庫日期只存日期，改為存完整日期+時間，入庫日期修改顯示日期 By Jesse
-            if (!string.IsNullOrWhiteSpace(inputdate_start))
-            {
-                strsql += " and CONVERT(varchar(10), inputdate, 120) >= @inputdate_start2 ";
-                parmL.Add(new SqlParameter("inputdate_start2", inputdate_start));
-            }
-            if (!string.IsNullOrWhiteSpace(inputdate_end))
-            {
-                strsql += " and CONVERT(varchar(10), inputdate, 120) <= @inputdate_end2 ";
-                parmL.Add(new SqlParameter("inputdate_end2", inputdate_end));
-            }
-
-            strsql += @" order by eng_sr ";
-
-            var dr = dbMethod.ExecuteReaderPmsList(strsql, CommandType.Text, parmL);
-            // 檢查是否有資料
-            if (dr == null || !dr.HasRows)
-            {
-                // 沒有資料時回傳提示訊息或空檔案
-                TempData["ErrorMessage"] = "查無資料，無法匯出 Excel。";
-                Response.StatusCode = 404;
-                return Content("查無資料，無法匯出 Excel。", "text/plain");
-                //return RedirectToAction("StoreHouseStock");
-            }
-
-            var data = new List<StoreHouseStock>();
-            while (dr.Read())
-            {
-                var store = new StoreHouseStock();
-                store.serialno = (int)dr["serialno"];
-                store.nowono = dr["nowono"].ToString();
-                store.sno = (int)dr["sno"];
-                store.wono = dr["wono"].ToString();
-                store.cust_wono = dr["cust_wono"].ToString();
-                store.eng_sr = dr["eng_sr"].ToString();
-                store.order_count = (int)dr["order_count"];
-                store.quantity = (int)dr["quantity"];
-                store.box_quantity = (int)dr["box_quantity"];
-                store.kf10 = (int)dr["kf10"];
-                store.kq30 = (int)dr["kq30"];
-                store.sap_in = dr["sap_in"].ToString();
-                store.position = dr["position"].ToString();
-                store.acc_in = (int)dr["acc_in"];
-                store.outed = (int)dr["outed"];
-                store.notout = (int)dr["notout"];
-                store.borrow = (int)dr["borrow"];
-                store.due_date = (DateTime)dr["due_date"];
-                store.mark = dr["mark"].ToString();
-                store.inputdate = dr["inputdate"].ToString();
-                store.package = dr["package"].ToString();
-                store.output_local = dr["output_local"].ToString();
-                store.Igroup = dr["Igroup"].ToString();
-                data.Add(store);
-            }
-            dr.Close();
-
-            // 產生 Excel
-            IWorkbook workbook = new XSSFWorkbook();
-            ISheet sheet = workbook.CreateSheet("成倉庫存");
-            // 標題列
-            var header = new[] { "工單", "客戶業單", "機種名稱", "訂單數量", "箱數", "數量", "KF10", "KQ30", "儲位", "累積入庫", "預計銷單日", "備註", "入庫日期", "包裝" };
-            IRow rowHeader = sheet.CreateRow(0);
-            for (int i = 0; i < header.Length; i++)
-            {
-                rowHeader.CreateCell(i).SetCellValue(header[i]);
-            }
-            // 資料列
-            int rowIdx = 1;
-            foreach (var s in data)
-            {
-                IRow row = sheet.CreateRow(rowIdx++);
-                row.CreateCell(0).SetCellValue(s.wono);
-                row.CreateCell(1).SetCellValue(s.cust_wono);
-                row.CreateCell(2).SetCellValue(s.eng_sr);
-                row.CreateCell(3).SetCellValue(s.order_count);
-                row.CreateCell(4).SetCellValue(s.box_quantity);
-                row.CreateCell(5).SetCellValue(s.quantity);
-                row.CreateCell(6).SetCellValue(s.kf10);
-                row.CreateCell(7).SetCellValue(s.kq30);
-                row.CreateCell(8).SetCellValue(s.position);
-                row.CreateCell(9).SetCellValue(s.acc_in);
-                row.CreateCell(10).SetCellValue(((DateTime)s.due_date).ToString("yyyy-MM-dd"));
-                row.CreateCell(11).SetCellValue(s.mark);
-                row.CreateCell(12).SetCellValue(s.inputdate);
-                row.CreateCell(13).SetCellValue(s.package);
-            }
-            // 自動欄寬
-            for (int i = 0; i < header.Length; i++)
-            {
-                sheet.AutoSizeColumn(i);
-            }
-            using (var exportData = new MemoryStream())
-            {
-                workbook.Write(exportData);
-                string fileName = $"倉庫庫存_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
-                // RFC 5987 percent-encode (UTF-8)
-                string encodedFileName = System.Web.HttpUtility.UrlEncode(fileName, System.Text.Encoding.UTF8).Replace("+", "%20");
-                Response.Clear();
-                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                // 同時支援 filename 與 filename* (RFC 5987)
-                Response.AddHeader("Content-Disposition", $"attachment; filename=\"{fileName}\"; filename*=UTF-8''{encodedFileName}");
-                Response.BinaryWrite(exportData.ToArray());
-                Response.End();
-                return new EmptyResult();
-            }
         }
         #endregion
         #region 新增庫存 View
@@ -544,6 +365,7 @@ namespace WebStoreHouse.Controllers
             // 按下Create按鈕則回到庫存畫面
             return RedirectToAction("StoreHouseStock");
         }
+
         #region 驗證輸入欄位
         /// <summary>
         /// 驗證庫存輸入欄位
@@ -807,6 +629,8 @@ namespace WebStoreHouse.Controllers
         }
         #endregion
 
+
+
         #endregion
         #region 修改庫存
         /// <summary>
@@ -946,8 +770,197 @@ namespace WebStoreHouse.Controllers
             return RedirectToAction("StoreHouseStock");
         }
         #endregion
+        #region  匯出倉庫庫存 Excel
+        /// <summary>
+        /// 匯出倉庫庫存 Excel
+        /// </summary>
+        /// <param name="wono">工單號碼</param>
+        /// <param name="order_cust">客戶業單</param>
+        /// <param name="engsr">機種名稱</param>
+        /// <param name="inputdate_start">入庫日期起</param>
+        /// <param name="inputdate_end">入庫日期迄</param>
+        /// <returns>Excel 檔案下載</returns>
+        [HttpGet]
+        public ActionResult ExportStoreHouseStock(string wono, string order_cust, string engsr, string inputdate_start, string inputdate_end)
+        {
+            // 登入驗證
+            var authResult = Login_Authentication();
+            if (authResult != null)
+            {
+                Response.StatusCode = 401;
+                return Content("未登入，請重新登入。", "text/plain");
+            }
+
+            // 20250821 因應歷史資料的入庫日期的呈現要完整日期，原本寫入入庫日期只存日期，改為存完整日期+時間，入庫日期修改顯示日期 By Jesse
+            // 查詢條件與 SQL 與 StoreHouseStock 相同
+            List<SqlParameter> parmL = new List<SqlParameter>();
+            string strsql = @"select serialno,sno,nowono,wono,cust_wono,eng_sr,order_count,quantity,box_quantity,kf10,kq30,
+                            sap_in,position,acc_in,outed,notout,borrow,due_date,mark,CONVERT(varchar(10), inputdate, 120) AS inputdate,package,output_local,Igroup 
+                            from E_StoreHouseStock where quantity >0 and (del_flag is null or del_flag <> 'D') and (igroup ='' or Igroup is null) ";
+            if (!string.IsNullOrWhiteSpace(wono))
+            {
+                strsql += " and wono = @wono ";
+                parmL.Add(new SqlParameter("wono", wono));
+            }
+            if (!string.IsNullOrWhiteSpace(order_cust))
+            {
+                strsql += " and cust_wono = @order_cust ";
+                parmL.Add(new SqlParameter("order_cust", order_cust));
+            }
+            if (!string.IsNullOrWhiteSpace(engsr))
+            {
+                strsql += " and eng_sr = @engsr ";
+                parmL.Add(new SqlParameter("engsr", engsr));
+            }
+            // 20250821 因應歷史資料的入庫日期的呈現要完整日期，原本寫入入庫日期只存日期，改為存完整日期+時間，入庫日期修改顯示日期 By Jesse
+            if (!string.IsNullOrWhiteSpace(inputdate_start))
+            {
+                strsql += " and CONVERT(varchar(10), inputdate, 120) >= @inputdate_start ";
+                parmL.Add(new SqlParameter("inputdate_start", inputdate_start));
+            }
+            if (!string.IsNullOrWhiteSpace(inputdate_end))
+            {
+                strsql += " and CONVERT(varchar(10), inputdate, 120) <= @inputdate_end ";
+                parmL.Add(new SqlParameter("inputdate_end", inputdate_end));
+            }
+
+            // 20250821 因應歷史資料的入庫日期的呈現要完整日期，原本寫入入庫日期只存日期，改為存完整日期+時間，入庫日期修改顯示日期 By Jesse
+            strsql += @" union
+                        select serialno,sno,nowono,wono,cust_wono,eng_sr,order_count,quantity,box_quantity,kf10,kq30,
+                        sap_in,position,acc_in,outed,notout,borrow,due_date,mark,CONVERT(varchar(10), inputdate, 120) AS inputdate,package,output_local,Igroup 
+                        from (Select *,ROW_NUMBER() Over (Partition By Igroup Order By CONVERT(varchar(10), inputdate, 120) Desc) As Sort 
+                        From E_StoreHouseStock where igroup <>'' and igroup is not null and (del_flag is null or del_flag <> 'D') 
+                        and quantity >0) s where sort=1 ";
+            if (!string.IsNullOrWhiteSpace(wono))
+            {
+                strsql += " and wono = @wono2 ";
+                parmL.Add(new SqlParameter("wono2", wono));
+            }
+            if (!string.IsNullOrWhiteSpace(order_cust))
+            {
+                strsql += " and cust_wono = @order_cust2 ";
+                parmL.Add(new SqlParameter("order_cust2", order_cust));
+            }
+            if (!string.IsNullOrWhiteSpace(engsr))
+            {
+                strsql += " and eng_sr = @engsr2 ";
+                parmL.Add(new SqlParameter("engsr2", engsr));
+            }
+            // 20250821 因應歷史資料的入庫日期的呈現要完整日期，原本寫入入庫日期只存日期，改為存完整日期+時間，入庫日期修改顯示日期 By Jesse
+            if (!string.IsNullOrWhiteSpace(inputdate_start))
+            {
+                strsql += " and CONVERT(varchar(10), inputdate, 120) >= @inputdate_start2 ";
+                parmL.Add(new SqlParameter("inputdate_start2", inputdate_start));
+            }
+            if (!string.IsNullOrWhiteSpace(inputdate_end))
+            {
+                strsql += " and CONVERT(varchar(10), inputdate, 120) <= @inputdate_end2 ";
+                parmL.Add(new SqlParameter("inputdate_end2", inputdate_end));
+            }
+
+            strsql += @" order by eng_sr ";
+
+            var dr = dbMethod.ExecuteReaderPmsList(strsql, CommandType.Text, parmL);
+            // 檢查是否有資料
+            if (dr == null || !dr.HasRows)
+            {
+                // 沒有資料時回傳提示訊息或空檔案
+                TempData["ErrorMessage"] = "查無資料，無法匯出 Excel。";
+                Response.StatusCode = 404;
+                return Content("查無資料，無法匯出 Excel。", "text/plain");
+                //return RedirectToAction("StoreHouseStock");
+            }
+
+            var data = new List<StoreHouseStock>();
+            while (dr.Read())
+            {
+                var store = new StoreHouseStock();
+                store.serialno = (int)dr["serialno"];
+                store.nowono = dr["nowono"].ToString();
+                store.sno = (int)dr["sno"];
+                store.wono = dr["wono"].ToString();
+                store.cust_wono = dr["cust_wono"].ToString();
+                store.eng_sr = dr["eng_sr"].ToString();
+                store.order_count = (int)dr["order_count"];
+                store.quantity = (int)dr["quantity"];
+                store.box_quantity = (int)dr["box_quantity"];
+                store.kf10 = (int)dr["kf10"];
+                store.kq30 = (int)dr["kq30"];
+                store.sap_in = dr["sap_in"].ToString();
+                store.position = dr["position"].ToString();
+                store.acc_in = (int)dr["acc_in"];
+                store.outed = (int)dr["outed"];
+                store.notout = (int)dr["notout"];
+                store.borrow = (int)dr["borrow"];
+                store.due_date = (DateTime)dr["due_date"];
+                store.mark = dr["mark"].ToString();
+                store.inputdate = dr["inputdate"].ToString();
+                store.package = dr["package"].ToString();
+                store.output_local = dr["output_local"].ToString();
+                store.Igroup = dr["Igroup"].ToString();
+                data.Add(store);
+            }
+            dr.Close();
+
+            // 產生 Excel
+            IWorkbook workbook = new XSSFWorkbook();
+            ISheet sheet = workbook.CreateSheet("成倉庫存");
+            // 標題列
+            var header = new[] { "工單", "客戶業單", "機種名稱", "訂單數量", "箱數", "數量", "KF10", "KQ30", "儲位", "累積入庫", "預計銷單日", "備註", "入庫日期", "包裝" };
+            IRow rowHeader = sheet.CreateRow(0);
+            for (int i = 0; i < header.Length; i++)
+            {
+                rowHeader.CreateCell(i).SetCellValue(header[i]);
+            }
+            // 資料列
+            int rowIdx = 1;
+            foreach (var s in data)
+            {
+                IRow row = sheet.CreateRow(rowIdx++);
+                row.CreateCell(0).SetCellValue(s.wono);
+                row.CreateCell(1).SetCellValue(s.cust_wono);
+                row.CreateCell(2).SetCellValue(s.eng_sr);
+                row.CreateCell(3).SetCellValue(s.order_count);
+                row.CreateCell(4).SetCellValue(s.box_quantity);
+                row.CreateCell(5).SetCellValue(s.quantity);
+                row.CreateCell(6).SetCellValue(s.kf10);
+                row.CreateCell(7).SetCellValue(s.kq30);
+                row.CreateCell(8).SetCellValue(s.position);
+                row.CreateCell(9).SetCellValue(s.acc_in);
+                row.CreateCell(10).SetCellValue(((DateTime)s.due_date).ToString("yyyy-MM-dd"));
+                row.CreateCell(11).SetCellValue(s.mark);
+                row.CreateCell(12).SetCellValue(s.inputdate);
+                row.CreateCell(13).SetCellValue(s.package);
+            }
+            // 自動欄寬
+            for (int i = 0; i < header.Length; i++)
+            {
+                sheet.AutoSizeColumn(i);
+            }
+            using (var exportData = new MemoryStream())
+            {
+                workbook.Write(exportData);
+                string fileName = $"倉庫庫存_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
+                // RFC 5987 percent-encode (UTF-8)
+                string encodedFileName = System.Web.HttpUtility.UrlEncode(fileName, System.Text.Encoding.UTF8).Replace("+", "%20");
+                Response.Clear();
+                Response.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                // 同時支援 filename 與 filename* (RFC 5987)
+                Response.AddHeader("Content-Disposition", $"attachment; filename=\"{fileName}\"; filename*=UTF-8''{encodedFileName}");
+                Response.BinaryWrite(exportData.ToArray());
+                Response.End();
+                return new EmptyResult();
+            }
+        }
+        #endregion
+        #endregion
+
+        #region Private Methods
+        // ...private methods...
+        #endregion
 
         #endregion
+
 
         #region 入庫資料查詢
         #region 查詢
@@ -1181,7 +1194,7 @@ namespace WebStoreHouse.Controllers
                     int.TryParse(dr["exp_shipquantity"].ToString(), out qty);
                     allList.Add(new
                     {
-                        OutputDate = outputDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                        OutputDate = outputDate.ToString("yyyy-MM-dd"),
                         WorkOrder = dr["wono"].ToString(),
                         Model = dr["eng_sr"].ToString(),
                         Quantity = qty
@@ -1256,7 +1269,7 @@ namespace WebStoreHouse.Controllers
                     int.TryParse(dr["exp_shipquantity"].ToString(), out qty);
                     data.Add(new
                     {
-                        OutputDate = outputDate.ToString("yyyy-MM-dd HH:mm:ss"),
+                        OutputDate = outputDate.ToString("yyyy-MM-dd"),
                         WorkOrder = dr["wono"].ToString(),
                         Model = dr["eng_sr"].ToString(),
                         Quantity = qty
@@ -2643,29 +2656,33 @@ namespace WebStoreHouse.Controllers
             {
                 db.SaveChanges();
 
+                // 因目前不需用，已改用排程發送Email-[WarehouseExpDirectShipExportExcdlSendEmail] By 20251022 Jesse 注釋掉的寄信功能
+                #region 寄送編輯通知Email
                 // 儲存成功後以背景工作方式寄信（非阻斷流程）
-                try
-                {
-                    // 使用快照避免將 EF tracked entity 傳到背景執行（可能造成生命週期/序列化問題）
-                    var snapshot = new E_Dropshipping
-                    {
-                        sno = result.sno,
-                        wono = result.wono,
-                        date = result.date,
-                        DN = result.DN,
-                        eng_sr = result.eng_sr,
-                        quantity = result.quantity,
-                        freight = result.freight
-                    };
+                /* try
+                 {
+                     // 使用快照避免將 EF tracked entity 傳到背景執行（可能造成生命週期/序列化問題）
+                     var snapshot = new E_Dropshipping
+                     {
+                         sno = result.sno,
+                         wono = result.wono,
+                         date = result.date,
+                         DN = result.DN,
+                         eng_sr = result.eng_sr,
+                         quantity = result.quantity,
+                         freight = result.freight
+                     };
 
-                    // 使用安全的背景啟動器來捕捉並記錄例外
-                    StartBackgroundTask(() => _emailService.SendDropshipEditedEmailAsync(snapshot), $"SendDropshipEditedEmailAsync sno={snapshot.sno}");
-                }
-                catch (Exception emailEx)
-                {
-                    // 只記錄錯誤訊息到 TempData，避免影響主要流程
-                    TempData["EmailError"] = "編輯預計直出寄送通知Email失敗: " + emailEx.Message;
-                }
+                     // 使用安全的背景啟動器來捕捉並記錄例外
+                     StartBackgroundTask(() => _emailService.SendDropshipEditedEmailAsync(snapshot), $"SendDropshipEditedEmailAsync sno={snapshot.sno}");
+                 }
+                 catch (Exception emailEx)
+                 {
+                     // 只記錄錯誤訊息到 TempData，避免影響主要流程
+                     TempData["EmailError"] = "編輯預計直出寄送通知Email失敗: " + emailEx.Message;
+                 }
+                */
+                #endregion
             }
             catch (Exception ex)
             {
@@ -2707,15 +2724,18 @@ namespace WebStoreHouse.Controllers
                 db.E_Dropshipping.Remove(result);
                 db.SaveChanges();
 
+                // 因目前不需用，已改用排程發送Email-[WarehouseExpDirectShipExportExcdlSendEmail] By 20251022 Jesse 注釋掉的寄信功能
+                #region 寄送刪除通知Email
                 // 背景寄送刪除通知（非阻斷流程）
-                try
+                /*try
                 {
                     StartBackgroundTask(() => _emailService.SendDropshipDeletedEmailAsync(snapshot), $"SendDropshipDeletedEmailAsync sno={snapshot.sno}");
                 }
                 catch (Exception bgEx)
                 {
                     TempData["EmailError"] = "刪除預計直出通知Email失敗: " + bgEx.Message;
-                }
+                }*/
+                #endregion
             }
             catch (Exception ex)
             {
@@ -2733,8 +2753,25 @@ namespace WebStoreHouse.Controllers
         public ActionResult CheckDropship(int sno)
         {
             var result = db.E_Dropshipping.Find(sno);
-            result.checkOK = true;
-            db.SaveChanges();
+            if (result == null)
+            {
+                // 若找不到資料，回傳友善訊息並導回列表，避免 NullReferenceException
+                TempData["ErrorMessage"] = $"找不到序號 {sno} 的預計直出資料。";
+                return RedirectToAction("StoreHouseDropshipping");
+            }
+
+            try
+            {
+                result.checkOK = true;
+                db.SaveChanges();
+                TempData["SuccessMessage"] = "已確認預計直出資料。";
+            }
+            catch (Exception ex)
+            {
+                // 記錄錯誤並顯示友善訊息，避免回傳 500
+                TempData["ErrorMessage"] = "確認預計直出發生錯誤: " + ex.Message;
+            }
+
             return RedirectToAction("StoreHouseDropshipping");
         }
 
@@ -2781,9 +2818,10 @@ namespace WebStoreHouse.Controllers
             ICellStyle integerStyle = workbook.CreateCellStyle();
             integerStyle.DataFormat = dataFormat.GetFormat("0"); // 整數格式
 
+            // By 20251023 Jesse 新增欄位名稱[尾數箱數量]與格式
             // 標題列
             var headerRow = sheet.CreateRow(0);
-            var headers = new[] { "工單號碼", "日期", "DN", "機種名稱", "數量", "滿箱數", "貨運行", "確認" };
+            var headers = new[] { "工單號碼", "日期", "DN", "機種名稱", "數量", "滿箱數", "貨運行", "尾數箱數量", "確認" };
             // 標題不帶診斷資訊，使用原始標題文字
             for (int i = 0; i < headers.Length; i++)
             {
@@ -2826,7 +2864,29 @@ namespace WebStoreHouse.Controllers
                 }
 
                 row.CreateCell(6).SetCellValue(r.freight ?? "");
-                row.CreateCell(7).SetCellValue(r.checkOK.GetValueOrDefault() ? "Y" : "");
+
+                var numberOfTailBoxes = row.CreateCell(7);
+                // 處理 NumberOfTailBoxes 為 string 型別
+                if (!string.IsNullOrEmpty(r.NumberOfTailBoxes))
+                {
+                    if (int.TryParse(r.NumberOfTailBoxes, out var tailBoxNum))
+                    {
+                        numberOfTailBoxes.SetCellType(CellType.Numeric);
+                        numberOfTailBoxes.SetCellValue((double)tailBoxNum);
+                        numberOfTailBoxes.CellStyle = integerStyle;
+                    }
+                    else
+                    {
+                        // 若不是數字，直接寫入原始字串
+                        numberOfTailBoxes.SetCellValue(r.NumberOfTailBoxes);
+                    }
+                }
+                else
+                {
+                    numberOfTailBoxes.SetCellValue(string.Empty);
+                }
+
+                row.CreateCell(8).SetCellValue(r.checkOK.GetValueOrDefault() ? "Y" : "");
             }
 
             // 自動調整欄寬：根據實際標題數目自動調整每一欄
@@ -2868,18 +2928,21 @@ namespace WebStoreHouse.Controllers
         private List<EDropshippingQDto> GetDropshipResults(string wono, string eng_sr, string startDate, string endDate)
         {
             // SQL 基本查詢語句，查詢 E_Dropshipping 並左連 E_StoreHouseStock_BOS 取得滿箱數
-            string baseSql = @"SELECT a.[sno], a.[wono], a.[date], a.[DN], a.[eng_sr], a.[quantity], a.[freight], a.[checkOK], b.Full_Amount
+            // 修改[滿箱數]的取得從 Table[出貨毛淨重明細] By 20251022 Jesse
+            string baseSql = @" SELECT a.[sno], a.[wono], a.[date], a.[DN], a.[eng_sr], a.[quantity], a.[freight], a.[checkOK], b.[滿箱台數] AS Full_Amount
+                                , CASE 
+                                -- 條件 1: 檢查 Full_Amount 是否為零或 NULL，避免除以零
+                                WHEN ISNULL(b.[滿箱台數], 0) = 0 THEN ''
+                                -- 條件 2: 檢查餘數是否為零，若為零則顯示空字串 ''
+                                WHEN a.[quantity] % b.[滿箱台數] = 0 THEN ''
+                                -- 條件 3: 餘數不為零，則計算並轉換為 nvarchar(6) 輸出                                
+                                ELSE CAST(a.[quantity] % b.[滿箱台數] AS nvarchar(6)) END AS NumberOfTailBoxes
                                 FROM E_Dropshipping a
-                                LEFT JOIN (
-                                    SELECT Distinct a.eng_sr,a.quantity,a.position,a.transportation,a.Full_Amount, a.Full_GW, a.Full_NW
-                                    FROM E_StoreHouseStock_BOS a 
-                                    LEFT JOIN E_Weight b on a.eng_sr=b.EngSr
-                                    WHERE a.quantity > 0
-                                ) b ON b.eng_sr = a.eng_sr
+                                LEFT JOIN [dbo].[出貨毛淨重明細] b ON b.[機種] = a.eng_sr
                                 WHERE 1=1";
 
             // 取得今天日期字串
-            string today = DateTime.Now.ToString("yyyy-MM-dd");
+            string today = DateTime.Now.ToString("yyyy -MM-dd");
 
             // 建立 SQL 參數清單的委派，根據查詢條件決定要加入哪些參數
             Func<bool, bool, bool, List<SqlParameter>> buildParams = (includeDateStart, includeDateEnd, includeToday) =>
