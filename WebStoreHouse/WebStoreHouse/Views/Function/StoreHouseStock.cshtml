@@ -150,40 +150,40 @@ inputdate_end = ViewBag.inputdate_end
     <label for="wono">工單號碼:</label>
 
     @Html.TextBox("wono", ViewBag.wono as string, new
-    {
-            @class = "form-control input-sm",
+{
+    @class = "form-control input-sm",
     @id = "wono",
     @placeholder =
     "請輸入工單號碼",
-    style = "display:inline-block; width: 150px;"
-    })
+    style = "display:inline-block; width: 150px; margin-right:10px;"
+})
     <label for="order_cust">客戶業單:</label>
 
     @Html.TextBox("order_cust", ViewBag.order_cust as string, new
-    {
-            @class = "form-control input-sm",
+{
+    @class = "form-control input-sm",
     @id = "order_cust",
     @placeholder = "請輸入客戶業單",
-    style = "display:inline-block; width: 150px;"
-    })
+    style = "display:inline-block; width: 150px; margin-right:10px;"
+})
     <label for="engsr">機種名稱:</label>
 
     @Html.TextBox("engsr", ViewBag.engsr as string, new
-    {
-            @class = "form-control input-sm",
+{
+    @class = "form-control input-sm",
     @id = "engsr",
     @placeholder =
     "請輸入機種名稱",
-    style = "display:inline-block; width: 150px;"
-    })
+    style = "display:inline-block; width: 150px; margin-right:10px;"
+})
     <label for="inputdate_start">入庫日期:</label>
     <input type="text" id="inputdate_start" name="inputdate_start" class="form-control input-sm" placeholder="YYYY-MM-DD"
            style="display:inline-block; width: 90px;" value="@ViewBag.inputdate_start" />
     <label for="inputdate_end">至</label>
     <input type="text" id="inputdate_end" name="inputdate_end" class="form-control input-sm" placeholder="YYYY-MM-DD"
-           style="display:inline-block; width: 90px;" value="@ViewBag.inputdate_end" />
-    <button type="submit" class="btn btn-warning">查詢</button>
-    <button type="button" class="btn btn-success" id="btnExport">匯出</button>
+           style="display: inline-block; width: 90px; margin-right: 10px;" value="@ViewBag.inputdate_end" />
+    <button type="submit" class="btn btn-warning" style="width: 90px; margin-right: 10px;">查詢</button>
+    <button type="button" class="btn btn-success" id="btnExport" style="width: 90px; margin-right: 10px;">匯出</button>
 
 }
 <p></p>
