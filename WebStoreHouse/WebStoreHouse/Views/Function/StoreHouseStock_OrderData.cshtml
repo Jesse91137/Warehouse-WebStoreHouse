@@ -27,22 +27,22 @@
                     {
                         <div style="display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:16px;width:100%;overflow-x:auto;min-width:700px;">
                             <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
-                                <label for="wono" class="form-label mb-0" style="white-space:nowrap;">工單</label>
+                                <label for="wono" class="form-label mb-0" style="white-space:nowrap;">工單：</label>
                                 @Html.TextBox("wono", null, new { @class = "form-control form-control-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "width:120px;" })
                             </div>
                             <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
-                                <label for="order_cust" class="form-label mb-0" style="white-space:nowrap;">客戶單號</label>
+                                <label for="order_cust" class="form-label mb-0" style="white-space:nowrap;">客戶單號：</label>
                                 @Html.TextBox("order_cust", null, new { @class = "form-control form-control-sm", @id = "order_cust", @placeholder = "請輸入客戶單號", style = "width:120px;" })
                             </div>
                             <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
-                                <label for="wono_cust" class="form-label mb-0" style="white-space:nowrap;">客戶工單</label>
+                                <label for="wono_cust" class="form-label mb-0" style="white-space:nowrap;">客戶工單：</label>
                                 @Html.TextBox("wono_cust", null, new { @class = "form-control form-control-sm", @id = "wono_cust", @placeholder = "請輸入客戶工單", style = "width:120px;" })
                             </div>
                             <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
-                                <label for="engsr" class="form-label mb-0" style="white-space:nowrap;">機種名稱</label>
+                                <label for="engsr" class="form-label mb-0" style="white-space:nowrap;">機種名稱：</label>
                                 @Html.TextBox("engsr", null, new { @class = "form-control form-control-sm", @id = "engsr", @placeholder = "請輸入機種名稱", style = "width:120px;" })
                             </div>
-                            <button type="submit" class="btn btn-primary px-4">查詢</button>
+                            <button type="submit" class="btn btn-primary px-4" style="width: 90px;">查詢</button>
                         </div>
                     }
                 </div>
@@ -98,7 +98,7 @@
                     {
                         <div style="display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;gap:12px;width:100%;overflow-x:auto;min-width:900px;">
                             <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
-                                <label for="indate" class="form-label mb-0" style="white-space:nowrap;">日期</label>
+                                <label for="indate" class="form-label mb-0" style="white-space:nowrap;">日期：</label>
                                 @Html.TextBox("indate", null, new { @class = "form-control form-control-sm", @id = "indate", @placeholder = "YYYY-MM-DD", style = "width:120px;" })
                             </div>
                             <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
@@ -106,18 +106,18 @@
                                 @Html.TextBox("indate2", null, new { @class = "form-control form-control-sm", @id = "indate2", @placeholder = "YYYY-MM-DD", style = "width:120px;" })
                             </div>
                             <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
-                                <label for="engsr" class="form-label mb-0" style="white-space:nowrap;">機種名稱</label>
+                                <label for="engsr" class="form-label mb-0" style="white-space:nowrap;">機種名稱：</label>
                                 @Html.TextBox("engsr", null, new { @class = "form-control form-control-sm", @id = "engsr", @placeholder = "請輸入工程號", style = "width:140px;" })
                             </div>
                             <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
-                                <label for="wono" class="form-label mb-0" style="white-space:nowrap;">工單</label>
+                                <label for="wono" class="form-label mb-0" style="white-space:nowrap;">工單：</label>
                                 @Html.TextBox("wono", null, new { @class = "form-control form-control-sm", @id = "wono", @placeholder = "請輸入工單號碼", style = "width:140px;" })
                             </div>
                             <div style="display:flex;flex-direction:row;align-items:center;gap:6px;">
-                                <label for="mark" class="form-label mb-0" style="white-space:nowrap;">備註</label>
+                                <label for="mark" class="form-label mb-0" style="white-space:nowrap;">備註：</label>
                                 @Html.TextBox("mark", null, new { @class = "form-control form-control-sm", @id = "mark", @placeholder = "請輸入標籤", style = "width:140px;" })
                             </div>
-                            <button type="submit" class="btn btn-primary px-4">查詢</button>
+                            <button type="submit" class="btn btn-primary px-4" style="width: 90px;">查詢</button>
                         </div>
                     }
                 </div>
@@ -200,14 +200,14 @@
         <div id="stockInQueryPanel" class="card mt-3" style="display:none;">
             <div class="d-flex justify-content-start" style="width:100%;">
                 <form id="stockInQueryForm" style="display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;width:100%;">
-                    <label for="inputdate" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">入庫日期</label>
+                    <label for="inputdate" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">入庫日期：</label>
                     <input type="date" class="form-control mb-0" id="inputdate" name="inputdate" style="width:130px;margin-right:12px;">
-                    <label for="wono" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">工單</label>
+                    <label for="wono" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">工單：</label>
                     <input type="text" class="form-control mb-0" id="wono" name="wono" placeholder="請輸入工單" style="width:130px;margin-right:12px;">
-                    <label for="engsr" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">機種</label>
+                    <label for="engsr" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">機種：</label>
                     <input type="text" class="form-control mb-0" id="engsr" name="engsr" placeholder="請輸入機種" style="width:130px;margin-right:12px;">
-                    <button type="button" id="btnStockInSearch" class="btn btn-success" style="margin-right:12px;">查詢</button>
-                    <button type="button" id="btnStockInExport" class="btn btn-secondary">匯出</button>
+                    <button type="button" id="btnStockInSearch" class="btn btn-success" style="width: 90px; margin-right: 12px;">查詢</button>
+                    <button type="button" id="btnStockInExport" class="btn btn-secondary" style="width: 90px;">匯出</button>
                 </form>
                 <br />
                 <div class="mt-4 w-100 table-responsive" style="overflow:auto;">
@@ -232,14 +232,14 @@
         <div id="stockOutQueryPanel" class="card mt-3" style="display:none;">
             <div class="d-flex justify-content-start" style="width:100%;">
                 <form id="stockOutQueryForm" style="display:flex;flex-direction:row;flex-wrap:nowrap;align-items:center;width:100%;">
-                    <label for="outputdate" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">出庫日期</label>
+                    <label for="outputdate" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">出庫日期：</label>
                     <input type="date" class="form-control mb-0" id="outputdate" name="outputdate" style="width:130px;margin-right:12px;">
-                    <label for="wono_out" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">工單</label>
+                    <label for="wono_out" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">工單：</label>
                     <input type="text" class="form-control mb-0" id="wono_out" name="wono_out" placeholder="請輸入工單" style="width:130px;margin-right:12px;">
-                    <label for="engsr_out" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">機種</label>
+                    <label for="engsr_out" class="form-label mb-0" style="white-space:nowrap;margin-right:12px;">機種：</label>
                     <input type="text" class="form-control mb-0" id="engsr_out" name="engsr_out" placeholder="請輸入機種" style="width:130px;margin-right:12px;">
-                    <button type="button" id="btnStockOutSearch" class="btn btn-success" style="margin-right:12px;">查詢</button>
-                    <button type="button" id="btnStockOutExport" class="btn btn-secondary">匯出</button>
+                    <button type="button" id="btnStockOutSearch" class="btn btn-success" style="width: 90px; margin-right: 12px;">查詢</button>
+                    <button type="button" id="btnStockOutExport" class="btn btn-secondary" style="width: 90px;">匯出</button>
                 </form>
                 <br />
                 <div class="mt-4 w-100 table-responsive" style="overflow:auto;">
