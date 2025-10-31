@@ -138,3 +138,190 @@
 ---
 
 **DISCLAIMER**: 這份 README 旨在幫助開發與維運；如需針對專案細節（例如確切的 .NET Framework 版本或資料庫腳本）進行補充，請提供 `Web.config` 中的連線字串樣本或專案的 `App_Start` 內容，我會把文件更新得更精準。
+
+---
+
+## 系統操作詳解（給開發者與維運）
+
+以下章節提供更具體、可執行的檢查清單與操作步驟，讓開發者或維運人員能在本機、測試或生產環境中快速啟動、偵錯與排除問題。
+
+### 先決條件（Prerequisites）
+
+- Windows 10/Server（支援 IIS）
+- Visual Studio 2019 或 2022（支援 .NET Framework）
+- SQL Server（或相容 DB）可供連線
+- nuget.exe（若需從命令列還原）
+- 必要的 native assemblies（例如 `SqlServerTypes` 對應的 x86/x64 DLL）已放置於專案或部署檔案中
+
+### 啟動與本機運行（詳細步驟）
+
+1. 取得程式碼並還原套件
+
+     - 在專案根目錄（含 `WebStoreHouse.sln`）執行還原：
+
+         ```powershell
+         nuget restore .\WebStoreHouse.sln
+         msbuild .\WebStoreHouse.sln /p:Configuration=Debug
+         ```
+
+     - 或在 Visual Studio 開啟 `WebStoreHouse.sln`，IDE 會自動還原 NuGet 套件。
+
+2. 設定資料庫連線
+
+     - 編輯 `Web.config` 中的 `<connectionStrings>`。建議在 local 開發使用本機 SQL Server（或 Docker container）測試。
+     - 若使用開發/測試/生產多個環境，請採用 Web.config transform 或在部署時注入連線字串（避免把敏感資訊放入版本庫）。
+
+3. 啟動應用程式
+
+     - 建議以 Visual Studio 的 IIS Express（F5）或使用本機 IIS（需要先設定 Site 與 Application Pool）：
+
+         - 如果使用本機 IIS：
+             1. 在 IIS 管理員建立一個 Site 或 Application，指向專案發佈輸出資料夾。
+             2. Application Pool 使用 .NET CLR v4.0 並設定適當的 Identity（建議專用服務帳號）。
+
+     - 若需發佈（Publish）：在 Visual Studio 使用「發佈」功能，或手動把編譯後的 `bin/`、`Views/`、`Content/`、`Scripts/`、`Web.config` 複製到網站目錄。
+
+### 快速檢查清單（當網站無法啟動）
+
+- 檢查 `Web.config` 的 `connectionStrings` 是否正確。
+- 確認 SQL Server 可連線（可用 SSMS 測試）。
+- 檢查 IIS Application Pool 是否啟動，並確認使用的 .NET CLR 版本。
+- 檢查網站檔案權限（例如 `App_Data` 是否有寫入權限）。
+- 查看 Windows Event Viewer 與 IIS 日誌（或開啟 Failed Request Tracing）取得詳細錯誤碼與堆疊。
+
+### 請求處理流程（Request flow — 詳細解說）
+
+1. 使用者發出 HTTP 請求到 URL。
+2. IIS 接受請求並依設定將請求轉給 ASP.NET MVC 管線。
+3. RouteConfig（或 Attribute Routing）解析路由並決定要呼叫哪個 Controller/Action。
+4. Controller 解析輸入（Model Binding）、驗證授權，並呼叫 Service 層或商業邏輯。
+5. Service 層或 Manager 層負責處理業務邏輯，並呼叫資料存取層（Repository）進行資料查詢或寫入。
+6. 資料層可能使用 Entity Framework（DbContext）或 Dapper（手寫 SQL）進行 DB 交互。
+7. Controller 根據需求回傳 View（Razor）或 JSON（API），視圖負責把資料渲染成 HTML 並回傳給瀏覽器。
+
+在除錯時，請沿著上述流程從 Controller 開始往下追蹤（先看路由、再看 Controller、Service、Repository、最後是 SQL）。
+
+### 資料庫與遷移（EF6）
+
+- 如果專案採用 EF Code First 與 Migration，使用 Package Manager Console（PMC）：
+
+    - 啟用 migration（只需做一次）：
+
+        ```powershell
+        Enable-Migrations
+        Add-Migration InitialCreate
+        Update-Database
+        ```
+
+    - 若僅在生產環境更新 schema，請先在 staging 測試 `Update-Database`，並將產生的 SQL script 備份。
+
+- 備份與還原（以 SQL Server 為例）：
+
+    - 備份（T-SQL）：
+
+        ```sql
+        BACKUP DATABASE [YourDatabase] TO DISK = N'C:\Backups\YourDatabase_full.bak' WITH INIT, FORMAT;
+        ```
+
+    - 還原（T-SQL）：
+
+        ```sql
+        RESTORE DATABASE [YourDatabase] FROM DISK = N'C:\Backups\YourDatabase_full.bak' WITH REPLACE;
+        ```
+
+    - 建議使用 SQL Server Agent 排程週期性備份，並驗證還原流程。
+
+### SqlServerTypes 與 Native Assemblies
+
+若專案使用 SQL Server 之地理空間型別或其他 native assemblies，需把對應的 x86/x64 DLL 放入 `bin`，並在啟動時載入（範例放在 Global.asax）：
+
+```csharp
+// ...existing code...
+// 在 Application_Start 或適合的位置呼叫：
+SqlServerTypes.Utilities.LoadNativeAssemblies(Server.MapPath("~"));
+// ...existing code...
+```
+
+### 日誌、錯誤追蹤與診斷（Operational diagnostics）
+
+- 檢查點：
+    - IIS 日誌位於 `%SystemDrive%\inetpub\logs\LogFiles`。
+    - Windows Event Viewer 可查看應用程式層級錯誤。
+    - 若專案有自訂日誌（例如 log4net、NLog、Serilog），請確認 `App_Data` 或日誌目錄權限並查看最近檔案。
+
+- 建議：
+    - 在 Global.asax 的 `Application_Error` 中把未處理例外記錄到檔案或外部系統。
+    - 生產環境建議導入集中式日誌（Application Insights、ELK、Seq、Sentry 等）。
+
+### 常見故障與處理步驟（Runbook）
+
+1. 500 系列錯誤（網站回傳 500）
+
+    - 步驟：
+        1. 開啟 `Web.config` 的 `customErrors` 設定為 `Off`（僅在測試環境），或查看 Event Viewer 與 IIS Failed Request Tracing。
+        2. 檢查 `Global.asax` 的 `Application_Error` 是否有記錄例外。
+        3. 檢查內部 exception 的 StackTrace，定位 Controller 或 Service 層的例外來源。
+
+2. 無法連線資料庫（連線逾時或拒絕）
+
+    - 步驟：
+        1. 用 SSMS 測試連線字串是否能連線到 DB。
+        2. 檢查防火牆、SQL Server 是否允許遠端連線，或是否有登入權限問題。
+        3. 在 `Web.config` 中確認帳號與密碼是否正確（若在生產環境請用安全的儲存方式）。
+
+3. 靜態檔 404（CSS / JS / 圖片）
+
+    - 步驟：
+        1. 檢查資源路徑是否正確，確認是否在 `Content/` 或 `Scripts/` 中存在該檔案。
+        2. 如果使用 BundleConfig，確認 bundle 設定與 `BundleTable.EnableOptimizations` 在開發/生產模式的差異。
+
+4. 權限問題（檔案寫入失敗）
+
+    - 步驟：
+        1. 檢查網站目錄與 `App_Data` 的 NTFS 權限，確保 Application Pool Identity 有寫入權限。
+        2. 若使用 Windows Service 帳號，確認該帳號擁有必要的權限。
+
+### 背景工作與排程任務
+
+- 若專案使用 Background Job（例如 Hangfire），請確認資料庫連線字串與 Background Job Server 是否在可用的主機上執行。
+- 如果使用 Windows Task Scheduler 或類似工具排程，請確認 Task 的執行帳號與工作目錄。
+
+### 建議的觀察指標與監控（要監控什麼）
+
+- 可用性（HTTP 2xx / 4xx / 5xx 比例）
+- 平均回應時間、P95/P99 延遲
+- 錯誤率（例外量）
+- 資料庫長查詢與死鎖
+- 磁碟與記憶體使用率、GC 次數（若可取得）
+
+建議工具：Prometheus + Grafana、Application Insights、ELK、Datadog。
+
+### 維運常用命令與操作清單
+
+- 重新啟動 App Pool（IIS）：在伺服器上使用 IIS 管理員或 PowerShell 指令重啟 App Pool。
+
+    ```powershell
+    Import-Module WebAdministration; Restart-WebAppPool -Name "YourAppPoolName"
+    ```
+
+- 查看最近 N 行 IIS 日誌（PowerShell 範例）：
+
+    ```powershell
+    Get-Content -Path 'C:\inetpub\logs\LogFiles\W3SVC1\u_ex*.log' -Tail 200
+    ```
+
+### 建議的改進與未來項目
+
+- 新增健康檢查 endpoint（例如 `/health` 或 `/api/health`），回傳簡單的 DB 連線檢查與磁碟空間狀態。
+- 導入集中式日誌與 APM（Application Performance Monitoring）。
+- 建立 CI/CD 流程（例如 Azure DevOps / GitHub Actions）執行自動化建置、單元測試與發佈。
+
+---
+
+如果你要我代為建立：
+
+- 一份測試用的 `Update-Database` SQL script 及 migration 範例；或
+- 一個簡單的 `health` API endpoint 與部署指引；或
+- 一個基礎的 CI/CD pipeline 範本（例如 Azure DevOps 或 GitHub Actions）
+
+請告訴我你要優先哪一項，我會幫你建立對應的檔案與示範。
