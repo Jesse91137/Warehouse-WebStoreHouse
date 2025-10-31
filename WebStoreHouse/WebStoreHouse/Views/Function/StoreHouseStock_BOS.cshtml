@@ -55,8 +55,8 @@
     <label for="engsr">機種名稱：</label>
     <input type="text" id="engsr" name="engsr" value="@Request.QueryString["engsr"]" class="form-control"
            style="width:180px; margin-right:10px;" />
-    <button type="submit" class="btn btn-primary" id="searchBtn" style="margin-right:10px;">查詢</button>
-    <button type="button" class="btn btn-success"
+    <button type="submit" class="btn btn-primary" id="searchBtn" style="margin-right:10px; width: 90px;">查詢</button>
+    <button type="button" class="btn btn-success" style="width: 90px;"
             onclick="location.href='@Url.Action("ExportBOSExcel", "Function", new { engsr = Request.QueryString["engsr"] })'">
         匯出
     </button>
