@@ -51,5 +51,13 @@ namespace WebStoreHouse.Models
         /// 滿箱數量（可為 null）。
         /// </summary>
         public int? Full_Amount { get; set; }
+
+        /// <summary>
+        /// 尾數箱數量。
+        /// </summary>
+        /// <value>
+        /// 數量 / 滿箱數量 餘數。
+        /// </value>
+        public string NumberOfTailBoxes { get; set; }
     }
 }
