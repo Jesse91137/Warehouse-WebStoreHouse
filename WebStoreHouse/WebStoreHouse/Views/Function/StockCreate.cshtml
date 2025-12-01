@@ -5,6 +5,7 @@
 @{
     ViewBag.Title = "倉庫庫存新增";
 }
+
 <head>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <link href="~/Content/bootstrap.css" rel="stylesheet" />
@@ -129,7 +130,7 @@
                 @if (!string.IsNullOrEmpty(iGroup))
                 {
                     <input type="submit" value="Group" class="btn btn-default" id="buttonName" name="buttonName"
-                           disabled="disabled" />
+                        disabled="disabled" />
                     <input type="submit" value="unGroup" class="btn btn-default" id="buttonName" name="buttonName" />
                 }
                 else
@@ -144,20 +145,30 @@
             <label class="control-label col-md-2">工單</label>
             <div class="col-md-10" style="display: flex; align-items: center; gap: 10px;">
                 <input class="form-control" id="wono" name="wono" autocomplete="off"
-                       style="width: 200px; display: inline-block;" value="@(Model.wono ?? string.Empty)" />
+                    style="width: 200px; display: inline-block;" value="@(Model.wono ?? string.Empty)" />
                 @Html.ValidationMessageFor(Model => Model.wono, "", new { @class = "text-danger" })
                 <label class="control-label" for="item" style="margin-left: 10px;">機種</label>
                 <input class="form-control" id="item" name="item" readonly
-                       style="width: 200px; display: inline-block; background-color: #f5f5f5;"
-                       value="@(Model.eng_sr ?? string.Empty)" />
+                    style="width: 200px; display: inline-block; background-color: #f5f5f5;"
+                    value="@(Model.eng_sr ?? string.Empty)" />
             </div>
         </div>
 
         <div class="form-group">
             <label class="control-label col-md-2">數量</label>
             <div class="col-md-10">
-                <input class="form-control" id="quantity" name="quantity" onkeyup="value=value.replace(/^(0+)|[^\d]+/g,'')"
-                       autocomplete="off" value="@(Model.quantity != null ? Model.quantity.ToString() : string.Empty)" />
+                <!--
+                                防呆要求：只能輸入整數、不可為空、預設 0
+                                - required + pattern 驗證表單提交時確保為數字且非空
+                                - oninput 即時過濾非數字字元
+                                - 若使用者清空欄位，自動補 0
+                                - value 預設 Model.quantity 或 "0"
+                            -->
+                <input class="form-control" id="quantity" name="quantity" autocomplete="off" required pattern="^\d+$"
+                    title="請輸入整數（大於或等於 0）"
+                    oninput="this.value=this.value.replace(/[^\d]/g,''); if(this.value.length>1 && this.value.startsWith('0')) this.value=this.value.replace(/^0+/, '');"
+                    onblur="if(this.value==='') this.value='0';"
+                    value="@(Model.quantity != null ? Model.quantity.ToString() : "0")" />
                 @Html.ValidationMessageFor(Model => Model.quantity, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -166,8 +177,10 @@
             <label class="control-label col-md-2">箱數</label>
             <div class="col-md-10">
                 <input class="form-control" id="box_quantity" name="box_quantity" autocomplete="off"
-                       value="@(Model.box_quantity != null ? Model.box_quantity.ToString() : "0")"
-                       onkeyup="if (value!='' && value!='0' && !/^([1-9][0-9]*)$/.test(value)) value=value.replace(/^0|[^\d]/g,'')" />
+                    value="@(Model.box_quantity != null ? Model.box_quantity.ToString() : "0")" required pattern="^\d+$"
+                    title="請輸入整數（大於或等於 0）"
+                    oninput="this.value=this.value.replace(/[^\d]/g,''); if(this.value.length>1 && this.value.startsWith('0')) this.value=this.value.replace(/^0+/, '');"
+                    onblur="if(this.value==='') this.value='0';" />
                 @Html.ValidationMessageFor(Model => Model.box_quantity, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -183,43 +196,43 @@
                         autocomplete = "off"
                     }
                         })
-                @Html.ValidationMessageFor(Model => Model.position, "", new { @class = "text-danger" })
-            </div>
+            @Html.ValidationMessageFor(Model => Model.position, "", new { @class = "text-danger" })
         </div>
+    </div>
 
-        <div class="form-group">
-            <label class="control-label col-md-2">包裝</label>
-            <div class="col-md-10">
-                <select id="package" name="package" class="form-control">
-                    <option value="" @(string.IsNullOrEmpty(Model.package) ? "selected" : "")>請選擇...</option>
-                    <option value="Tary" @(Model.package == "Tary" ? "selected" : "")>1　|　Tray盤(Tray)</option>
-                    <option value="Box" @(Model.package == "Box" ? "selected" : "")>2　|　箱(Box)</option>
-                </select>
-            </div>
+    <div class="form-group">
+        <label class="control-label col-md-2">包裝</label>
+        <div class="col-md-10">
+            <select id="package" name="package" class="form-control">
+                <option value="" @(string.IsNullOrEmpty(Model.package) ? "selected" : "")>請選擇...</option>
+                <option value="Tary" @(Model.package == "Tary" ? "selected" : "")>1　|　Tray盤(Tray)</option>
+                <option value="Box" @(Model.package == "Box" ? "selected" : "")>2　|　箱(Box)</option>
+            </select>
         </div>
+    </div>
 
-        <div class="form-group">
-            <label class="control-label col-md-2">備註</label>
-            <div class="col-md-10">
-                @Html.EditorFor(Model => Model.mark, new
-                            {
-                        htmlAttributes = new
+    <div class="form-group">
+        <label class="control-label col-md-2">備註</label>
+        <div class="col-md-10">
+            @Html.EditorFor(Model => Model.mark, new
                         {
-                            @class = "form-control",
-                            autocomplete =
-                        "off"
-                        }
-                            })
-                @Html.ValidationMessageFor(Model => Model.mark, "", new { @class = "text-danger" })
-            </div>
-            <label class="control-label col-md-2"></label>
-            <div class="col-md-10">
-            </div>
+                    htmlAttributes = new
+                    {
+                        @class = "form-control",
+                        autocomplete =
+                    "off"
+                    }
+                        })
+            @Html.ValidationMessageFor(Model => Model.mark, "", new { @class = "text-danger" })
         </div>
+        <label class="control-label col-md-2"></label>
+        <div class="col-md-10">
+        </div>
+    </div>
 
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                @{
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            @{
                     var iGroup2 = Session["IGroup"] as string;
                 }
                 @if (!string.IsNullOrWhiteSpace(iGroup2))
@@ -227,7 +240,8 @@
                     <button type="submit" name="buttonName" value="Again" class="btn btn-primary">再一筆</button>
                 }
                 <button type="submit" name="buttonName" value="End" class="btn btn-primary">結束送出</button>
-                <button type="button" class="btn btn-warning" onclick="window.location.href='@Url.Action("StoreHouseStock", "Function")'">取消</button>&emsp; &emsp;
+                <button type="button" class="btn btn-warning"
+                    onclick="window.location.href='@Url.Action("StoreHouseStock", "Function")'">取消</button>&emsp; &emsp;
                 <label class="text-danger" id="errMsg">@ViewBag.err</label>
             </div>
         </div>
