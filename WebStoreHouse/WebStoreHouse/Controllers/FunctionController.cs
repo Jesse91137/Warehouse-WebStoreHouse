@@ -289,10 +289,15 @@ namespace WebStoreHouse.Controllers
         public ActionResult StockCreate(string wono, int? quantity, string position, string mark, string package,
             string buttonName, bool isActive, int? box_quantity, string transportation, string nowono = "N")
         {
+            /*// 每日排程"\\192.168.4.11\33 倉庫備料單\07. 收發組\成倉\成倉SAP_Excel\"把EXCEL檔案
+             * -[ZRSD19]取得寫入 E_ZRSD19
+             * -[ZRSD14P]取得寫入 E_ZRSD14P
+             * Update E_StoreHouseStock
+             */
             // ZRSD19 / ZRSD14P 查無資料無法新增情況
             if (TempData["CheckData"] != null && !string.IsNullOrWhiteSpace(TempData["CheckData"].ToString()))
             {
-                ViewBag.err = "ZRSD19/ZRSD14P查無資料，無法新增!";
+                ViewBag.err = "ZRSD19/ZRSD14P 查無資料，無法新增!";
                 // 保留原欄位值並顯示錯誤
                 var model = new WebStoreHouse.Models.E_StoreHouseStock
                 {
@@ -437,8 +442,16 @@ namespace WebStoreHouse.Controllers
             if (data19 != null && !string.IsNullOrEmpty(data19.item))
             {
                 // 找到剛剛寫入 E_StoreHouseStock_In 的sno
+                /*取得[E_StoreHouseStock_In]最新的入庫記錄時*/
                 int sno = db.E_StoreHouseStock_In.Where(x => x.wono == wono).OrderByDescending(x => x.sno).Select(x => x.sno).FirstOrDefault();
 
+                /*// 每日排程"\\192.168.4.11\33 倉庫備料單\07. 收發組\成倉\成倉SAP_Excel\"把EXCEL檔案
+                 * -[ZRSD19]取得寫入 E_ZRSD19
+                 * -[ZRSD14P]取得寫入 E_Kf10
+                 * -[KQ30]取得寫入 E_KQ30
+                 * -[KF10]取得寫入 E_Kf10
+                 * Update E_StoreHouseStock
+                 */
                 // 透過這筆sno的wono資料查詢相關資訊
                 var query = from a in db.E_ZRSD19
                             join b in (from E_Kf10 in db.E_Kf10 group E_Kf10 by E_Kf10.Material into g select new { Material = g.Key, Unrestricted = (int?)g.Sum(p => p.Unrestricted) })
@@ -516,6 +529,7 @@ namespace WebStoreHouse.Controllers
             #region ZRSD14P
             else if (data14p != null && !string.IsNullOrEmpty(data14p.item))
             {
+                /*取得[E_StoreHouseStock_In]最新的入庫記錄時*/
                 var chk_in = db.E_StoreHouseStock_In.Where(_in => _in.wono == wono).OrderByDescending(_in => _in.sno).FirstOrDefault();
                 var houseStock = new E_StoreHouseStock
                 {
@@ -593,6 +607,7 @@ namespace WebStoreHouse.Controllers
             }
             #endregion
             #region step 2. 寫入庫存總表作業
+            /*取得[E_StoreHouseStock_In]最新的入庫記錄時*/
             var chk_in = db.E_StoreHouseStock_In.Where(_in => _in.wono == wono).OrderByDescending(_in => _in.sno).FirstOrDefault();
             var houseStock = new E_StoreHouseStock
             {
@@ -628,8 +643,6 @@ namespace WebStoreHouse.Controllers
             #endregion
         }
         #endregion
-
-
 
         #endregion
         #region 修改庫存
@@ -732,14 +745,16 @@ namespace WebStoreHouse.Controllers
 
             return RedirectToAction("StoreHouseStock");
         }
-        #endregion
-        #region 刪除庫存
+
         /// <summary>
-        /// 刪除庫存資料
+        /// 刪除庫存資料（軟刪除，僅設置 del_flag 為 'D'，不會從資料庫實體刪除）。
         /// </summary>
-        /// <param name="serialno"></param>
-        /// <param name="igroup"></param>
-        /// <returns></returns>
+        /// <param name="serialno">庫存資料的唯一識別碼（serialno）。</param>
+        /// <param name="igroup">群組代碼（Igroup），若有指定則刪除該群組下所有庫存資料。</param>
+        /// <returns>
+        /// 刪除後重新導向至 <see cref="StoreHouseStock"/> 庫存查詢頁面。
+        /// 若未登入則導向登入頁。
+        /// </returns>
         public ActionResult DeleteStock(int? serialno, string igroup)
         {
             // 權限不足或未登入
@@ -749,15 +764,16 @@ namespace WebStoreHouse.Controllers
                 return authResult;
             }
 
-            //刪除非真正刪除資料,加入flag以後查詢
-            //var stock = db.E_StoreHouseStock.Find(sno);
+            // 刪除非真正刪除資料，僅設置 del_flag 以後查詢時不顯示
             List<E_StoreHouseStock> stock;
             if (!string.IsNullOrEmpty(igroup))
             {
+                // 若有指定群組，則刪除該群組下所有庫存資料
                 stock = db.E_StoreHouseStock.Where(m => m.Igroup == igroup).ToList();
             }
             else
             {
+                // 否則僅刪除指定 serialno 的單筆庫存資料
                 stock = db.E_StoreHouseStock.Where(m => m.serialno == serialno).ToList();
             }
 
@@ -955,12 +971,7 @@ namespace WebStoreHouse.Controllers
         #endregion
         #endregion
 
-        #region Private Methods
-        // ...private methods...
         #endregion
-
-        #endregion
-
 
         #region 入庫資料查詢
         #region 查詢
@@ -1416,20 +1427,15 @@ namespace WebStoreHouse.Controllers
             */
             #endregion
 
-            //try
-            //{
-            //    db.SaveChanges();
-            //}
-            //catch (Exception sc)
-            //{
-
-            //    throw;
-            //}
-
             //執行Home控制器的ShoppingCar動作方法
             return RedirectToAction("StoreHouseStock_SC");
 
         }
+        /// <summary>
+        /// 刪除預計出貨明細（購物車）資料。
+        /// </summary>
+        /// <param name="sno">預計出貨明細的唯一識別碼。</param>
+        /// <returns>刪除後重新導向至預計出貨明細頁面。</returns>
         public ActionResult Delete_SC(int sno)
         {
             var del_sc = db.E_StoreHouseStock_SC.Find(sno);
@@ -1437,7 +1443,11 @@ namespace WebStoreHouse.Controllers
             db.SaveChanges();
             return RedirectToAction("StoreHouseStock_SC");
         }
-        //GET:Index/DeleteCar
+        /// <summary>
+        /// 刪除購物車中指定工單號碼的商品。
+        /// </summary>
+        /// <param name="wono">工單號碼。</param>
+        /// <returns>刪除後重新導向至預計出貨明細頁面。</returns>
         public ActionResult DeleteCar(string wono)
         {
             //依照fId找出要刪除的購物車"狀態"的商品
@@ -1451,6 +1461,7 @@ namespace WebStoreHouse.Controllers
         #endregion
 
         #region 預設出貨
+        // 每日排程"\\192.168.4.11\33 倉庫備料單\07. 收發組\成倉\成倉SAP_Excel\"把EXCEL檔案-ZRSD13 寫入 E_ZRSD13取得寫入
         //GET:Function/StoreHouseStock_SC
         /// <summary>
         /// 預設出貨
@@ -1597,8 +1608,9 @@ namespace WebStoreHouse.Controllers
         /// <returns>編輯完成後導向預計出貨明細頁面，或回傳編輯頁面與錯誤訊息。</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit_SC(int sno, string sales_order, string cust_wono, int? exp_shipquantity, string sap_mark,
-            int? stock_quantity, string sap_in, string company_code, string wono, string position, string eng_sr, int ssno, int box_quantity, string transportation)
+        public ActionResult Edit_SC(int sno, string sales_order, string cust_wono, int? exp_shipquantity
+            , string sap_mark,int? stock_quantity, string sap_in, string company_code, string wono
+            , string position, string eng_sr, int ssno, int box_quantity, string transportation)
         {
             // 權限不足或未登入
             var authResult = Login_Authentication();
@@ -1696,6 +1708,231 @@ namespace WebStoreHouse.Controllers
 
         }
 
+        /// <summary>
+        /// 確認出貨，將[預計出貨]明細資料正式轉為訂單，並處理庫存扣帳與已銷單庫存。
+        /// <para>1. 取得[預計出貨]-公司名稱不為空及未確認。</para>
+        /// <para>2. 取得會員帳號，建立訂單識別碼。</para>
+        /// <para>3. 將購物車狀態的預計出貨明細（IsApproved="N"）設為已確認（IsApproved="Y"），並加入訂單識別碼。</para>
+        /// <para>4. 建立出貨明細（E_StoreHouseStock_Order），並將公司代號為5的資料寫入已銷單庫存（E_StoreHouseStock_BOS）。</para>
+        /// <para>5. 確認出貨後，依據出貨明細扣除成倉庫存數量。</para>
+        /// </summary>
+        /// <param name="sno">訂單唯一識別碼（未使用，保留參數）</param>
+        /// <returns>出貨明細頁面</returns>
+        [HttpPost]
+        public ActionResult OrderConfirm(string sno)
+        {
+            // 權限不足或未登入
+            var authResult = Login_Authentication();
+            if (authResult != null)
+            {
+                return authResult;
+            }
+
+            // 找出會員帳號指定給fUserId
+            string fUserId = ViewBag.UserId;
+            //建立唯一的識別,並指定給guid變數用來當作訂單編號
+            //tOrder的fOrderGuid欄位會關連到tOrderDetail的fOrderGuid欄位
+            //形成一對的關係,即一筆訂單資料對應多筆訂單明細(Master-Detail)
+            string guid = Guid.NewGuid().ToString();
+
+            //找出目前在預計出貨中"未有識別碼"及"公司"不為空的資料
+            var carList = db.E_StoreHouseStock_SC.Where(m => m.IsApproved == "N" && m.company_name != "").ToList();
+            //將購物車狀態的fIsApproved設定為"是"表示確認訂購產品
+            foreach (var item in carList)
+            {
+                if (!string.IsNullOrEmpty(item.company_name) || item.company_code == "5")
+                {
+                    item.OrderGuid = guid;     //進入該迴圈表示訂單成立,加入訂單識別碼
+                    item.IsApproved = "Y";
+                    db.Entry(item).State = EntityState.Modified;
+                }
+            }
+            //更新資料庫, 異動tOrder 和 tOrderDetail
+            //完成訂單主檔和訂單明細的更新
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                // 保持原本行為：向上拋出
+                throw;
+            }
+            #region 預計出貨資料 - E_StoreHouseStock_SC
+            //找出當日預計出貨資料(Y+當日)
+            string today = DateTime.Now.ToString("yyyy-MM-dd");
+            //寫出貨明細(加入訂單碼)
+            var Y_carList = db.E_StoreHouseStock_SC
+                                .Where(m => m.IsApproved == "Y" //&& m.company_code != "5"
+                                && m.exp_shipdate == today && !string.IsNullOrEmpty(m.OrderGuid)
+                                && !db.E_StoreHouseStock_Order.Any(x => x.OrderGuid == m.OrderGuid)).ToList();
+            //寫已銷單庫存(不加入訂單碼)
+            var carList_5 = db.E_StoreHouseStock_SC
+                                .Where(m => m.IsApproved == "Y" && m.company_code == "5"
+                                && m.exp_shipdate == today && !string.IsNullOrEmpty(m.OrderGuid)
+                                && !db.E_StoreHouseStock_Order.Any(x => x.OrderGuid == m.OrderGuid)).ToList();
+            #endregion
+            //建立當日訂單主檔資料 company_code != "5"
+            foreach (var Y_item in Y_carList)
+            {
+                E_StoreHouseStock_Order order = new E_StoreHouseStock_Order();
+                order.OrderGuid = Y_item.OrderGuid;    //訂單識別碼
+                order.UserId = fUserId;
+                order.wono = Y_item.wono.Trim();
+                order.cust_wono = Y_item.cust_wono.Trim();
+                order.eng_sr = Y_item.eng_sr.Trim();
+                order.sales_order = Y_item.sales_order.Trim();
+                order.box_quantity = Y_item.box_quantity;
+                order.exp_shipquantity = Y_item.exp_shipquantity;
+                order.stock_quantity = Y_item.stock_quantity;
+                order.sap_mark = Y_item.sap_mark.Trim();
+                order.sap_in = Y_item.sap_in;
+                order.company_code = Y_item.company_code.Trim();
+                order.company_name = Y_item.company_name;
+                order.address = Y_item.address;
+                order.transportation = Y_item.transportation;
+                order.chk_date = DateTime.Now;
+                order.position = Y_item.position;
+                try
+                {
+                    db.E_StoreHouseStock_Order.Add(order);
+                }
+                catch (Exception)
+                {
+                    // 保持原本行為：向上拋出
+                    throw;
+                }
+            }
+            db.SaveChanges();
+
+            #region 寫入已銷單庫存 - 預計出貨資料 - 公司代號 = 5 (已銷單庫存)
+            foreach (var item_5 in carList_5)
+            {
+                //檢查E_StoreHouseStock_BOS是否已有該機種資料，考量到會異動庫位
+                //20251113 Jesse 修改多加庫位條件
+                var engsr_bos = db.E_StoreHouseStock_BOS
+                    .FirstOrDefault(x => x.eng_sr == item_5.eng_sr && x.position == item_5.position);
+                if (engsr_bos != null)
+                {
+                    engsr_bos.quantity += item_5.exp_shipquantity;
+                }
+                else
+                {
+                    E_StoreHouseStock_BOS stock_BOS = new E_StoreHouseStock_BOS();
+
+                    stock_BOS.quantity = item_5.exp_shipquantity;
+                    stock_BOS.position = item_5.position;
+                    stock_BOS.eng_sr = item_5.eng_sr.Trim();
+                    stock_BOS.ship_quantity = 0;
+                    stock_BOS.transportation = item_5.transportation.Trim();
+                    stock_BOS.date = item_5.exp_shipdate;
+                    try
+                    {
+                        db.E_StoreHouseStock_BOS.Add(stock_BOS);
+                    }
+                    catch (Exception)
+                    {
+                        // 保持原本行為：向上拋出
+                        throw;
+                    }
+                }
+            }
+            db.SaveChanges();
+            #endregion
+            #region XX寫入已銷單庫存XX
+            //找出公司代號5的資料
+            //var result = (from a in db.E_StoreHouseStock_SC
+            //              join b in db.E_StoreHouseStock on a.eng_sr equals b.eng_sr into b_join
+            //              from b in b_join.DefaultIfEmpty()
+            //              join c in db.E_Weight on new { Eng_sr = a.eng_sr } equals new { Eng_sr = c.EngSr } into c_join
+            //              from c in c_join.DefaultIfEmpty()
+            //              where
+            //                a.IsApproved == "Y" &&
+            //                a.company_code == "5" &&
+            //                a.exp_shipdate == today
+            //              select new
+            //              {
+            //                  a.eng_sr,
+            //                  a.exp_shipdate,
+            //                  a.exp_shipquantity,
+            //                  Position = b.position,
+            //                  a.transportation,
+            //                  Full_Amount = (int?)c.Full_Amount,
+            //                  Full_GW = (decimal?)c.Full_GW,
+            //                  Full_NW = (decimal?)c.Full_NW,
+            //              }).Distinct();
+            //if (result.Count() > 0)
+            //{
+            //    List<E_StoreHouseStock_BOS> stock_BOS_List = new List<E_StoreHouseStock_BOS>();
+            //    //var groupedResult = result.GroupBy(x => x.eng_sr);
+
+            //    foreach (var group in result)
+            //    {
+            //        var engsr_bos = db.E_StoreHouseStock_BOS.FirstOrDefault(x => x.eng_sr == group.eng_sr);
+            //        if (engsr_bos == null)
+            //        {
+            //            E_StoreHouseStock_BOS stock_BOS = new E_StoreHouseStock_BOS();
+            //            stock_BOS.eng_sr = group.eng_sr;
+            //            stock_BOS.date = group.exp_shipdate;
+            //            stock_BOS.position = group.Position;
+            //            stock_BOS.quantity = group.exp_shipquantity;
+            //            stock_BOS.Full_Amount = group.Full_Amount;
+            //            stock_BOS.Full_GW = group.Full_GW;
+            //            stock_BOS.Full_NW = group.Full_NW;
+            //            stock_BOS.ship_quantity = 0;
+            //            stock_BOS.transportation = group.transportation;
+            //            stock_BOS_List.Add(stock_BOS);
+            //        }
+            //        else
+            //        {
+            //            engsr_bos.quantity += group.exp_shipquantity;
+            //        }
+            //    }
+            //    try
+            //    {
+            //        db.E_StoreHouseStock_BOS.AddRange(stock_BOS_List);
+            //        db.SaveChanges();
+            //    }
+            //    catch (Exception torder)
+            //    {
+            //        throw;
+            //    }
+            //}
+            #endregion
+
+            #region 取消編輯後扣帳改為確認出貨再扣帳
+            //Y_carList 代表編輯後這一批要出貨的帳
+            foreach (var item in Y_carList)
+            {
+                if (item.wono != "無工單出貨")
+                {
+                    var tstock = db.E_StoreHouseStock
+                    .Where(w => w.wono == item.wono && w.position == item.position && w.del_flag != "D").FirstOrDefault();
+                    tstock.quantity = tstock.quantity - item.exp_shipquantity;
+                    db.SaveChanges();
+                }
+
+            }
+            //carList_5 代表公司代碼5的扣帳
+            foreach (var item_5 in carList_5)
+            {
+                if (item_5.wono != "無工單出貨")
+                {
+                    var tstock_5 = db.E_StoreHouseStock
+                    .Where(w => w.eng_sr == item_5.eng_sr && w.position == item_5.position && item_5.wono == "").FirstOrDefault();
+                    if (tstock_5 != null)
+                    {
+                        tstock_5.quantity = tstock_5.quantity - item_5.exp_shipquantity;
+                        db.SaveChanges();
+                    }
+                }
+
+            }
+
+            #endregion
+
+            return RedirectToAction("StoreHouseStock_Order");
+        }
         #endregion
 
         #region 無單號出貨
@@ -1968,227 +2205,6 @@ namespace WebStoreHouse.Controllers
             return RedirectToAction("StoreHouseStock");
         }
 
-        /// <summary>
-        /// 確認出貨訂單，將預計出貨明細資料正式轉為訂單，並處理庫存扣帳與已銷單庫存。
-        /// <para>1. 取得會員帳號，建立訂單識別碼。</para>
-        /// <para>2. 將購物車狀態的預計出貨明細（IsApproved="N"）設為已確認（IsApproved="Y"），並加入訂單識別碼。</para>
-        /// <para>3. 建立出貨明細（E_StoreHouseStock_Order），並將公司代號為5的資料寫入已銷單庫存（E_StoreHouseStock_BOS）。</para>
-        /// <para>4. 確認出貨後，依據出貨明細扣除成倉庫存數量。</para>
-        /// </summary>
-        /// <param name="sno">訂單唯一識別碼（未使用，保留參數）</param>
-        /// <returns>出貨明細頁面</returns>
-        [HttpPost]
-        public ActionResult OrderConfirm(string sno)
-        {
-            // 權限不足或未登入
-            var authResult = Login_Authentication();
-            if (authResult != null)
-            {
-                return authResult;
-            }
-
-            // 找出會員帳號指定給fUserId
-            string fUserId = ViewBag.UserId;
-            //建立唯一的識別,並指定給guid變數用來當作訂單編號
-            //tOrder的fOrderGuid欄位會關連到tOrderDetail的fOrderGuid欄位
-            //形成一對的關係,即一筆訂單資料對應多筆訂單明細(Master-Detail)
-            string guid = Guid.NewGuid().ToString();
-
-            //找出目前在預計出貨中"未有識別碼"的資料
-            var carList = db.E_StoreHouseStock_SC.Where(m => m.IsApproved == "N" && m.company_name != "").ToList();
-            //將購物車狀態的fIsApproved設定為"是"表示確認訂購產品
-            foreach (var item in carList)
-            {
-                if (!string.IsNullOrEmpty(item.company_name) || item.company_code == "5")
-                {
-                    item.OrderGuid = guid;     //進入該迴圈表示訂單成立,加入訂單識別碼
-                    item.IsApproved = "Y";
-                    db.Entry(item).State = EntityState.Modified;
-                }
-            }
-            //更新資料庫, 異動tOrder 和 tOrderDetail
-            //完成訂單主檔和訂單明細的更新
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (Exception)
-            {
-                // 保持原本行為：向上拋出
-                throw;
-            }
-            //找出當日預計出貨資料(Y+當日)
-            string today = DateTime.Now.ToString("yyyy-MM-dd");
-            //寫出貨明細(加入訂單碼)
-            var Y_carList = db.E_StoreHouseStock_SC
-                                .Where(m => m.IsApproved == "Y" //&& m.company_code != "5"
-                                && m.exp_shipdate == today && !string.IsNullOrEmpty(m.OrderGuid)
-                                && !db.E_StoreHouseStock_Order.Any(x => x.OrderGuid == m.OrderGuid)).ToList();
-            //寫已銷單庫存(不加入訂單碼)
-            var carList_5 = db.E_StoreHouseStock_SC
-                                .Where(m => m.IsApproved == "Y" && m.company_code == "5"
-                                && m.exp_shipdate == today && !string.IsNullOrEmpty(m.OrderGuid)
-                                && !db.E_StoreHouseStock_Order.Any(x => x.OrderGuid == m.OrderGuid)).ToList();
-
-            //建立當日訂單主檔資料
-            foreach (var Y_item in Y_carList)
-            {
-                E_StoreHouseStock_Order order = new E_StoreHouseStock_Order();
-                order.OrderGuid = Y_item.OrderGuid;    //訂單識別碼
-                order.UserId = fUserId;
-                order.wono = Y_item.wono.Trim();
-                order.cust_wono = Y_item.cust_wono.Trim();
-                order.eng_sr = Y_item.eng_sr.Trim();
-                order.sales_order = Y_item.sales_order.Trim();
-                order.box_quantity = Y_item.box_quantity;
-                order.exp_shipquantity = Y_item.exp_shipquantity;
-                order.stock_quantity = Y_item.stock_quantity;
-                order.sap_mark = Y_item.sap_mark.Trim();
-                order.sap_in = Y_item.sap_in;
-                order.company_code = Y_item.company_code.Trim();
-                order.company_name = Y_item.company_name;
-                order.address = Y_item.address;
-                order.transportation = Y_item.transportation;
-                order.chk_date = DateTime.Now;
-                order.position = Y_item.position;
-                try
-                {
-                    db.E_StoreHouseStock_Order.Add(order);
-                }
-                catch (Exception)
-                {
-                    // 保持原本行為：向上拋出
-                    throw;
-                }
-            }
-            db.SaveChanges();
-
-            #region 寫入已銷單庫存
-            foreach (var item_5 in carList_5)
-            {
-                var engsr_bos = db.E_StoreHouseStock_BOS.FirstOrDefault(x => x.eng_sr == item_5.eng_sr);
-                if (engsr_bos != null)
-                {
-                    engsr_bos.quantity += item_5.exp_shipquantity;
-                }
-                else
-                {
-                    E_StoreHouseStock_BOS stock_BOS = new E_StoreHouseStock_BOS();
-
-                    stock_BOS.quantity = item_5.exp_shipquantity;
-                    stock_BOS.position = item_5.position;
-                    stock_BOS.eng_sr = item_5.eng_sr.Trim();
-                    stock_BOS.ship_quantity = 0;
-                    stock_BOS.transportation = item_5.transportation.Trim();
-                    stock_BOS.date = item_5.exp_shipdate;
-                    try
-                    {
-                        db.E_StoreHouseStock_BOS.Add(stock_BOS);
-                    }
-                    catch (Exception)
-                    {
-                        // 保持原本行為：向上拋出
-                        throw;
-                    }
-                }
-            }
-            db.SaveChanges();
-            #endregion
-            #region XX寫入已銷單庫存XX
-            //找出公司代號5的資料
-            //var result = (from a in db.E_StoreHouseStock_SC
-            //              join b in db.E_StoreHouseStock on a.eng_sr equals b.eng_sr into b_join
-            //              from b in b_join.DefaultIfEmpty()
-            //              join c in db.E_Weight on new { Eng_sr = a.eng_sr } equals new { Eng_sr = c.EngSr } into c_join
-            //              from c in c_join.DefaultIfEmpty()
-            //              where
-            //                a.IsApproved == "Y" &&
-            //                a.company_code == "5" &&
-            //                a.exp_shipdate == today
-            //              select new
-            //              {
-            //                  a.eng_sr,
-            //                  a.exp_shipdate,
-            //                  a.exp_shipquantity,
-            //                  Position = b.position,
-            //                  a.transportation,
-            //                  Full_Amount = (int?)c.Full_Amount,
-            //                  Full_GW = (decimal?)c.Full_GW,
-            //                  Full_NW = (decimal?)c.Full_NW,
-            //              }).Distinct();
-            //if (result.Count() > 0)
-            //{
-            //    List<E_StoreHouseStock_BOS> stock_BOS_List = new List<E_StoreHouseStock_BOS>();
-            //    //var groupedResult = result.GroupBy(x => x.eng_sr);
-
-            //    foreach (var group in result)
-            //    {
-            //        var engsr_bos = db.E_StoreHouseStock_BOS.FirstOrDefault(x => x.eng_sr == group.eng_sr);
-            //        if (engsr_bos == null)
-            //        {
-            //            E_StoreHouseStock_BOS stock_BOS = new E_StoreHouseStock_BOS();
-            //            stock_BOS.eng_sr = group.eng_sr;
-            //            stock_BOS.date = group.exp_shipdate;
-            //            stock_BOS.position = group.Position;
-            //            stock_BOS.quantity = group.exp_shipquantity;
-            //            stock_BOS.Full_Amount = group.Full_Amount;
-            //            stock_BOS.Full_GW = group.Full_GW;
-            //            stock_BOS.Full_NW = group.Full_NW;
-            //            stock_BOS.ship_quantity = 0;
-            //            stock_BOS.transportation = group.transportation;
-            //            stock_BOS_List.Add(stock_BOS);
-            //        }
-            //        else
-            //        {
-            //            engsr_bos.quantity += group.exp_shipquantity;
-            //        }
-            //    }
-            //    try
-            //    {
-            //        db.E_StoreHouseStock_BOS.AddRange(stock_BOS_List);
-            //        db.SaveChanges();
-            //    }
-            //    catch (Exception torder)
-            //    {
-            //        throw;
-            //    }
-            //}
-            #endregion
-
-            #region 取消編輯後扣帳改為確認出貨再扣帳
-            //Y_carList 代表編輯後這一批要出貨的帳
-            foreach (var item in Y_carList)
-            {
-                if (item.wono != "無工單出貨")
-                {
-                    var tstock = db.E_StoreHouseStock
-                    .Where(w => w.wono == item.wono && w.position == item.position && w.del_flag != "D").FirstOrDefault();
-                    tstock.quantity = tstock.quantity - item.exp_shipquantity;
-                    db.SaveChanges();
-                }
-
-            }
-            //carList_5 代表公司代碼5的扣帳
-            foreach (var item_5 in carList_5)
-            {
-                if (item_5.wono != "無工單出貨")
-                {
-                    var tstock_5 = db.E_StoreHouseStock
-                    .Where(w => w.eng_sr == item_5.eng_sr && w.position == item_5.position && item_5.wono == "").FirstOrDefault();
-                    if (tstock_5 != null)
-                    {
-                        tstock_5.quantity = tstock_5.quantity - item_5.exp_shipquantity;
-                        db.SaveChanges();
-                    }
-                }
-
-            }
-
-            #endregion
-
-            return RedirectToAction("StoreHouseStock_Order");
-        }
-
         //bill of sale 銷貨單據,銷單
         #region 已銷單庫存
         /// <summary>
@@ -2276,8 +2292,10 @@ namespace WebStoreHouse.Controllers
             }
         }
         #endregion
+
+        #region 已銷出貨
         /// <summary>
-        /// 進入已銷單庫存出貨頁面
+        /// 已銷出貨 - 進入已銷單庫存出貨頁面
         /// </summary>
         /// <param name="eng_sr">機種名稱</param>  // 指定要查詢的機種名稱
         /// <param name="position">庫位</param>    // 指定要查詢的庫位
@@ -2288,7 +2306,7 @@ namespace WebStoreHouse.Controllers
             return View("BOS_toShip", "_LayoutMember", _bos);
         }
         /// <summary>
-        /// 已銷單庫存出貨作業：
+        /// 已銷出貨 - 已銷單庫存出貨作業：
         /// 1. 依據機種名稱與庫位，扣除已銷單庫存數量，並記錄出貨數量與出貨日期。
         /// 2. 將出貨資料寫入 E_StoreHouseStock_SC（預計出貨明細），以利後續出貨流程。
         /// </summary>
@@ -2314,7 +2332,7 @@ namespace WebStoreHouse.Controllers
             {
                 try
                 {
-                    // 找出符合條件的資料
+                    // 已銷單庫存-找出符合條件的資料 - 機種名稱與庫位
                     var bos = db.E_StoreHouseStock_BOS
                         .Where(m => m.eng_sr == eng_sr && m.position == position)
                         .ToList();
@@ -2323,7 +2341,7 @@ namespace WebStoreHouse.Controllers
                     {
                         string today = DateTime.Now.ToString("yyyy-MM-dd");
 
-                        // 更新 E_StoreHouseStock_BOS 資料
+                        // 更新-已銷單庫存- E_StoreHouseStock_BOS 資料
                         foreach (var item in bos)
                         {
                             item.ship_quantity = ship_quantity;
@@ -2335,7 +2353,7 @@ namespace WebStoreHouse.Controllers
                         // 儲存異動
                         db.SaveChanges();
 
-                        // 將資料新增到 E_StoreHouseStock_SC 中
+                        // 將資料-已銷單庫存-新增到-預計出貨- E_StoreHouseStock_SC 中
                         var tos = bos.Select(item => new E_StoreHouseStock_SC
                         {
                             exp_shipdate = item.ship_date,
@@ -2370,7 +2388,8 @@ namespace WebStoreHouse.Controllers
                 }
             }
         }
-
+        #endregion
+        #region 庫位異動
         /// <summary>
         /// 編輯已銷單庫存資料的 View。
         /// </summary>
@@ -2393,9 +2412,9 @@ namespace WebStoreHouse.Controllers
         }
 
         /// <summary>
-        /// 編輯已銷單庫存資料。
+        /// 編輯已銷單庫存資料-庫位異動。
         /// 1. 若目標庫位 (changeP) 已存在相同機種名稱的資料，則將數量加總。
-        /// 2. 若目標庫位不存在，則將原始庫位資料的庫位變更為目標庫位，並複製相關欄位資料。
+        /// 2. 若目標庫位不存在，則將原始庫位資料複製並把庫位變更為目標庫位，新增一筆資料。
         /// 3. 原始庫位資料數量歸零。
         /// </summary>
         /// <param name="eng_sr">機種名稱</param>
@@ -2406,61 +2425,101 @@ namespace WebStoreHouse.Controllers
         [HttpPost]
         public ActionResult Edit_BOS(string eng_sr, string position, string changeP, int quantity)
         {
-            // 權限不足或未登入
+            // 權限驗證
             var authResult = Login_Authentication();
             if (authResult != null)
             {
                 return authResult;
             }
 
-            //取得會員帳號指定fUserId
-            string UserId = ViewBag.UserId;
-            using (var db = new E_StoreHouseEntities())
+            // 參數防呆檢查，錯誤訊息寫入 ModelState 以便前端顯示
+            if (string.IsNullOrWhiteSpace(eng_sr) || string.IsNullOrWhiteSpace(position) || string.IsNullOrWhiteSpace(changeP))
             {
-                using (var transaction = db.Database.BeginTransaction())
+                ModelState.AddModelError("", "參數不可為空，請重新操作。");
+                var _bos = db.E_StoreHouseStock_BOS.Where(m => m.eng_sr == eng_sr && m.quantity > 0).FirstOrDefault();
+                return View("Edit_BOS", "_LayoutMember", _bos);
+            }
+            if (quantity <= 0)
+            {
+                ModelState.AddModelError("", "轉移數量必須大於0。");
+                var _bos = db.E_StoreHouseStock_BOS.Where(m => m.eng_sr == eng_sr && m.quantity > 0).FirstOrDefault();
+                return View("Edit_BOS", "_LayoutMember", _bos);
+            }
+            if (position == changeP)
+            {
+                ModelState.AddModelError("", "原始庫位與目標庫位不可相同。");
+                var _bos = db.E_StoreHouseStock_BOS.Where(m => m.eng_sr == eng_sr && m.quantity > 0).FirstOrDefault();
+                return View("Edit_BOS", "_LayoutMember", _bos);
+            }
+
+            // 取得會員帳號指定fUserId
+            string UserId = ViewBag.UserId;
+
+            using (var db = new E_StoreHouseEntities())
+            using (var transaction = db.Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    // 取得原始庫位資料且數量足夠
+                    var srcBos = db.E_StoreHouseStock_BOS.FirstOrDefault(m => m.eng_sr == eng_sr && m.position == position && m.quantity > 0);
+                    if (srcBos == null)
                     {
-                        var bos = db.E_StoreHouseStock_BOS.SingleOrDefault(m => m.eng_sr == eng_sr && m.position == changeP);
-                        if (bos != null)
-                        {
-                            bos.quantity += quantity;
-                        }
-                        else
-                        {
-                            var e_bos = db.E_StoreHouseStock_BOS.FirstOrDefault(m => m.eng_sr == eng_sr && m.position == position && m.quantity > 0);
-                            e_bos.position = changeP;
-                            e_bos.date = e_bos.date;
-                            e_bos.eng_sr = e_bos.eng_sr;
-                            e_bos.quantity = e_bos.quantity;
-                            e_bos.Full_Amount = e_bos.Full_Amount;
-                            e_bos.Full_GW = e_bos.Full_GW;
-                            e_bos.Full_NW = e_bos.Full_NW;
-                            e_bos.ship_quantity = e_bos.ship_quantity;
-                            e_bos.ship_date = e_bos.ship_date;
-                            e_bos.transportation = e_bos.transportation;
-                            db.E_StoreHouseStock_BOS.Add(e_bos);
-                            //db.SaveChanges();
-                            //transaction.Commit();
-                        }
-
-                        //異動後原始庫位資料數量=0,並加上註記
-                        var u_bos = db.E_StoreHouseStock_BOS.FirstOrDefault(m => m.eng_sr == eng_sr && m.position == position && m.quantity > 0);
-                        u_bos.quantity = 0;
-
-                        db.SaveChanges();
-                        transaction.Commit();
+                        ModelState.AddModelError("", "找不到原始庫位資料或數量不足。");
+                        var _bos = db.E_StoreHouseStock_BOS.Where(m => m.eng_sr == eng_sr && m.quantity > 0).FirstOrDefault();
+                        return View("Edit_BOS", "_LayoutMember", _bos);
                     }
-                    catch (Exception)
+                    if (srcBos.quantity < quantity)
                     {
-                        transaction.Rollback();
-                        //Log error message here
-                        throw;
+                        ModelState.AddModelError("", "原始庫位數量不足，無法轉移。");
+                        var _bos = db.E_StoreHouseStock_BOS.Where(m => m.eng_sr == eng_sr && m.quantity > 0).FirstOrDefault();
+                        return View("Edit_BOS", "_LayoutMember", _bos);
                     }
+
+                    // 檢查目標庫位是否已有相同機種資料
+                    var destBos = db.E_StoreHouseStock_BOS.SingleOrDefault(m => m.eng_sr == eng_sr && m.position == changeP);
+                    if (destBos != null)
+                    {
+                        // 目標庫位已有資料，直接加總數量
+                        destBos.quantity += quantity;
+                    }
+                    else
+                    {
+                        // 目標庫位無資料，複製原始資料並設置新庫位與數量
+                        var newBos = new E_StoreHouseStock_BOS
+                        {
+                            eng_sr = srcBos.eng_sr,
+                            position = changeP,
+                            date = srcBos.date,
+                            quantity = quantity,
+                            Full_Amount = srcBos.Full_Amount,
+                            Full_GW = srcBos.Full_GW,
+                            Full_NW = srcBos.Full_NW,
+                            ship_quantity = srcBos.ship_quantity,
+                            ship_date = srcBos.ship_date,
+                            transportation = srcBos.transportation
+                        };
+                        db.E_StoreHouseStock_BOS.Add(newBos);
+                    }
+
+                    // 原始庫位數量減少，若歸零則設為0
+                    srcBos.quantity -= quantity;
+                    if (srcBos.quantity < 0) srcBos.quantity = 0;
+
+                    db.SaveChanges();
+                    transaction.Commit();
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    // 記錄錯誤訊息於 ModelState 以便前端顯示
+                    ModelState.AddModelError("", "異動失敗：" + ex.Message);
+                    var _bos = db.E_StoreHouseStock_BOS.Where(m => m.eng_sr == eng_sr && m.quantity > 0).FirstOrDefault();
+                    return View("Edit_BOS", "_LayoutMember", _bos);
                 }
             }
             return RedirectToAction("StoreHouseStock_BOS");
         }
+        #endregion
 
         #endregion
 
